@@ -860,11 +860,14 @@
   });
 </script>
 
+<!-- =========================================================================
+     CLEANED SCRIPT 1: INTERFACE & LAYOUT CONTROLLER
+     ========================================================================= -->
 <script>
-  // Global reference variable so buttons can target it directly
-  let map;
+  // Safe declaration check: sets global variables ONLY if they aren't declared yet
+  if (typeof window.trackingAuthMode === 'undefined') window.trackingAuthMode = "login";
+  if (typeof window.currentAuthStep === 'undefined') window.currentAuthStep = "credentials";
 
-  // Initialize theme & utility UI functions
   function toggleTheme() {
     const d = document.documentElement;
     const isDark = d.getAttribute('data-theme') === 'dark';
@@ -875,104 +878,183 @@
   let toastTimer;
   function showToast(msg) {
     const t = document.getElementById('toast');
+    if (!t) return;
     t.innerHTML = '✓ ' + msg;
     t.classList.add('show');
     clearTimeout(toastTimer);
     toastTimer = setTimeout(() => t.classList.remove('show'), 3200);
   }
 
-  function filterMap(el) {
-    document.querySelectorAll('.mf-chip').forEach(c => c.classList.remove('on'));
-    el.classList.add('on');
-    showToast('Filtering map: ' + el.textContent);
+  function openModal(type) {
+    // Looks for 'modal' first. If missing, automatically tries your consumer pane wrapper
+    let m = document.getElementById('modal') || document.getElementById('modal-consumer');
+    if (!m) {
+      console.error("Error: Could not find any HTML element with id='modal' or id='modal-consumer'!");
+      showToast("System error: Login panel interface structure is missing.");
+      return;
+    }
+    m.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    if (type === 'register') {
+      toggleAuthIntent('register');
+    } else {
+      toggleAuthIntent('login');
+    }
   }
 
-  // Scroll visibility listeners
-  const obs = new IntersectionObserver(entries => {
-    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('revealed'); obs.unobserve(e.target); } });
-  }, { threshold: 0.12 });
-  document.querySelectorAll('.scroll-reveal').forEach(el => obs.observe(el));
-
-  // Geolocation handling 
-  function getUserLocation() {
-  if (!navigator.geolocation) {
-    showToast("Geolocation is not supported by your browser");
-    return;
+  function closeModal() {
+    let m = document.getElementById('modal') || document.getElementById('modal-consumer');
+    if (m) m.classList.remove('open');
+    document.body.style.overflow = '';
   }
 
-  const locationSpan = document.getElementById('location-text');
-  locationSpan.textContent = "Locating...";
-  showToast('Locating your position… 📍');
+  function toggleAuthIntent(mode) {
+    window.trackingAuthMode = mode;
+    window.currentAuthStep = "credentials";
+    
+    const inputFields = document.getElementById('consumer-input-fields');
+    const otpFields = document.getElementById('consumer-otp-fields');
+    if (inputFields) inputFields.style.display = "block";
+    if (otpFields) otpFields.style.display = "none";
+    
+    const title = document.getElementById('modal-title');
+    const sub = document.getElementById('modal-sub');
+    const button = document.getElementById('primary-auth-btn');
+    const passGroup = document.getElementById('password-group');
 
-  navigator.geolocation.getCurrentPosition(
-    function(position) {
-      const lat = position.coords.latitude;
-      const lon = position.coords.longitude;
+    if (mode === 'register') {
+      if (title) title.textContent = "Create Account";
+      if (sub) sub.textContent = "Join SevaSarthi to access trusted local help near you";
+      if (button) button.textContent = "Send Verification OTP";
+      if (passGroup) passGroup.style.display = "none";
+    } else {
+      if (title) title.textContent = "Welcome back";
+      if (sub) sub.textContent = "Sign in to your SevaSarthi account";
+      if (button) button.textContent = "Sign In";
+      if (passGroup) passGroup.style.display = "block";
+    }
+  }
 
-      // Update the live Leaflet map view if it exists
-      if (map) {
-        map.setView([lat, lon], 14);
+  function handleAuthSubmission() {
+    if (window.trackingAuthMode === 'login') {
+      const mobileField = document.getElementById('auth-mobile');
+      const passwordField = document.getElementById('auth-password');
+      if (!mobileField || !passwordField || !mobileField.value.trim() || !passwordField.value.trim()) {
+        showToast("Please enter your registered credentials.");
+        return;
       }
-
-      // Convert coordinates into a human-readable city name using OpenStreetMap's free API
-      fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`)
-        .then(response => response.json())
-        .then(data => {
-          if (data && data.address) {
-            // Pick the best available layout name variant (City, Town, Suburb, or State)
-            const city = data.address.city || data.address.town || data.address.village || data.address.suburb || "Unknown City";
-            const stateCode = data.address.state ? data.address.state.substring(0, 2).toUpperCase() : "";
-            
-            // Format example: "Dhanbad, JH" or "Bhagalpur, BI"
-            const formattedLocation = stateCode ? `${city}, ${stateCode}` : city;
-            
-            // Update the text directly on the screen!
-            locationSpan.textContent = formattedLocation;
-            showToast(`Location updated to: ${formattedLocation}`);
-          } else {
-            locationSpan.textContent = "Location Found";
-          }
-        })
-        .catch(error => {
-          console.error("Geocoding Error:", error);
-          locationSpan.textContent = `${lat.toFixed(2)}, ${lon.toFixed(2)}`;
-          showToast("Position found, but could not retrieve street address name.");
-        });
-    },
-    function(error) {
-      if (error.code === error.PERMISSION_DENIED) {
-        showToast("Location access permission denied");
-        locationSpan.textContent = "Permission Denied";
+      showToast("Authenticating profile login metrics...");
+    } else {
+      if (window.currentAuthStep === "credentials") {
+        if (typeof window.triggerFirebaseOTP === 'function') window.triggerFirebaseOTP();
       } else {
-        locationSpan.textContent = "Location Error";
+        if (typeof window.verifyFirebaseOTP === 'function') window.verifyFirebaseOTP();
       }
     }
-  );
-}
-  // Real Leaflet Engine Start
-  document.addEventListener("DOMContentLoaded", function() {
-    // Center directly on Dhanbad coordinates: [23.7957, 86.4304]
-    map = L.map('map', {
-      zoomControl: false // Disable default layout to let custom styles overlay nicely
-    }).setView([23.7957, 86.4304], 13);
+  }
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '© OpenStreetMap contributors'
-    }).addTo(map);
-    
-    // Auto trigger dimensions recalculation so tiles frame up tightly
-    setTimeout(() => { map.invalidateSize(); }, 400);
+  // Safe Map Initializer Block
+  document.addEventListener("DOMContentLoaded", function() {
+    // Only build the map container if it hasn't been built yet
+    if (!window.mapInstance) {
+      const mapContainer = document.getElementById('map');
+      if (mapContainer) {
+        window.mapInstance = L.map('map', { zoomControl: false }).setView([23.7957, 86.4304], 13);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          attribution: '© OpenStreetMap contributors'
+        }).addTo(window.mapInstance);
+      }
+    }
   });
- 
- const firebaseConfig = {
-  apiKey: "AIzaSyDiVK2-HG9cTajZ4vRLVtOezSelWkK9XNA",
-  authDomain: "sevasarthi-5e78c.firebaseapp.com",
-  projectId: "sevasarthi-5e78c",
-  storageBucket: "sevasarthi-5e78c.firebasestorage.app",
-  messagingSenderId: "905980173042",
-  appId: "1:905980173042:web:da80b1109a54064158ce6b",
-  measurementId: "G-85807YN6Q1"
-};
+</script>
+
+
+<!-- =========================================================================
+     CLEANED SCRIPT 2: BACKGROUND FIREBASE INTERACTION ENGINE
+     ========================================================================= -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+  import { 
+    getAuth, 
+    signInWithRedirect, 
+    GoogleAuthProvider, 
+    RecaptchaVerifier, 
+    signInWithPhoneNumber 
+  } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyDiVK2-HG9cTajZ4vRLVtOezSelWkk9XNA",
+    authDomain: "sevasarthi-5e78c.firebaseapp.com",
+    projectId: "sevasarthi-5e78c",
+    storageBucket: "sevasarthi-5e78c.firebasestorage.app",
+    messagingSenderId: "905980173042",
+    appId: "1:905980173042:web:da80b1109a54064158ce6b",
+    measurementId: "G-85807YN6Q1"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const googleProvider = new GoogleAuthProvider();
+  let confirmationResult = null;
+
+  window.initiateGoogleAuth = function() {
+    showToast("Opening secure Google Account link...");
+    signInWithRedirect(auth, googleProvider);
+  };
+
+  window.triggerFirebaseOTP = function() {
+    const mobileEl = document.getElementById('auth-mobile');
+    if (!mobileEl) return;
+    const mobileField = mobileEl.value.trim();
+    if (!/^[6-9]\d{9}$/.test(mobileField.replace('+91', '').trim())) {
+      showToast("Please enter a valid 10-digit Indian mobile number.");
+      return;
+    }
+    const formattedPhoneNumber = mobileField.startsWith('+91') ? mobileField : '+91' + mobileField;
+    showToast('Initializing secure anti-bot verification checkpoint… 🤖');
+
+    if (!window.recaptchaVerifier) {
+      window.recaptchaVerifier = new RecaptchaVerifier(auth, 'primary-auth-btn', {
+        'size': 'invisible'
+      });
+    }
+
+    signInWithPhoneNumber(auth, formattedPhoneNumber, window.recaptchaVerifier)
+      .then((result) => {
+        confirmationResult = result;
+        window.currentAuthStep = "otp";
+        document.getElementById('consumer-input-fields').style.display = "none";
+        document.getElementById('consumer-otp-fields').style.display = "block";
+        document.getElementById('primary-auth-btn').textContent = "Verify Code & Complete Setup";
+        showToast("OTP sent successfully to your mobile! 📱");
+      })
+      .catch((error) => {
+        console.error("SMS Error:", error);
+        showToast("Verification failed. Make sure your number is correct.");
+      });
+  };
+
+  window.verifyFirebaseOTP = function() {
+    const otpInputs = document.querySelectorAll('.otp-field');
+    let combinedCode = "";
+    otpInputs.forEach(input => combinedCode += input.value.trim());
+
+    if (combinedCode.length < 4) {
+      showToast("Please input the complete verification code numbers.");
+      return;
+    }
+
+    showToast("Validating code entries...");
+    confirmationResult.confirm(combinedCode)
+      .then((result) => {
+        showToast(`Profile authorized! Welcome to SevaSarthi 🎉`);
+        closeModal();
+      })
+      .catch((error) => {
+        showToast("Invalid verification code. Please request a new OTP code.");
+      });
+  };
+</script>
  
 </script>
 </body>
