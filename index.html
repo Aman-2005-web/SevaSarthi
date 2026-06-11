@@ -182,8 +182,6 @@
   .pin-elec .map-pin-dot { background: #FEF3C7; transform: rotate(-45deg); }
   .pin-plumb { top: 50%; left: 55%; }
   .pin-plumb .map-pin-dot { background: #DBEAFE; transform: rotate(-45deg); }
-  .pin-tutor { bottom: 20px; left: 20%; }
-  .pin-tutor .map-pin-dot { background: #D1FAE5; transform: rotate(-45deg); }
   .map-user-pin {
     position: absolute; top: 45%; left: 45%;
     width: 18px; height: 18px; border-radius: 50%;
@@ -617,7 +615,6 @@
 
 <nav>
   <a href="#" class="logo">Seva<span>Sarthi</span><span class="logo-dot"></span></a>
-  </div>
   <div style="display:flex;gap:8px;align-items:center;">
     <button class="theme-toggle" onclick="toggleTheme()">🌙</button>
     <button class="btn btn-outline" onclick="openModal('login')">Sign In</button>
@@ -662,7 +659,7 @@
       <input type="text" id="search-input" placeholder="Search electrician, plumber, carpenter, tutor…" aria-label="Search for services">
       <div class="search-divider"></div>
       
-      <!-- Interactive location block that triggers the Reverse Geocoding lookups -->
+      <!-- Interactive location block -->
       <div class="search-location" onclick="getUserLocation()" style="cursor: pointer; display: inline-flex; align-items: center; gap: 8px;">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--accent); flex-shrink: 0;" aria-hidden="true">
           <path d="M12 22s-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 8.2c0 7.3-8 11.8-8 11.8z"/>
@@ -675,7 +672,6 @@
     </div>
   </div>
 </div>
-
 
 <section id="map-section" class="map-section">
   <div class="section-header scroll-reveal">
@@ -703,7 +699,6 @@
     </div>
 
     <div class="map-container">
-      
       <div id="map"></div>
 
       <div class="map-overlay-pin" style="top:25%; left:28%;" onclick="showToast('Ramesh Kumar — Electrician ⚡')">
@@ -726,11 +721,10 @@
       </div>
 
       <div class="map-controls">
-        <button class="map-ctrl-btn" onclick="map.zoomIn()">+</button>
-        <button class="map-ctrl-btn" onclick="map.zoomOut()">−</button>
+        <button class="map-ctrl-btn" onclick="if(map) map.zoomIn()">+</button>
+        <button class="map-ctrl-btn" onclick="if(map) map.zoomOut()">−</button>
         <button class="map-ctrl-btn" onclick="getUserLocation()">📍</button>
       </div>
-
     </div>
   </div>
 </section>
@@ -753,20 +747,21 @@
 
 <footer>
   <div class="footer-brand">
-  <a href="#" class="logo">Seva<span>Sarthi</span><span class="logo-dot"></span></a>
-  <p>Connecting skilled workers with families across India. Empowering daily-wage earners with dignity, visibility, and fair pay.</p>
-  <div class="app-badges" style="margin-top:16px;">
-    <a href="#" class="app-badge" onclick="showToast('App coming soon!');return false;">📱 Android</a>
-    <a href="#" class="app-badge" onclick="showToast('App coming soon!');return false;">🍎 iOS</a>
+    <a href="#" class="logo">Seva<span>Sarthi</span><span class="logo-dot"></span></a>
+    <p>Connecting skilled workers with families across India. Empowering daily-wage earners with dignity, visibility, and fair pay.</p>
+    <div class="app-badges" style="margin-top:16px;">
+      <a href="#" class="app-badge" onclick="showToast('App coming soon!');return false;">📱 Android</a>
+      <a href="#" class="app-badge" onclick="showToast('App coming soon!');return false;">🍎 iOS</a>
+    </div>
   </div>
-</div>
 </footer>
 
 <div class="toast" id="toast"></div>
 
 <script>
-  // Global reference variable so buttons can target it directly
+  // Global reference variable
   let map;
+  let toastTimer;
 
   // Initialize theme & utility UI functions
   function toggleTheme() {
@@ -776,9 +771,9 @@
     localStorage.setItem('theme', isDark ? 'light' : 'dark');
   }
 
-  let toastTimer;
   function showToast(msg) {
     const t = document.getElementById('toast');
+    if (!t) return;
     t.innerHTML = '✓ ' + msg;
     t.classList.add('show');
     clearTimeout(toastTimer);
@@ -791,81 +786,96 @@
     showToast('Filtering map: ' + el.textContent);
   }
 
-  // Scroll visibility listeners
-  const obs = new IntersectionObserver(entries => {
-    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('revealed'); obs.unobserve(e.target); } });
-  }, { threshold: 0.12 });
-  document.querySelectorAll('.scroll-reveal').forEach(el => obs.observe(el));
+  function handleSearch() {
+    const inp = document.getElementById('search-input');
+    if (inp && inp.value.trim()) {
+      showToast('Searching for matches: "' + inp.value.trim() + '"');
+    } else {
+      showToast('Please type a service skill to search.');
+    }
+  }
+
+  function toggleMenu() {
+    showToast('Menu controller accessed');
+  }
 
   // Geolocation handling 
   function getUserLocation() {
-  if (!navigator.geolocation) {
-    showToast("Geolocation is not supported by your browser");
-    return;
+    if (!navigator.geolocation) {
+      showToast("Geolocation is not supported by your browser");
+      return;
+    }
+
+    const locationSpan = document.getElementById('location-text');
+    if (locationSpan) locationSpan.textContent = "Locating...";
+    showToast('Locating your position… 📍');
+
+    navigator.geolocation.getCurrentPosition(
+      function(position) {
+        const lat = position.coords.latitude;
+        const lon = position.coords.longitude;
+
+        if (map) {
+          map.setView([lat, lon], 14);
+        }
+
+        fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`)
+          .then(response => response.json())
+          .then(data => {
+            if (locationSpan) {
+              if (data && data.address) {
+                const city = data.address.city || data.address.town || data.address.village || data.address.suburb || "Unknown City";
+                const stateCode = data.address.state ? data.address.state.substring(0, 2).toUpperCase() : "";
+                const formattedLocation = stateCode ? `${city}, ${stateCode}` : city;
+                
+                locationSpan.textContent = formattedLocation;
+                showToast(`Location updated to: ${formattedLocation}`);
+              } else {
+                locationSpan.textContent = "Location Found";
+              }
+            }
+          })
+          .catch(error => {
+            console.error("Geocoding Error:", error);
+            if (locationSpan) locationSpan.textContent = `${lat.toFixed(2)}, ${lon.toFixed(2)}`;
+            showToast("Position found, but could not retrieve street address name.");
+          });
+      },
+      function(error) {
+        if (locationSpan) {
+          if (error.code === error.PERMISSION_DENIED) {
+            showToast("Location access permission denied");
+            locationSpan.textContent = "Permission Denied";
+          } else {
+            locationSpan.textContent = "Location Error";
+          }
+        }
+      }
+    );
   }
 
-  const locationSpan = document.getElementById('location-text');
-  locationSpan.textContent = "Locating...";
-  showToast('Locating your position… 📍');
-
-  navigator.geolocation.getCurrentPosition(
-    function(position) {
-      const lat = position.coords.latitude;
-      const lon = position.coords.longitude;
-
-      // Update the live Leaflet map view if it exists
-      if (map) {
-        map.setView([lat, lon], 14);
-      }
-
-      // Convert coordinates into a human-readable city name using OpenStreetMap's free API
-      fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`)
-        .then(response => response.json())
-        .then(data => {
-          if (data && data.address) {
-            // Pick the best available layout name variant (City, Town, Suburb, or State)
-            const city = data.address.city || data.address.town || data.address.village || data.address.suburb || "Unknown City";
-            const stateCode = data.address.state ? data.address.state.substring(0, 2).toUpperCase() : "";
-            
-            // Format example: "Dhanbad, JH" or "Bhagalpur, BI"
-            const formattedLocation = stateCode ? `${city}, ${stateCode}` : city;
-            
-            // Update the text directly on the screen!
-            locationSpan.textContent = formattedLocation;
-            showToast(`Location updated to: ${formattedLocation}`);
-          } else {
-            locationSpan.textContent = "Location Found";
-          }
-        })
-        .catch(error => {
-          console.error("Geocoding Error:", error);
-          locationSpan.textContent = `${lat.toFixed(2)}, ${lon.toFixed(2)}`;
-          showToast("Position found, but could not retrieve street address name.");
-        });
-    },
-    function(error) {
-      if (error.code === error.PERMISSION_DENIED) {
-        showToast("Location access permission denied");
-        locationSpan.textContent = "Permission Denied";
-      } else {
-        locationSpan.textContent = "Location Error";
-      }
-    }
-  );
-}
-  // Real Leaflet Engine Start
+  // Safely trigger elements when DOM ecosystem is stable
   document.addEventListener("DOMContentLoaded", function() {
-    // Center directly on Dhanbad coordinates: [23.7957, 86.4304]
-    map = L.map('map', {
-      zoomControl: false // Disable default layout to let custom styles overlay nicely
-    }).setView([23.7957, 86.4304], 13);
+    // 1. Core Map Assembly
+    map = L.map('map', { zoomControl: false }).setView([23.7957, 86.4304], 13);
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '© OpenStreetMap contributors'
     }).addTo(map);
     
-    // Auto trigger dimensions recalculation so tiles frame up tightly
     setTimeout(() => { map.invalidateSize(); }, 400);
+
+    // 2. Structural Scroll Reveal Setup
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(e => { 
+        if (e.isIntersecting) { 
+          e.target.classList.add('revealed'); 
+          obs.unobserve(e.target); 
+        } 
+      });
+    }, { threshold: 0.12 });
+    
+    document.querySelectorAll('.scroll-reveal').forEach(el => obs.observe(el));
   });
 </script>
 </body>
