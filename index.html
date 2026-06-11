@@ -627,48 +627,50 @@
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+  import { getAuth, signInWithRedirect, GoogleAuthProvider, RecaptchaVerifier, signInWithPhoneNumber } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
   import {
-    getAuth,
-    signInWithRedirect,
-    GoogleAuthProvider,
-    RecaptchaVerifier,
-    signInWithPhoneNumber,
-    onAuthStateChanged
-  } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+  getAuth,
+  signInWithRedirect,
+  GoogleAuthProvider,
+  RecaptchaVerifier,
+  signInWithPhoneNumber,
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyDiVK2-HG9cTajZ4vRLVtOezSelWkK9XNA",
-    authDomain: "sevasarthi-5e78c.firebaseapp.com",
-    projectId: "sevasarthi-5e78c",
-    storageBucket: "sevasarthi-5e78c.firebasestorage.app",
-    messagingSenderId: "905980173042",
-    appId: "1:905980173042:web:ae8021710f803e9758ce6b",
-    measurementId: "G-WN5MJ0ESC7"
-  };
+onAuthStateChanged(auth, (user) => {
+  const status = document.getElementById("user-status");
+  const signin = document.getElementById("signin-btn");
+  const register = document.getElementById("register-btn");
+  if (user) {
+    status.style.display = "inline-block";
+    status.textContent =
+      user.displayName ||
+      user.phoneNumber ||
+      user.email ||
+      "Logged In";
+    signin.style.display = "none";
+    register.style.display = "none";
+  } else {
+    status.style.display = "none";
+    signin.style.display = "inline-block";
+    register.style.display = "inline-block";
+  }
+});
 
-  const app = initializeApp(firebaseConfig);
+const firebaseConfig = {
+  apiKey: "AIzaSyDiVK2-HG9cTajZ4vRLVtOezSelWkK9XNA",
+  authDomain: "sevasarthi-5e78c.firebaseapp.com",
+  projectId: "sevasarthi-5e78c",
+  storageBucket: "sevasarthi-5e78c.firebasestorage.app",
+  messagingSenderId: "905980173042",
+  appId: "1:905980173042:web:ae8021710f803e9758ce6b",
+  measurementId: "G-WN5MJ0ESC7"
+};
+const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
   const googleProvider = new GoogleAuthProvider();
   let confirmationResult = null;
-
-  onAuthStateChanged(auth, (user) => {
-    const status = document.getElementById("user-status");
-    const signin = document.getElementById("signin-btn");
-    const register = document.getElementById("register-btn");
-
-    if (user) {
-      if (signin) signin.style.display = "none";
-      if (register) register.style.display = "none";
-      if (status) {
-        status.style.display = "inline-block";
-        status.textContent = user.displayName || user.phoneNumber || user.email || "Logged In";
-      }
-    } else {
-      if (status) status.style.display = "none";
-      if (signin) signin.style.display = "inline-block";
-      if (register) register.style.display = "inline-block";
-    }
-  });
 
   window.initiateGoogleAuth = function () {
     showToast("Launching secure Google account portal…");
@@ -687,16 +689,18 @@
     showToast("Checking security parameters… 🤖");
 
     if (window._recaptchaVerifier) {
-      try { window._recaptchaVerifier.clear(); } catch(e) {}
+  try {
+    window._recaptchaVerifier.clear();
+  } catch(e) {}
     }
 
-    if (!document.getElementById('recaptcha-container')) {
-      const container = document.createElement('div');
-      container.id = 'recaptcha-container';
-      document.body.appendChild(container);
-    }
-
-    window._recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', { size: 'invisible' });
+window._recaptchaVerifier = new RecaptchaVerifier(
+  auth,
+  'recaptcha-container',
+  {
+    size: 'invisible'
+  }
+);
 
     signInWithPhoneNumber(auth, phone, window._recaptchaVerifier)
       .then(result => {
@@ -707,7 +711,7 @@
         showToast("OTP sent successfully! 📱");
       })
       .catch(err => {
-        console.error(err);
+        console.error(err); 
         showToast("Failed to send OTP. Check authorized domains.");
         if (window._recaptchaVerifier) { window._recaptchaVerifier.clear(); window._recaptchaVerifier = null; }
       });
@@ -720,22 +724,25 @@
     showToast("Validating entries…");
 
     confirmationResult.confirm(code)
-      .then((result) => {
-        const user = result.user;
-        const status = document.getElementById("user-status");
-        if (status) {
-          status.style.display = "inline-block";
-          status.textContent = user.phoneNumber || user.displayName || user.email || "Logged In";
-        }
+      .then(() => {
         showToast("Profile authorized! Welcome to SevaSarthi 🎉");
         closeModal();
       })
-      .catch((error) => {
-        console.error(error);
-        showToast("Invalid code entry.");
-      });
+  .then((result) => {
+const user = result.user;
+    const status = document.getElementById("user-status");
+    if (status) {
+      status.textContent =
+        user.phoneNumber ||
+        user.displayName ||
+        user.email;
+    showToast("Profile authorized! Welcome to SevaSarthi 🎉");
+    closeModal();
+  })
+      .catch(() => { showToast("Invalid code entry."); });
   };
 </script>
 
 </body>
 </html>
+
