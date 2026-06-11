@@ -186,15 +186,13 @@
   <a href="#" class="logo">Seva<span>Sarthi</span><span class="logo-dot"></span></a>
   <div style="display:flex;gap:8px;align-items:center;">
     <span id="user-status"
-      style="
-      font-size:14px;
-      font-weight:600;
-      color:#16a34a;
-      padding:6px 10px;
-      border-radius:20px;
-      background:#ecfdf5;
-      display:none;">
-    </span>
+        style="display:none;
+               padding:6px 10px;
+               background:#ecfdf5;
+               border-radius:20px;
+               font-size:14px;
+               font-weight:600;">
+  </span>
 
     <button id="signin-btn"
       class="btn btn-outline"
@@ -655,8 +653,12 @@ const firebaseConfig = {
 onAuthStateChanged(auth, (user) => {
   console.log("AUTH STATE:", user);
   const status = document.getElementById("user-status");
+ const signin = document.getElementById("signin-btn");
+const register = document.getElementById("register-btn");
   if (user) {
     console.log("USER LOGGED IN");
+   signin.style.display = "none";
+  register.style.display = "none";
     if (status) {
       status.style.display = "inline-block";
       status.textContent =
@@ -724,20 +726,44 @@ window._recaptchaVerifier = new RecaptchaVerifier(
     if (code.length < 6) { showToast("Enter all 6 digits."); return; }
     showToast("Validating entries…");
 
-    confirmationResult.confirm(code)
-  .then((result) => {
-    const user = result.user;
-    const status = document.getElementById("user-status");
-    if (status) {
-      status.textContent =
-        user.phoneNumber ||
-        user.displayName ||
-        user.email;
-    showToast("Profile authorized! Welcome to SevaSarthi 🎉");
-    closeModal();
-  })
-      .catch(() => { showToast("Invalid code entry."); });
-  };
+    window.verifyFirebaseOTP = function () {
+  if (!confirmationResult) {
+    showToast("Request an OTP first.");
+    return;
+  }
+
+  const code = Array.from(
+    document.querySelectorAll('.otp-field')
+  ).map(i => i.value.trim()).join('');
+
+  if (code.length < 6) {
+    showToast("Enter all 6 digits.");
+    return;
+  }
+
+  showToast("Validating entries…");
+
+  confirmationResult.confirm(code)
+    .then((result) => {
+      const user = result.user;
+      const status = document.getElementById("user-status");
+      if (status) {
+        status.style.display = "inline-block";
+        status.textContent =
+          user.phoneNumber ||
+          user.displayName ||
+          user.email ||
+          "Logged In";
+      }
+      showToast("Profile authorized! Welcome to SevaSarthi 🎉");
+      closeModal();
+    })
+    .catch((error) => {
+      console.error(error);
+      showToast("Invalid code entry.");
+    });
+};
+   
 </script>
 
 </body>
