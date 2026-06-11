@@ -192,6 +192,8 @@
   </div>
 </nav>
 
+ <div id="recaptcha-container"></div>
+
 <div class="hero">
   <div>
     <div class="hero-eyebrow">🇮🇳 Trusted in 200+ Cities Across India</div>
@@ -642,9 +644,19 @@ const firebaseConfig = {
     if (disp) disp.textContent = '+91 ' + raw.slice(0, 5) + ' ' + raw.slice(5);
     showToast("Checking security parameters… 🤖");
 
-    if (!window._recaptchaVerifier) {
-      window._recaptchaVerifier = new RecaptchaVerifier(auth, 'primary-auth-btn', { size: 'invisible' });
-    }
+    if (window._recaptchaVerifier) {
+  try {
+    window._recaptchaVerifier.clear();
+  } catch(e) {}
+}
+
+window._recaptchaVerifier = new RecaptchaVerifier(
+  auth,
+  'recaptcha-container',
+  {
+    size: 'invisible'
+  }
+);
 
     signInWithPhoneNumber(auth, phone, window._recaptchaVerifier)
       .then(result => {
