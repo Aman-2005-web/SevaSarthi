@@ -185,31 +185,12 @@
 <nav>
   <a href="#" class="logo">Seva<span>Sarthi</span><span class="logo-dot"></span></a>
   <div style="display:flex;gap:8px;align-items:center;">
-    <span id="user-status"
-        style="display:none;
-               padding:6px 10px;
-               background:#ecfdf5;
-               border-radius:20px;
-               font-size:14px;
-               font-weight:600;">
-  </span>
-
-    <button id="signin-btn"
-      class="btn btn-outline"
-      onclick="openModal('login')">
-      Sign In
-    </button>
-    <button id="register-btn"
-      class="btn btn-primary"
-      onclick="openModal('register')">
-      Get Started
-    </button>
     <button class="theme-toggle" onclick="toggleTheme()">🌙</button>
+    <button class="btn btn-outline" onclick="openModal('login')">Sign In</button>
+    <button class="btn btn-primary" onclick="openModal('register')">Get Started</button>
     <button class="hamburger" onclick="toggleMenu()">☰</button>
   </div>
 </nav>
- 
- <div id="recaptcha-container"></div>
 
 <div class="hero">
   <div>
@@ -629,45 +610,17 @@
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
   import { getAuth, signInWithRedirect, GoogleAuthProvider, RecaptchaVerifier, signInWithPhoneNumber } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-  import {
-  getAuth,
-  signInWithRedirect,
-  GoogleAuthProvider,
-  RecaptchaVerifier,
-  signInWithPhoneNumber,
-  onAuthStateChanged
-} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+  const firebaseConfig = {
+    apiKey:            "AIzaSyDiVK2-HG9cTajZ4vRLVtOezSelWkk9XNA",
+    authDomain:        "sevasarthi-5e78c.firebaseapp.com",
+    projectId:         "sevasarthi-5e78c",
+    storageBucket:     "sevasarthi-5e78c.firebasestorage.app",
+    messagingSenderId: "905980173042",
+    appId:             "1:905980173042:web:ae8021710f803e9758ce6b",
+    measurementId:     "G-WN5MJ0ESC7"
+  };
 
-onAuthStateChanged(auth, (user) => {
-  const status = document.getElementById("user-status");
-  const signin = document.getElementById("signin-btn");
-  const register = document.getElementById("register-btn");
-  if (user) {
-    status.style.display = "inline-block";
-    status.textContent =
-      user.displayName ||
-      user.phoneNumber ||
-      user.email ||
-      "Logged In";
-    signin.style.display = "none";
-    register.style.display = "none";
-  } else {
-    status.style.display = "none";
-    signin.style.display = "inline-block";
-    register.style.display = "inline-block";
-  }
-});
-
-const firebaseConfig = {
-  apiKey: "AIzaSyDiVK2-HG9cTajZ4vRLVtOezSelWkK9XNA",
-  authDomain: "sevasarthi-5e78c.firebaseapp.com",
-  projectId: "sevasarthi-5e78c",
-  storageBucket: "sevasarthi-5e78c.firebasestorage.app",
-  messagingSenderId: "905980173042",
-  appId: "1:905980173042:web:ae8021710f803e9758ce6b",
-  measurementId: "G-WN5MJ0ESC7"
-};
-const app = initializeApp(firebaseConfig);
+  const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
   const googleProvider = new GoogleAuthProvider();
   let confirmationResult = null;
@@ -688,19 +641,9 @@ const app = initializeApp(firebaseConfig);
     if (disp) disp.textContent = '+91 ' + raw.slice(0, 5) + ' ' + raw.slice(5);
     showToast("Checking security parameters… 🤖");
 
-    if (window._recaptchaVerifier) {
-  try {
-    window._recaptchaVerifier.clear();
-  } catch(e) {}
+    if (!window._recaptchaVerifier) {
+      window._recaptchaVerifier = new RecaptchaVerifier(auth, 'primary-auth-btn', { size: 'invisible' });
     }
-
-window._recaptchaVerifier = new RecaptchaVerifier(
-  auth,
-  'recaptcha-container',
-  {
-    size: 'invisible'
-  }
-);
 
     signInWithPhoneNumber(auth, phone, window._recaptchaVerifier)
       .then(result => {
@@ -728,21 +671,11 @@ window._recaptchaVerifier = new RecaptchaVerifier(
         showToast("Profile authorized! Welcome to SevaSarthi 🎉");
         closeModal();
       })
-  .then((result) => {
-const user = result.user;
-    const status = document.getElementById("user-status");
-    if (status) {
-      status.textContent =
-        user.phoneNumber ||
-        user.displayName ||
-        user.email;
-    showToast("Profile authorized! Welcome to SevaSarthi 🎉");
-    closeModal();
-  })
       .catch(() => { showToast("Invalid code entry."); });
   };
 </script>
-
 </body>
 </html>
 
+</body>
+</html>
