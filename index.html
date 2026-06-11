@@ -7,8 +7,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SevaSarthi – Find Trusted Local Services & Skilled Workers Near You</title>
-<meta name="description" content="Book background-verified electricians, plumbers, carpenters, tutors, and laborers. Real-time mapping and trusted community reviews with SevaSarthi.">
-<meta name="keywords" content="SevaSarthi, local services India, find electrician, plumber near me, skilled workers, home tutor booking">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -57,7 +55,6 @@
     transition: background 0.3s, color 0.3s;
   }
 
-  /* ─── NAV ─── */
   nav {
     position: sticky; top: 0; z-index: 100;
     background: var(--surface);
@@ -65,7 +62,6 @@
     padding: 0 5%;
     display: flex; align-items: center; justify-content: space-between;
     height: 64px;
-    backdrop-filter: blur(12px);
   }
   .logo {
     font-family: var(--font-display);
@@ -76,538 +72,111 @@
   }
   .logo span { color: var(--accent); }
   .logo-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); display: inline-block; }
-  .nav-links { display: flex; align-items: center; gap: 8px; }
-  .nav-links a {
-    text-decoration: none; color: var(--text2); font-size: 14px; font-weight: 500;
-    padding: 8px 14px; border-radius: var(--radius-sm);
-    transition: all 0.2s;
-  }
-  .nav-links a:hover { color: var(--text); background: var(--surface2); }
-  .btn { display: inline-flex; align-items: center; gap: 6px; padding: 9px 18px; border-radius: var(--radius-sm); font-size: 14px; font-weight: 600; cursor: pointer; border: none; transition: all 0.2s; text-decoration: none; font-family: var(--font-body); }
+  .btn { display: inline-flex; align-items: center; gap: 6px; padding: 9px 18px; border-radius: var(--radius-sm); font-size: 14px; font-weight: 600; cursor: pointer; border: none; transition: all 0.2s; text-decoration: none; }
   .btn-outline { background: transparent; border: 1.5px solid var(--border); color: var(--text); }
   .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
   .btn-primary { background: var(--accent); color: #fff; }
-  .btn-primary:hover { background: #c73d22; transform: translateY(-1px); box-shadow: 0 4px 16px rgba(232,75,47,0.35); }
-  .btn-blue { background: var(--blue); color: #fff; }
-  .btn-blue:hover { background: #1249ab; transform: translateY(-1px); }
-  .btn-green { background: var(--green); color: #fff; }
-  .btn-green:hover { background: #15723f; transform: translateY(-1px); }
+  .btn-primary:hover { background: #c73d22; transform: translateY(-1px); }
+  
+  .theme-toggle, .hamburger { background: var(--surface2); border: none; cursor: pointer; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; color: var(--text2); }
+  .hamburger { display: none; }
 
-  .theme-toggle {
-    background: var(--surface2); border: none; cursor: pointer;
-    width: 36px; height: 36px; border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 18px; transition: all 0.2s;
-    color: var(--text2);
-  }
-  .theme-toggle:hover { background: var(--border); }
-
-  .hamburger { display: none; background: none; border: none; cursor: pointer; color: var(--text); font-size: 22px; padding: 4px; }
-
-  /* ─── HERO ─── */
-  .hero {
-    padding: 80px 5% 60px;
-    display: grid; grid-template-columns: 1fr 1fr; gap: 60px;
-    align-items: center; max-width: 1200px; margin: 0 auto;
-  }
-  .hero-eyebrow {
-    display: inline-flex; align-items: center; gap: 8px;
-    background: rgba(232,75,47,0.1); color: var(--accent);
-    padding: 6px 14px; border-radius: 99px; font-size: 12px; font-weight: 600;
-    text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 20px;
-  }
-  .hero h1 {
-    font-family: var(--font-display);
-    font-size: clamp(36px, 5vw, 58px);
-    font-weight: 800; line-height: 1.1;
-    letter-spacing: -0.02em;
-    margin-bottom: 20px;
-  }
+  .hero { padding: 80px 5% 60px; display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; max-width: 1200px; margin: 0 auto; }
+  .hero-eyebrow { display: inline-flex; align-items: center; gap: 8px; background: rgba(232,75,47,0.1); color: var(--accent); padding: 6px 14px; border-radius: 99px; font-size: 12px; font-weight: 600; text-transform: uppercase; margin-bottom: 20px; }
+  .hero h1 { font-family: var(--font-display); font-size: clamp(36px, 5vw, 58px); font-weight: 800; line-height: 1.1; margin-bottom: 20px; }
   .hero h1 em { font-style: normal; color: var(--accent); }
-  .hero p { font-size: 17px; color: var(--text2); line-height: 1.7; margin-bottom: 32px; max-width: 480px; }
-
+  .hero p { font-size: 17px; color: var(--text2); margin-bottom: 32px; max-width: 480px; }
   .hero-cta { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 40px; }
-
   .hero-stats { display: flex; gap: 32px; }
-  .stat-item { }
-  .stat-num { font-family: var(--font-display); font-size: 26px; font-weight: 800; color: var(--text); }
-  .stat-label { font-size: 12px; color: var(--text3); margin-top: 2px; }
+  .stat-num { font-family: var(--font-display); font-size: 26px; font-weight: 800; }
+  .stat-label { font-size: 12px; color: var(--text3); }
 
-  /* hero visual */
-  .hero-visual {
-    position: relative;
-  }
-  .hero-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 20px;
-    box-shadow: var(--shadow-lg);
-    animation: floatUp 0.7s ease both;
-  }
-  .hero-map-mockup {
-    background: linear-gradient(135deg, #d4e8ff 0%, #b8d4ff 50%, #d4f0e8 100%);
-    border-radius: 14px;
-    height: 220px;
-    position: relative;
-    overflow: hidden;
-    margin-bottom: 14px;
-  }
-  [data-theme="dark"] .hero-map-mockup {
-    background: linear-gradient(135deg, #1a3052 0%, #0e2038 50%, #0e2e20 100%);
-  }
-  .map-pin {
-    position: absolute;
-    display: flex; flex-direction: column; align-items: center;
-    cursor: pointer;
-    transition: transform 0.2s;
-  }
-  .map-pin:hover { transform: scale(1.1); }
-  .map-pin-dot {
-    width: 36px; height: 36px; border-radius: 50% 50% 50% 0;
-    transform: rotate(-45deg);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 16px;
-    box-shadow: 0 3px 10px rgba(0,0,0,0.25);
-  }
-  .map-pin-label {
-    margin-top: 6px; font-size: 11px; font-weight: 600;
-    background: var(--surface); color: var(--text);
-    padding: 3px 8px; border-radius: 6px;
-    border: 1px solid var(--border);
-    white-space: nowrap;
-    transform: rotate(0deg);
-  }
+  .hero-visual { position: relative; }
+  .hero-card { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 20px; box-shadow: var(--shadow-lg); }
+  .hero-map-mockup { background: linear-gradient(135deg, #d4e8ff 0%, #b8d4ff 50%, #d4f0e8 100%); border-radius: 14px; height: 220px; position: relative; overflow: hidden; }
+  .map-pin { position: absolute; display: flex; flex-direction: column; align-items: center; }
+  .map-pin-dot { width: 36px; height: 36px; border-radius: 50% 50% 50% 0; transform: rotate(-45deg); display: flex; align-items: center; justify-content: center; background: #FEF3C7; }
+  .map-pin-label { margin-top: 6px; font-size: 11px; font-weight: 600; background: var(--surface); padding: 3px 8px; border-radius: 6px; border: 1px solid var(--border); white-space: nowrap; }
   .pin-elec { top: 20px; left: 30%; }
-  .pin-elec .map-pin-dot { background: #FEF3C7; transform: rotate(-45deg); }
   .pin-plumb { top: 50%; left: 55%; }
-  .pin-plumb .map-pin-dot { background: #DBEAFE; transform: rotate(-45deg); }
-  .map-user-pin {
-    position: absolute; top: 45%; left: 45%;
-    width: 18px; height: 18px; border-radius: 50%;
-    background: var(--accent); border: 3px solid #fff;
-    box-shadow: 0 0 0 6px rgba(232,75,47,0.2);
-    animation: pulse 2s infinite;
-  }
+  .map-user-pin { position: absolute; top: 45%; left: 45%; width: 18px; height: 18px; border-radius: 50%; background: var(--accent); border: 3px solid #fff; }
 
-  /* ─── SEARCH BAR ─── */
-  .search-section {
-    background: var(--surface);
-    border-top: 1px solid var(--border);
-    border-bottom: 1px solid var(--border);
-    padding: 24px 5%;
-  }
+  .search-section { background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 24px 5%; }
   .search-wrap { max-width: 900px; margin: 0 auto; }
-  .search-box {
-    display: flex; gap: 10px;
-    background: var(--bg);
-    border: 2px solid var(--border);
-    border-radius: var(--radius);
-    padding: 8px 8px 8px 20px;
-    transition: border-color 0.2s;
-  }
-  .search-box:focus-within { border-color: var(--accent); }
-  .search-box input {
-    flex: 1; background: none; border: none; outline: none;
-    font-size: 15px; color: var(--text); font-family: var(--font-body);
-  }
-  .search-box input::placeholder { color: var(--text3); }
-  .search-divider { width: 1px; background: var(--border); margin: 4px 0; }
-  .search-location {
-    display: flex; align-items: center; gap: 8px;
-    font-size: 14px; color: var(--text2); padding: 0 12px; cursor: pointer;
-    white-space: nowrap;
-  }
-  .search-location svg { width: 16px; height: 16px; color: var(--accent); flex-shrink: 0; }
-  .search-chips { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
-  .chip {
-    font-size: 13px; padding: 5px 14px; border-radius: 99px;
-    border: 1.5px solid var(--border); background: var(--surface);
-    color: var(--text2); cursor: pointer; transition: all 0.15s;
-    font-weight: 500;
-  }
-  .chip:hover { border-color: var(--accent); color: var(--accent); background: rgba(232,75,47,0.05); }
+  .search-box { display: flex; gap: 10px; background: var(--bg); border: 2px solid var(--border); border-radius: var(--radius); padding: 8px 8px 8px 20px; align-items: center; }
+  .search-box input { flex: 1; background: none; border: none; outline: none; font-size: 15px; color: var(--text); }
+  .search-divider { width: 1px; background: var(--border); height: 24px; }
+  .search-location { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--text2); padding: 0 12px; cursor: pointer; white-space: nowrap; }
+  .chip { font-size: 13px; padding: 6px 14px; border-radius: 99px; border: 1.5px solid var(--border); background: var(--surface); color: var(--text2); cursor: pointer; margin-right: 4px; font-weight: 500; }
+  .chip:hover { border-color: var(--accent); color: var(--accent); }
 
-  /* ─── SERVICES GRID ─── */
-  section { padding: 64px 5%; }
-  .section-header { max-width: 1200px; margin: 0 auto 40px; }
-  .section-label { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent); margin-bottom: 8px; }
-  .section-title { font-family: var(--font-display); font-size: clamp(24px, 3vw, 36px); font-weight: 800; color: var(--text); }
-  .section-sub { font-size: 16px; color: var(--text2); margin-top: 8px; }
-
-  .services-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-    gap: 14px;
-    max-width: 1200px; margin: 0 auto;
-  }
-  .service-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 20px 16px 18px;
-    cursor: pointer;
-    text-align: center;
-    transition: all 0.2s;
-    text-decoration: none;
-    display: flex; flex-direction: column; align-items: center; gap: 10px;
-  }
-  .service-card:hover { border-color: var(--accent); box-shadow: var(--shadow); transform: translateY(-2px); }
-  .service-icon {
-    width: 52px; height: 52px; border-radius: 14px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 24px;
-  }
-  .service-name { font-size: 14px; font-weight: 600; color: var(--text); }
-  .service-count { font-size: 12px; color: var(--text3); }
-
-  /* ─── HOW IT WORKS ─── */
-  .how-it-works { background: var(--surface2); }
-  .steps-grid {
-    display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 24px; max-width: 1200px; margin: 0 auto;
-  }
-  .step-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 28px 24px;
-    position: relative;
-  }
-  .step-num {
-    font-family: var(--font-display); font-size: 48px; font-weight: 800;
-    color: var(--border); position: absolute; top: 16px; right: 20px;
-    line-height: 1;
-  }
-  .step-icon-wrap {
-    width: 48px; height: 48px; border-radius: 12px; background: rgba(232,75,47,0.1);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 22px; margin-bottom: 16px;
-  }
-  .step-card h3 { font-size: 17px; font-weight: 700; margin-bottom: 8px; }
-  .step-card p { font-size: 14px; color: var(--text2); line-height: 1.6; }
-
-  /* ─── PROVIDER CARDS ─── */
-  .providers-grid {
-    display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 18px; max-width: 1200px; margin: 0 auto;
-  }
-  .pcard {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 20px;
-    transition: all 0.2s;
-    cursor: pointer;
-  }
-  .pcard:hover { box-shadow: var(--shadow-lg); transform: translateY(-2px); }
-  .pcard-top { display: flex; gap: 14px; align-items: flex-start; margin-bottom: 14px; }
-  .pcard-avatar {
-    width: 52px; height: 52px; border-radius: 14px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 20px; font-weight: 800; color: #fff; flex-shrink: 0;
-  }
-  .pcard-name { font-size: 16px; font-weight: 700; margin-bottom: 2px; }
-  .pcard-role { font-size: 13px; color: var(--text2); }
-  .pcard-meta { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 6px; }
-  .meta-badge {
-    font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 6px;
-  }
-  .badge-verified { background: rgba(27,138,78,0.12); color: var(--green); }
-  .badge-exp { background: var(--surface2); color: var(--text2); }
-  .pcard-stats { display: flex; gap: 16px; padding-top: 14px; border-top: 1px solid var(--border2); }
-  .pstat { text-align: center; flex: 1; }
-  .pstat-val { font-size: 17px; font-weight: 700; color: var(--text); }
-  .pstat-key { font-size: 11px; color: var(--text3); margin-top: 2px; }
-  .pcard-footer { display: flex; gap: 8px; margin-top: 16px; }
-  .pcard-footer .btn { flex: 1; justify-content: center; font-size: 13px; padding: 8px; }
-
-  /* ─── TABS ─── */
-  .tabs-section { background: var(--surface); border-radius: 20px; max-width: 900px; margin: 0 auto; padding: 40px; box-shadow: var(--shadow-lg); border: 1px solid var(--border); }
-  .tab-bar { display: flex; background: var(--bg); border-radius: 10px; padding: 4px; gap: 4px; margin-bottom: 32px; }
-  .tab-btn {
-    flex: 1; padding: 10px; border-radius: 8px; border: none;
-    cursor: pointer; font-size: 14px; font-weight: 600;
-    font-family: var(--font-body); transition: all 0.2s;
-    background: none; color: var(--text2);
-  }
-  .tab-btn.active { background: var(--surface); color: var(--text); box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
-  .tab-pane { display: none; }
-  .tab-pane.active { display: block; }
-
-  .form-group { margin-bottom: 20px; }
-  .form-label { display: block; font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 8px; }
-  .form-input {
-    width: 100%; padding: 11px 16px; border-radius: var(--radius-sm);
-    border: 1.5px solid var(--border); background: var(--bg);
-    font-size: 15px; color: var(--text); font-family: var(--font-body);
-    transition: border-color 0.2s; outline: none;
-  }
-  .form-input:focus { border-color: var(--accent); }
-  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-  .form-required { color: var(--accent); }
-  .skills-check { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
-  .skill-tag {
-    padding: 7px 14px; border-radius: 8px; border: 1.5px solid var(--border);
-    font-size: 13px; font-weight: 500; cursor: pointer;
-    transition: all 0.15s; background: var(--surface); color: var(--text2);
-  }
-  .skill-tag.selected { border-color: var(--accent); background: rgba(232,75,47,0.08); color: var(--accent); }
-  .form-divider { display: flex; align-items: center; gap: 12px; margin: 20px 0; color: var(--text3); font-size: 13px; }
-  .form-divider::before, .form-divider::after { content:''; flex:1; height:1px; background: var(--border); }
-  .social-btn { width: 100%; padding: 11px; border: 1.5px solid var(--border); border-radius: var(--radius-sm); background: var(--surface); cursor: pointer; font-size: 14px; font-family: var(--font-body); color: var(--text); display: flex; align-items: center; justify-content: center; gap: 10px; transition: all 0.2s; }
-  .social-btn:hover { background: var(--surface2); }
-  .form-footer { text-align: center; font-size: 13px; color: var(--text2); margin-top: 16px; }
-  .form-footer a { color: var(--accent); text-decoration: none; font-weight: 600; }
-
-  /* ─── MAP SECTION ─── */
-  .map-section { background: var(--surface2); }
-  .map-demo {
-    max-width: 1200px; margin: 0 auto;
-    display: grid; grid-template-columns: 360px 1fr; gap: 20px; align-items: start;
-  }
-  .map-sidebar {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    overflow: hidden;
-  }
+  .map-section { background: var(--surface2); padding: 64px 5%; }
+  .map-demo { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 360px 1fr; gap: 20px; }
+  .map-sidebar { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
   .map-sidebar-header { padding: 18px 20px; border-bottom: 1px solid var(--border); }
-  .map-sidebar-title { font-size: 16px; font-weight: 700; }
-  .map-sidebar-sub { font-size: 13px; color: var(--text2); margin-top: 2px; }
   .map-provider-list { max-height: 460px; overflow-y: auto; }
-  .map-provider-item {
-    display: flex; gap: 12px; padding: 14px 20px;
-    border-bottom: 1px solid var(--border2); cursor: pointer;
-    transition: background 0.15s;
-  }
-  .map-provider-item:hover { background: var(--surface2); }
-  .mpi-avatar {
-    width: 42px; height: 42px; border-radius: 10px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 16px; font-weight: 800; color: #fff; flex-shrink: 0;
-  }
-  .mpi-info { flex: 1; min-width: 0; }
+  .map-provider-item { display: flex; gap: 12px; padding: 14px 20px; border-bottom: 1px solid var(--border2); cursor: pointer; }
+  .mpi-avatar { width: 42px; height: 42px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 800; color: #fff; }
+  .mpi-info { flex: 1; }
   .mpi-name { font-size: 14px; font-weight: 600; }
-  .mpi-role { font-size: 12px; color: var(--text2); }
-  .mpi-dist { font-size: 12px; color: var(--green); font-weight: 600; }
-  .mpi-rating { display: flex; align-items: center; gap: 3px; font-size: 12px; color: var(--text3); }
-  .star { color: #F5A623; }
+  .mpi-role, .mpi-dist { font-size: 12px; color: var(--text2); }
 
-  /* The outer wrapper that holds the real Leaflet map + custom controls */
-  .map-container {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    overflow: hidden;
-    position: relative;
-    height: 520px;
-  }
+  .map-container { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; position: relative; height: 520px; }
+  #map { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 1; }
 
-  /* The Pristine container Leaflet initialization targets */
-  #map {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 1; /* Lowest layout stack layer inside the wrapper */
-  }
+  .map-overlay-pin { position: absolute; display: flex; flex-direction: column; align-items: center; cursor: pointer; z-index: 1000; }
+  .mop-circle { width: 44px; height: 44px; border-radius: 50%; border: 3px solid #fff; display: flex; align-items: center; justify-content: center; font-size: 18px; box-shadow: 0 4px 12px rgba(0,0,0,0.25); }
+  .mop-label { margin-top: 4px; background: var(--surface); border: 1px solid var(--border); padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 600; color: var(--text); }
+  .map-user-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); z-index: 999; }
+  .map-user-center-dot { width: 20px; height: 20px; border-radius: 50%; background: var(--accent); border: 3px solid #fff; box-shadow: 0 0 0 8px rgba(232,75,47,0.2); }
+  .map-controls, .map-filter-bar { position: absolute; z-index: 1000; display: flex; gap: 6px; }
+  .map-controls { top: 16px; right: 16px; flex-direction: column; }
+  .map-filter-bar { top: 16px; left: 16px; }
+  .map-ctrl-btn, .mf-chip { background: var(--surface); border: 1px solid var(--border); cursor: pointer; color: var(--text); font-weight: 600; }
+  .map-ctrl-btn { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+  .mf-chip { padding: 6px 12px; border-radius: 99px; font-size: 12px; }
+  .mf-chip.on { background: var(--accent); color: #fff; border-color: var(--accent); }
 
-  /* CRITICAL z-index fixes: Make sure custom UI sit *above* map vectors */
-  .map-overlay-pin {
-    position: absolute;
-    display: flex; flex-direction: column; align-items: center;
-    cursor: pointer; transition: transform 0.2s;
-    z-index: 1000; /* Must slide above default Leaflet layers */
-  }
-  .map-overlay-pin:hover { transform: scale(1.1); z-index: 1010; }
-  .mop-circle {
-    width: 44px; height: 44px; border-radius: 50%;
-    border: 3px solid #fff;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 18px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.25);
-  }
-  .mop-label {
-    margin-top: 4px; background: var(--surface); border: 1px solid var(--border);
-    padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 600;
-    white-space: nowrap; box-shadow: var(--shadow); color: var(--text);
-  }
-  .map-user-center {
-    position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
-    z-index: 999;
-  }
-  .map-user-center-dot {
-    width: 20px; height: 20px; border-radius: 50%; background: var(--accent);
-    border: 3px solid #fff; box-shadow: 0 0 0 8px rgba(232,75,47,0.2);
-    animation: pulse 2s infinite;
-  }
-  .map-controls {
-    position: absolute; top: 16px; right: 16px;
-    display: flex; flex-direction: column; gap: 6px;
-    z-index: 1000;
-  }
-  .map-ctrl-btn {
-    width: 36px; height: 36px; background: var(--surface);
-    border: 1px solid var(--border); border-radius: 8px;
-    cursor: pointer; font-size: 18px; font-weight: 700;
-    display: flex; align-items: center; justify-content: center;
-    color: var(--text2); transition: all 0.15s;
-  }
-  .map-ctrl-btn:hover { background: var(--surface2); }
-  .map-filter-bar {
-    position: absolute; top: 16px; left: 16px;
-    display: flex; gap: 6px;
-    z-index: 1000;
-  }
-  .mf-chip {
-    background: var(--surface); border: 1px solid var(--border);
-    padding: 6px 12px; border-radius: 99px; font-size: 12px; font-weight: 600;
-    cursor: pointer; transition: all 0.15s; color: var(--text);
-  }
-  .mf-chip.on { background: var(--accent); border-color: var(--accent); color: #fff; }
-  .mf-chip:hover:not(.on) { border-color: var(--accent); }
+  .trust-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; max-width: 1200px; margin: 40px auto 0; }
+  .trust-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px 20px; display: flex; gap: 16px; }
+  .trust-icon { width: 46px; height: 46px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px; background: rgba(27,138,78,0.12); }
 
-  @keyframes pulse {
-    0%, 100% { box-shadow: 0 0 0 4px rgba(232,75,47,0.2); }
-    50% { box-shadow: 0 0 0 10px rgba(232,75,47,0.05); }
-  }
-
-  /* ─── TRUST SECTION ─── */
-  .trust-grid {
-    display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 20px; max-width: 1200px; margin: 0 auto;
-  }
-  .trust-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 24px 20px;
-    display: flex; gap: 16px; align-items: flex-start;
-  }
-  .trust-icon {
-    width: 46px; height: 46px; border-radius: 12px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 22px; flex-shrink: 0;
-  }
-  .trust-card h4 { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
-  .trust-card p { font-size: 13px; color: var(--text2); line-height: 1.5; }
-
-  /* ─── CTA SECTION ─── */
-  .cta-section {
-    background: var(--text); color: var(--bg); text-align: center; padding: 80px 5%;
-  }
-  [data-theme="dark"] .cta-section { background: var(--surface2); }
-  .cta-section h2 {
-    font-family: var(--font-display); font-size: clamp(28px, 4vw, 48px); font-weight: 800; margin-bottom: 16px; color: var(--bg);
-  }
-  [data-theme="dark"] .cta-section h2 { color: var(--text); }
-  .cta-section p { font-size: 17px; opacity: 0.7; margin-bottom: 36px; max-width: 500px; margin-left: auto; margin-right: auto; }
-  .cta-btns { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
-  .btn-white { background: #fff; color: var(--text); font-size: 15px; padding: 13px 28px; }
-  .btn-white:hover { background: #f0efeb; }
-  .btn-ghost { background: transparent; border: 2px solid rgba(255,255,255,0.35); color: #fff; font-size: 15px; padding: 13px 28px; }
-  .btn-ghost:hover { background: rgba(255,255,255,0.1); }
-
-  /* ─── FOOTER ─── */
-  footer { background: var(--surface); border-top: 1px solid var(--border); padding: 48px 5% 28px; }
-  .footer-grid {
-    max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; margin-bottom: 40px;
-  }
-  .footer-brand p { font-size: 14px; color: var(--text2); line-height: 1.7; margin-top: 12px; max-width: 260px; }
-  footer h5 { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text3); margin-bottom: 14px; }
-  footer ul { list-style: none; }
-  footer ul li { margin-bottom: 8px; }
-  footer ul li a { font-size: 14px; color: var(--text2); text-decoration: none; transition: color 0.15s; }
-  footer ul li a:hover { color: var(--accent); }
-  .footer-bottom {
-    max-width: 1200px; margin: 0 auto; border-top: 1px solid var(--border); padding-top: 24px;
-    display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: var(--text3);
-  }
-  .app-badges { display: flex; gap: 10px; }
-  .app-badge {
-    background: var(--text); color: var(--bg); padding: 8px 14px; border-radius: var(--radius-sm); font-size: 12px; font-weight: 600; display: flex; align-items: center; gap: 6px; text-decoration: none;
-  }
-  [data-theme="dark"] .app-badge { background: var(--surface2); color: var(--text); }
+  footer { background: var(--surface); border-top: 1px solid var(--border); padding: 48px 5%; text-align: center; }
 
   /* ─── MODALS & TOAST ─── */
   .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 2000; display: none; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(4px); }
   .modal-overlay.open { display: flex; }
-  .modal { background: var(--surface); border-radius: 20px; width: 100%; max-width: 460px; box-shadow: var(--shadow-lg); animation: modalIn 0.25s ease; overflow: hidden; }
+  .modal { background: var(--surface); border-radius: 20px; width: 100%; max-width: 460px; box-shadow: var(--shadow-lg); overflow: hidden; }
   .modal-header { padding: 24px 28px 0; display: flex; justify-content: space-between; align-items: flex-start; }
   .modal-title { font-family: var(--font-display); font-size: 22px; font-weight: 800; }
   .modal-sub { font-size: 14px; color: var(--text2); margin-top: 4px; }
-  .modal-close { width: 32px; height: 32px; border-radius: 50%; background: var(--surface2); border: none; cursor: pointer; font-size: 18px; color: var(--text2); display: flex; align-items: center; justify-content: center; }
-  .modal-close:hover { background: var(--border); }
+  .modal-close { width: 32px; height: 32px; border-radius: 50%; background: var(--surface2); border: none; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; }
   .modal-tabs { display: flex; background: var(--bg); border-radius: 10px; padding: 4px; gap: 4px; margin: 20px 28px 0; }
-  .modal-tab { flex:1; padding: 9px; border-radius: 8px; border: none; cursor: pointer; font-size: 14px; font-weight: 600; background: none; color: var(--text2); font-family: var(--font-body); }
+  .modal-tab { flex:1; padding: 9px; border-radius: 8px; border: none; cursor: pointer; font-size: 14px; font-weight: 600; background: none; color: var(--text2); }
   .modal-tab.active { background: var(--surface); color: var(--text); box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
   .modal-body { padding: 20px 28px 28px; }
   .modal-pane { display: none; }
   .modal-pane.active { display: block; }
-
-  .review-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 2100; display: none; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(6px); }
-  .review-overlay.open { display: flex; }
-  .review-modal { background: var(--surface); border-radius: 22px; width: 100%; max-width: 500px; box-shadow: var(--shadow-lg); animation: modalIn 0.28s ease; overflow: hidden; }
-  .review-header { background: var(--accent); padding: 24px 28px 20px; color: #fff; }
-  .review-provider-chip { display: flex; align-items: center; gap: 12px; margin-top: 16px; background: rgba(255,255,255,0.15); border-radius: 12px; padding: 10px 14px; }
-  .rpc-avatar { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 800; color: #fff; border: 2px solid rgba(255,255,255,0.4); }
-  .rpc-name { font-size: 14px; font-weight: 700; }
-  .rpc-role { font-size: 12px; opacity: 0.8; }
-  .review-body { padding: 24px 28px 28px; }
-  .review-mandatory-notice { background: rgba(232,75,47,0.08); border: 1px solid rgba(232,75,47,0.2); border-radius: 10px; padding: 10px 14px; font-size: 13px; color: var(--accent); font-weight: 500; display: flex; align-items: center; gap: 8px; margin-bottom: 22px; }
-  .star-row { display: flex; gap: 6px; align-items: center; }
-  .star-btn { font-size: 30px; cursor: pointer; background: none; border: none; filter: grayscale(1) opacity(0.35); }
-  .star-btn.lit { filter: none; transform: scale(1.1); }
-  .quick-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
-  .review-tag { font-size: 12px; font-weight: 600; padding: 6px 13px; border-radius: 99px; border: 1.5px solid var(--border); cursor: pointer; background: var(--surface); color: var(--text2); }
-  .review-tag.selected { border-color: var(--green); background: rgba(27,138,78,0.1); color: var(--green); }
-  .review-textarea { width: 100%; min-height: 90px; padding: 12px 14px; border-radius: var(--radius-sm); border: 1.5px solid var(--border); background: var(--bg); font-size: 14px; color: var(--text); outline: none; }
-  .review-actions { display: flex; gap: 10px; margin-top: 20px; }
-  .review-actions .btn { flex: 1; justify-content: center; padding: 12px; }
-
-  .bookings-section { background: var(--surface2); }
-  .bookings-grid { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; }
-  .booking-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
-  .booking-status-bar { height: 4px; width: 100%; }
-  .status-completed { background: var(--green); }
-  .status-pending-review { background: var(--accent); animation: barPulse 1.5s infinite; }
-  .status-upcoming { background: var(--blue); }
-  .booking-card-body { padding: 18px 20px; }
-  .booking-card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 14px; }
-  .booking-provider-info { display: flex; gap: 12px; align-items: center; }
-  .bk-avatar { width: 44px; height: 44px; border-radius: 12px; font-size: 15px; font-weight: 800; color: #fff; display: flex; align-items: center; justify-content: center; }
-  .bk-status-badge { font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 99px; }
-  .status-badge-done { background: rgba(27,138,78,0.12); color: var(--green); }
-  .status-badge-review { background: rgba(232,75,47,0.12); color: var(--accent); }
-  .status-badge-upcoming { background: rgba(26,95,212,0.1); color: var(--blue); }
-  .booking-meta { display: flex; gap: 14px; font-size: 12px; color: var(--text3); margin-bottom: 14px; flex-wrap: wrap; }
-  .booking-card-footer { border-top: 1px solid var(--border2); padding-top: 14px; display: flex; justify-content: space-between; align-items: center; }
+  .form-group { margin-bottom: 20px; text-align: left; }
+  .form-label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 8px; }
+  .form-input { width: 100%; padding: 11px 16px; border-radius: var(--radius-sm); border: 1.5px solid var(--border); background: var(--bg); font-size: 15px; color: var(--text); outline: none; }
+  .form-input:focus { border-color: var(--accent); }
+  .form-divider { display: flex; align-items: center; gap: 12px; margin: 20px 0; color: var(--text3); font-size: 13px; }
+  .form-divider::before, .form-divider::after { content:''; flex:1; height:1px; background: var(--border); }
+  .social-btn { width: 100%; padding: 11px; border: 1.5px solid var(--border); border-radius: var(--radius-sm); background: var(--surface); cursor: pointer; font-size: 14px; color: var(--text); display: flex; align-items: center; justify-content: center; gap: 10px; }
   
   .toast { position: fixed; bottom: 24px; right: 24px; z-index: 5000; background: var(--text); color: var(--bg); padding: 14px 20px; border-radius: 12px; font-size: 14px; box-shadow: 0 4px 24px rgba(0,0,0,0.25); transform: translateY(100px); opacity: 0; transition: all 0.3s ease; }
   .toast.show { transform: none; opacity: 1; }
-  .scroll-reveal { opacity: 0; transform: translateY(20px); transition: all 0.5s ease; }
-  .scroll-reveal.revealed { opacity: 1; transform: none; }
-
-  @keyframes modalIn { from { opacity:0; transform: scale(0.95) translateY(16px); } to { opacity:1; transform: none; } }
-  @keyframes barPulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
 
   @media (max-width: 900px) {
-    .hero { grid-template-columns: 1fr; gap: 40px; text-align: center; }
-    .hero p { max-width: 100%; }
+    .hero { grid-template-columns: 1fr; text-align: center; gap: 40px; }
     .hero-cta, .hero-stats { justify-content: center; }
     .hero-visual { display: none; }
     .map-demo { grid-template-columns: 1fr; }
-    .map-sidebar { max-height: 300px; }
-    .map-provider-list { max-height: 240px; }
-    .footer-grid { grid-template-columns: 1fr 1fr; gap: 28px; }
-    .form-row { grid-template-columns: 1fr; }
   }
   @media (max-width: 640px) {
-    .nav-links, nav .btn, .map-filter-bar { display: none; }
     .hamburger { display: flex; }
-    .footer-grid { grid-template-columns: 1fr; }
-    .tabs-section { padding: 24px 20px; }
+    .map-filter-bar { display: none; }
   }
 </style>
 </head>
@@ -641,8 +210,6 @@
 
   <div class="hero-visual">
     <div class="hero-card">
-      <div class="float-badge">✅ Background Verified</div>
-      <div class="float-badge2">⚡ Arrives in 30 min</div>
       <div class="hero-map-mockup">
         <div class="map-pin pin-elec"><div class="map-pin-dot">⚡</div><div class="map-pin-label">Ramesh</div></div>
         <div class="map-pin pin-plumb"><div class="map-pin-dot">🔧</div><div class="map-pin-label">Suresh</div></div>
@@ -652,16 +219,14 @@
   </div>
 </div>
 
-<!-- ── DYNAMIC SEARCH SECTION ── -->
 <div class="search-section">
   <div class="search-wrap">
     <div class="search-box">
       <input type="text" id="search-input" placeholder="Search electrician, plumber, carpenter, tutor…" aria-label="Search for services">
       <div class="search-divider"></div>
       
-      <!-- Interactive location block -->
-      <div class="search-location" onclick="getUserLocation()" style="cursor: pointer; display: inline-flex; align-items: center; gap: 8px;">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--accent); flex-shrink: 0;" aria-hidden="true">
+      <div class="search-location" onclick="getUserLocation()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--accent); flex-shrink: 0;">
           <path d="M12 22s-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 8.2c0 7.3-8 11.8-8 11.8z"/>
           <circle cx="12" cy="10" r="3"/>
         </svg>
@@ -670,17 +235,20 @@
       
       <button class="btn btn-primary" style="white-space: nowrap;" onclick="handleSearch()">Search</button>
     </div>
+
+    <div class="search-chips" style="display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap;">
+      <button class="chip" onclick="setQuickSearch('Mechanic')">🔧 Mechanic</button>
+      <button class="chip" onclick="setQuickSearch('Labour')">👷 Labour</button>
+      <button class="chip" onclick="setQuickSearch('Home Tutor')">📚 Home Tutor</button>
+      <button class="chip" onclick="setQuickSearch('Painter')">🎨 Painter</button>
+      <button class="chip" onclick="setQuickSearch('Electrician')">⚡ Electrician</button>
+      <button class="chip" onclick="setQuickSearch('Plumber')">🪠 Plumber</button>
+    </div>
   </div>
 </div>
 
 <section id="map-section" class="map-section">
-  <div class="section-header scroll-reveal">
-    <div class="section-label">Live Map</div>
-    <div class="section-title">Providers near you, right now</div>
-    <div class="section-sub">Real-time availability. See who's nearby and book in seconds.</div>
-  </div>
-  
-  <div class="map-demo scroll-reveal">
+  <div class="map-demo">
     <div class="map-sidebar">
       <div class="map-sidebar-header">
         <div class="map-sidebar-title">Nearby Providers</div>
@@ -710,9 +278,7 @@
         <div class="mop-label">Suresh</div>
       </div>
 
-      <div class="map-user-center">
-        <div class="map-user-center-dot"></div>
-      </div>
+      <div class="map-user-center"><div class="map-user-center-dot"></div></div>
 
       <div class="map-filter-bar">
         <div class="mf-chip on" onclick="filterMap(this)">All</div>
@@ -729,14 +295,10 @@
   </div>
 </section>
 
-<section style="background:var(--surface2);">
-  <div class="section-header scroll-reveal" style="text-align:center;">
-    <div class="section-label">Why SevaSarthi</div>
-    <div class="section-title">Built on trust, designed for Bharat</div>
-  </div>
-  <div class="trust-grid scroll-reveal">
+<section style="background:var(--surface);">
+  <div class="trust-grid">
     <div class="trust-card">
-      <div class="trust-icon" style="background:rgba(27,138,78,0.12);">✅</div>
+      <div class="trust-icon">✅</div>
       <div>
         <h4>ID-Verified Providers</h4>
         <p>Every worker goes through secure registration check and background check before appearing in results.</p>
@@ -746,24 +308,102 @@
 </section>
 
 <footer>
-  <div class="footer-brand">
-    <a href="#" class="logo">Seva<span>Sarthi</span><span class="logo-dot"></span></a>
-    <p>Connecting skilled workers with families across India. Empowering daily-wage earners with dignity, visibility, and fair pay.</p>
-    <div class="app-badges" style="margin-top:16px;">
-      <a href="#" class="app-badge" onclick="showToast('App coming soon!');return false;">📱 Android</a>
-      <a href="#" class="app-badge" onclick="showToast('App coming soon!');return false;">🍎 iOS</a>
+  <a href="#" class="logo" style="justify-content: center; margin-bottom: 10px;">Seva<span>Sarthi</span><span class="logo-dot"></span></a>
+  <p>© 2026 SevaSarthi Technologies. Empowering local skilled workers.</p>
+</footer>
+
+<div class="modal-overlay" id="modal" onclick="closeModalIfOverlay(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title" id="modal-title">Welcome back</div>
+        <div class="modal-sub" id="modal-sub">Sign in to your SevaSarthi account</div>
+      </div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+
+    <div class="modal-tabs">
+      <button class="modal-tab active" id="modal-tab-consumer" onclick="switchModalTab('consumer')">👤 Customer</button>
+      <button class="modal-tab" id="modal-tab-provider" onclick="switchModalTab('provider')">🔨 Provider</button>
+    </div>
+
+    <div class="modal-body">
+      <div class="modal-pane active" id="modal-consumer">
+        <div id="consumer-input-fields">
+          <div class="form-row" id="name-row" style="display:none; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+            <div class="form-group" style="margin:0;">
+              <label class="form-label">First Name *</label>
+              <input type="text" id="auth-firstname" class="form-input" placeholder="Ravi">
+            </div>
+            <div class="form-group" style="margin:0;">
+              <label class="form-label">Last Name</label>
+              <input type="text" id="auth-lastname" class="form-input" placeholder="Sharma">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Mobile Number *</label>
+            <input type="tel" id="auth-mobile" class="form-input" placeholder="98765 43210" maxlength="10">
+          </div>
+
+          <div class="form-group" id="password-group">
+            <label class="form-label">Password *</label>
+            <input type="password" id="auth-password" class="form-input" placeholder="Enter password">
+          </div>
+
+          <button class="btn btn-primary" id="primary-auth-btn" style="width:100%; justify-content:center; padding:13px;" onclick="handleAuthSubmission()">Sign In</button>
+
+          <div class="form-divider">or continue with</div>
+          <button class="social-btn" onclick="window.initiateGoogleAuth()">
+            <svg width="18" height="18" viewBox="0 0 18 18"><path d="M17.64 9.2a10.34 10.34 0 0 0-.16-1.84H9v3.48h4.84A4.14 4.14 0 0 1 12.07 13v2.26h2.88A8.72 8.72 0 0 0 17.64 9.2z" fill="#4285F4"/><path d="M9 18a8.59 8.59 0 0 0 5.95-2.18L12.07 13a5.43 5.43 0 0 1-8.07-2.85H1.08v2.33A9 9 0 0 0 9 18z" fill="#34A853"/><path d="M4 10.15a5.34 5.34 0 0 1 0-3.41V4.4H1.08a9 9 0 0 0 0 8.09z" fill="#FBBC05"/><path d="M9 3.58a4.86 4.86 0 0 1 3.44 1.35l2.58-2.58A8.66 8.66 0 0 0 9 0 9 9 0 0 0 1.08 4.4L4 6.73A5.37 5.37 0 0 1 9 3.58z" fill="#EA4335"/></svg>
+            Continue with Google
+          </button>
+
+          <div class="form-footer" id="auth-toggle-text">
+            New to SevaSarthi? <a href="#" onclick="toggleAuthIntent('register');return false;">Create account</a>
+          </div>
+        </div>
+
+        <div id="consumer-otp-fields" style="display:none; text-align: center;">
+          <div style="font-size:36px; margin-bottom:8px;">📱</div>
+          <div style="font-size:16px; font-weight:700;">Enter the OTP</div>
+          <div style="font-size:13px; color:var(--text2); margin: 6px 0 20px;">We sent a code to <strong id="otp-phone-display">your number</strong></div>
+
+          <div style="display:flex; gap:8px; justify-content:center; margin-bottom:20px;">
+            <input type="text" class="otp-field form-input" maxlength="1" inputmode="numeric" style="width:40px; text-align:center; padding:10px 0;" oninput="otpAutoTab(this)">
+            <input type="text" class="otp-field form-input" maxlength="1" inputmode="numeric" style="width:40px; text-align:center; padding:10px 0;" oninput="otpAutoTab(this)">
+            <input type="text" class="otp-field form-input" maxlength="1" inputmode="numeric" style="width:40px; text-align:center; padding:10px 0;" oninput="otpAutoTab(this)">
+            <input type="text" class="otp-field form-input" maxlength="1" inputmode="numeric" style="width:40px; text-align:center; padding:10px 0;" oninput="otpAutoTab(this)">
+            <input type="text" class="otp-field form-input" maxlength="1" inputmode="numeric" style="width:40px; text-align:center; padding:10px 0;" oninput="otpAutoTab(this)">
+            <input type="text" class="otp-field form-input" maxlength="1" inputmode="numeric" style="width:40px; text-align:center; padding:10px 0;" oninput="otpAutoTab(this)">
+          </div>
+
+          <button class="btn btn-primary" style="width:100%; justify-content:center; padding:13px;" onclick="window.verifyFirebaseOTP()">Verify &amp; Sign In</button>
+          <div style="margin-top: 14px;"><a href="#" onclick="backToPhone();return false;" style="font-size:13px; color:var(--accent); text-decoration:none;">← Change number</a></div>
+        </div>
+      </div>
+
+      <div class="modal-pane" id="modal-provider">
+        <div class="form-group">
+          <label class="form-label">Mobile Number *</label>
+          <input type="tel" id="provider-mobile" class="form-input" placeholder="98765 43210" maxlength="10">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password *</label>
+          <input type="password" id="provider-password" class="form-input" placeholder="Enter password">
+        </div>
+        <button class="btn btn-green" style="width:100%; justify-content:center; padding:13px;" onclick="showToast('Signing in as Provider…')">Sign In as Provider</button>
+      </div>
     </div>
   </div>
-</footer>
+</div>
 
 <div class="toast" id="toast"></div>
 
 <script>
-  // Global reference variables accessible securely across the layout tree
   let map;
   let toastTimer;
 
-  // Track dynamic login/register interactive step switches
   window._authMode = 'login';
   window._currentAuthStep = 'credentials';
 
@@ -791,28 +431,18 @@
 
   function handleSearch() {
     const inp = document.getElementById('search-input');
-    if (inp && inp.value.trim()) {
-      showToast('Searching for matches: "' + inp.value.trim() + '"');
-    } else {
-      showToast('Please type a service skill to search.');
-    }
+    if (inp && inp.value.trim()) { showToast('Searching for matches: "' + inp.value.trim() + '"'); }
+    else { showToast('Please type a service skill to search.'); }
   }
 
-  function toggleMenu() {
-    showToast('Menu controller accessed');
-  }
+  function toggleMenu() { showToast('Menu controller accessed'); }
 
-  /* ── Automatically writes the category into the search box ── */
   function setQuickSearch(val) {
     const inp = document.getElementById('search-input');
-    if (inp) { 
-      inp.value = val; 
-      inp.focus(); 
-    }
+    if (inp) { inp.value = val; inp.focus(); }
     showToast('Showing nearby results for: ' + val + ' 🔍');
   }
 
-  /* ── Modals & Intent Toggle Routing State Engines ── */
   function openModal(type) {
     const m = document.getElementById('modal');
     if (!m) return;
@@ -833,44 +463,41 @@
     document.body.style.overflow = '';
   }
 
-  function closeModalIfOverlay(e) {
-    if (e.target === document.getElementById('modal')) closeModal();
-  }
+  function closeModalIfOverlay(e) { if (e.target === document.getElementById('modal')) closeModal(); }
 
   function switchModalTab(tab) {
     document.querySelectorAll('.modal-tab').forEach(b => b.classList.remove('active'));
     document.querySelectorAll('.modal-pane').forEach(p => p.classList.remove('active'));
-    const tabBtn = document.getElementById('modal-tab-' + tab);
-    const tabPane = document.getElementById('modal-' + tab);
-    if (tabBtn) tabBtn.classList.add('active');
-    if (tabPane) tabPane.classList.add('active');
+    const b = document.getElementById('modal-tab-' + tab);
+    const p = document.getElementById('modal-' + tab);
+    if (b) b.classList.add('active');
+    if (p) p.classList.add('active');
     backToPhone();
   }
 
   function toggleAuthIntent(mode) {
     window._authMode = mode;
     backToPhone();
-
-    const title     = document.getElementById('modal-title');
-    const sub       = document.getElementById('modal-sub');
-    const btn       = document.getElementById('primary-auth-btn');
+    const title = document.getElementById('modal-title');
+    const sub = document.getElementById('modal-sub');
+    const btn = document.getElementById('primary-auth-btn');
     const passGroup = document.getElementById('password-group');
-    const nameRow   = document.getElementById('name-row');
+    const nameRow = document.getElementById('name-row');
     const toggleTxt = document.getElementById('auth-toggle-text');
 
     if (mode === 'register') {
-      if (title)     title.textContent = 'Create Account';
-      if (sub)       sub.textContent   = 'Join thousands finding services daily';
-      if (btn)       btn.textContent   = 'Send Verification OTP';
+      if (title) title.textContent = 'Create Account';
+      if (sub) sub.textContent = 'Join thousands finding services daily';
+      if (btn) btn.textContent = 'Send Verification OTP';
       if (passGroup) passGroup.style.display = 'none';
-      if (nameRow)   nameRow.style.display   = 'grid';
+      if (nameRow) nameRow.style.display = 'grid';
       if (toggleTxt) toggleTxt.innerHTML = 'Already have an account? <a href="#" onclick="toggleAuthIntent(\'login\');return false;">Sign in</a>';
     } else {
-      if (title)     title.textContent = 'Welcome back';
-      if (sub)       sub.textContent   = 'Sign in to your SevaSarthi account';
-      if (btn)       btn.textContent   = 'Sign In';
+      if (title) title.textContent = 'Welcome back';
+      if (sub) sub.textContent = 'Sign in to your SevaSarthi account';
+      if (btn) btn.textContent = 'Sign In';
       if (passGroup) passGroup.style.display = 'block';
-      if (nameRow)   nameRow.style.display   = 'none';
+      if (nameRow) nameRow.style.display = 'none';
       if (toggleTxt) toggleTxt.innerHTML = 'New to SevaSarthi? <a href="#" onclick="toggleAuthIntent(\'register\');return false;">Create account</a>';
     }
   }
@@ -878,9 +505,9 @@
   function backToPhone() {
     window._currentAuthStep = 'credentials';
     const fields = document.getElementById('consumer-input-fields');
-    const otp    = document.getElementById('consumer-otp-fields');
+    const otp = document.getElementById('consumer-otp-fields');
     if (fields) fields.style.display = 'block';
-    if (otp)    otp.style.display    = 'none';
+    if (otp) otp.style.display = 'none';
   }
 
   function otpAutoTab(input) {
@@ -892,97 +519,52 @@
     }
   }
 
-  // Routes layouts events to your live background Firebase module
   function handleAuthSubmission() {
     if (window._authMode === 'login') {
       const mobile = (document.getElementById('auth-mobile') || {}).value || '';
-      const pass   = (document.getElementById('auth-password') || {}).value || '';
-      if (!mobile.trim() || !pass.trim()) {
-        showToast('Please enter your mobile number and password.');
-        return;
-      }
+      const pass = (document.getElementById('auth-password') || {}).value || '';
+      if (!mobile.trim() || !pass.trim()) { showToast('Please enter mobile number and password.'); return; }
       showToast('Validating profile credentials… 🔐');
     } else {
-      if (window._currentAuthStep === 'credentials') {
-        if (typeof window.triggerFirebaseOTP === 'function') {
-          window.triggerFirebaseOTP();
-        }
+      if (window._currentAuthStep === 'credentials' && typeof window.triggerFirebaseOTP === 'function') {
+        window.triggerFirebaseOTP();
       }
     }
   }
 
-  /* ── NATIVE LOCATION PROMPT & MAP SYNC ── */
   function getUserLocation() {
-    if (!navigator.geolocation) {
-      showToast("Geolocation is not supported by your browser");
-      return;
-    }
-
-    const locationSpan = document.getElementById('location-text');
-    if (locationSpan) locationSpan.textContent = "Locating...";
+    if (!navigator.geolocation) { showToast("Geolocation is not supported."); return; }
+    const span = document.getElementById('location-text');
+    if (span) span.textContent = "Locating...";
     showToast('Locating your position… 📍');
 
     navigator.geolocation.getCurrentPosition(
-      function(position) {
-        const lat = position.coords.latitude;
-        const lon = position.coords.longitude;
-
-        if (map) {
-          map.setView([lat, lon], 14);
-        }
-
+      function(pos) {
+        const lat = pos.coords.latitude; const lon = pos.coords.longitude;
+        if (map) map.setView([lat, lon], 14);
         fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`)
-          .then(response => response.json())
-          .then(data => {
-            if (locationSpan && data && data.address) {
-              const city = data.address.city || data.address.town || data.address.village || data.address.suburb || "Unknown City";
-              const stateCode = data.address.state ? data.address.state.substring(0, 2).toUpperCase() : "";
-              const formattedLocation = stateCode ? city + ", " + stateCode : city;
-              
-              locationSpan.textContent = formattedLocation;
-              showToast('Location synced: ' + formattedLocation);
+          .then(r => r.json()).then(data => {
+            if (span && data && data.address) {
+              const city = data.address.city || data.address.town || data.address.village || "Unknown City";
+              span.textContent = city; showToast('Location synced: ' + city);
             }
-          })
-          .catch(error => {
-            console.error("Geocoding Error:", error);
-            if (locationSpan) locationSpan.textContent = lat.toFixed(2) + ", " + lon.toFixed(2);
-          });
+          }).catch(() => { if (span) span.textContent = lat.toFixed(2) + ", " + lon.toFixed(2); });
       },
-      function(error) {
-        if (locationSpan) {
-          locationSpan.textContent = error.code === error.PERMISSION_DENIED ? "Permission Denied" : "Location Error";
-        }
-      }
+      function() { if (span) span.textContent = "Location Error"; }
     );
   }
 
   document.addEventListener("DOMContentLoaded", function() {
     map = L.map('map', { zoomControl: false }).setView([23.7957, 86.4304], 13);
-
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '© OpenStreetMap contributors'
-    }).addTo(map);
-    
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
     setTimeout(() => { map.invalidateSize(); }, 400);
-
-    const obs = new IntersectionObserver(entries => {
-      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('revealed'); obs.unobserve(e.target); } });
-    }, { threshold: 0.12 });
-    document.querySelectorAll('.scroll-reveal').forEach(el => obs.observe(el));
   });
 </script>
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-  import {
-    getAuth,
-    signInWithRedirect,
-    GoogleAuthProvider,
-    RecaptchaVerifier,
-    signInWithPhoneNumber
-  } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+  import { getAuth, signInWithRedirect, GoogleAuthProvider, RecaptchaVerifier, signInWithPhoneNumber } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-  // configuration
   const firebaseConfig = {
     apiKey:            "AIzaSyDiVK2-HG9cTajZ4vRLVtOezSelWkk9XNA",
     authDomain:        "sevasarthi-5e78c.firebaseapp.com",
@@ -993,32 +575,25 @@
     measurementId:     "G-WN5MJ0ESC7"
   };
 
-  // Initialise app processes
-  const app  = initializeApp(firebaseConfig);
+  const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
   const googleProvider = new GoogleAuthProvider();
   let confirmationResult = null;
 
-  /* ── Google Sign-In ── */
   window.initiateGoogleAuth = function () {
-    showToast("Launching secure Google Single-Sign-On account portal…");
+    showToast("Launching secure Google account portal…");
     signInWithRedirect(auth, googleProvider);
   };
 
-  /* ── Phone OTP: Sending SMS ── */
   window.triggerFirebaseOTP = function () {
     const mobileEl = document.getElementById('auth-mobile');
     if (!mobileEl) return;
     const raw = mobileEl.value.trim().replace(/\D/g, '');
-    if (!/^[6-9]\d{9}$/.test(raw)) {
-      showToast("Please enter a valid 10-digit Indian mobile number.");
-      return;
-    }
+    if (!/^[6-9]\d{9}$/.test(raw)) { showToast("Enter a valid 10-digit Indian number."); return; }
     const phone = '+91' + raw;
 
     const disp = document.getElementById('otp-phone-display');
     if (disp) disp.textContent = '+91 ' + raw.slice(0, 5) + ' ' + raw.slice(5);
-
     showToast("Checking security parameters… 🤖");
 
     if (!window._recaptchaVerifier) {
@@ -1029,48 +604,30 @@
       .then(result => {
         confirmationResult = result;
         window._currentAuthStep = 'otp';
-        
-        // Safely adjust interface cards view
         document.getElementById('consumer-input-fields').style.display = 'none';
         document.getElementById('consumer-otp-fields').style.display = 'block';
-        showToast("OTP sent successfully! Check your device messages 📱");
+        showToast("OTP sent successfully! 📱");
       })
       .catch(err => {
-        console.error("SMS Error:", err);
-        showToast("Failed to verify credentials gateway route.");
-        if (window._recaptchaVerifier) {
-          window._recaptchaVerifier.clear();
-          window._recaptchaVerifier = null;
-        }
+        console.error(err); showToast("Failed to send OTP.");
+        if (window._recaptchaVerifier) { window._recaptchaVerifier.clear(); window._recaptchaVerifier = null; }
       });
   };
 
-  /* ── Phone OTP: Code Verification ── */
   window.verifyFirebaseOTP = function () {
-    if (!confirmationResult) { showToast("Please send an OTP token check first."); return; }
+    if (!confirmationResult) { showToast("Request an OTP first."); return; }
     const code = Array.from(document.querySelectorAll('.otp-field')).map(i => i.value.trim()).join('');
-    if (code.length < 6) { showToast("Please enter all 6 verification digits."); return; }
-    showToast("Validating submission entries…");
-    
+    if (code.length < 6) { showToast("Enter all 6 digits."); return; }
+    showToast("Validating entries…");
+
     confirmationResult.confirm(code)
-      .then(result => {
+      .then(() => {
         showToast("Profile authorized! Welcome to SevaSarthi 🎉");
-        
-        // Swap your interactive navigation elements smoothly
-        const navBtns = document.querySelectorAll('nav .btn');
-        navBtns.forEach(b => b.style.display = 'none');
-        const loggedInChip = document.createElement('div');
-        loggedInChip.className = 'provider-chip';
-        loggedInChip.innerHTML = '<div class="provider-avatar" style="background:var(--accent);">Me</div><div style="font-size:13px;font-weight:600;color:var(--text);">Signed in</div>';
-        document.querySelector('nav > div:last-child')?.appendChild(loggedInChip);
         closeModal();
       })
-      .catch(err => {
-        console.error("Verification Token error:", err);
-        showToast("Invalid code selection. Please request a new text token.");
-      });
+      .catch(() => { showToast("Invalid code entry."); });
   };
 </script>
- 
+
 </body>
 </html>
