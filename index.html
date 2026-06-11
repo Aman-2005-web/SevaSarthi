@@ -878,5 +878,106 @@
     document.querySelectorAll('.scroll-reveal').forEach(el => obs.observe(el));
   });
 </script>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+  import {
+    getAuth,
+    signInWithRedirect,
+    GoogleAuthProvider,
+    RecaptchaVerifier,
+    signInWithPhoneNumber
+  } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+  // configuration
+  const firebaseConfig = {
+    apiKey:            "AIzaSyDiVK2-HG9cTajZ4vRLVtOezSelWkk9XNA",
+    authDomain:        "sevasarthi-5e78c.firebaseapp.com",
+    projectId:         "sevasarthi-5e78c",
+    storageBucket:     "sevasarthi-5e78c.firebasestorage.app",
+    messagingSenderId: "905980173042",
+    appId:             "1:905980173042:web:ae8021710f803e9758ce6b",
+    measurementId:     "G-WN5MJ0ESC7"
+  };
+
+  // Initialise app processes
+  const app  = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const googleProvider = new GoogleAuthProvider();
+  let confirmationResult = null;
+
+  /* ── Google Sign-In ── */
+  window.initiateGoogleAuth = function () {
+    showToast("Launching secure Google Single-Sign-On account portal…");
+    signInWithRedirect(auth, googleProvider);
+  };
+
+  /* ── Phone OTP: Sending SMS ── */
+  window.triggerFirebaseOTP = function () {
+    const mobileEl = document.getElementById('auth-mobile');
+    if (!mobileEl) return;
+    const raw = mobileEl.value.trim().replace(/\D/g, '');
+    if (!/^[6-9]\d{9}$/.test(raw)) {
+      showToast("Please enter a valid 10-digit Indian mobile number.");
+      return;
+    }
+    const phone = '+91' + raw;
+
+    const disp = document.getElementById('otp-phone-display');
+    if (disp) disp.textContent = '+91 ' + raw.slice(0, 5) + ' ' + raw.slice(5);
+
+    showToast("Checking security parameters… 🤖");
+
+    if (!window._recaptchaVerifier) {
+      window._recaptchaVerifier = new RecaptchaVerifier(auth, 'primary-auth-btn', { size: 'invisible' });
+    }
+
+    signInWithPhoneNumber(auth, phone, window._recaptchaVerifier)
+      .then(result => {
+        confirmationResult = result;
+        window._currentAuthStep = 'otp';
+        
+        // Safely adjust interface cards view
+        document.getElementById('consumer-input-fields').style.display = 'none';
+        document.getElementById('consumer-otp-fields').style.display = 'block';
+        showToast("OTP sent successfully! Check your device messages 📱");
+      })
+      .catch(err => {
+        console.error("SMS Error:", err);
+        showToast("Failed to verify credentials gateway route.");
+        if (window._recaptchaVerifier) {
+          window._recaptchaVerifier.clear();
+          window._recaptchaVerifier = null;
+        }
+      });
+  };
+
+  /* ── Phone OTP: Code Verification ── */
+  window.verifyFirebaseOTP = function () {
+    if (!confirmationResult) { showToast("Please send an OTP token check first."); return; }
+    const code = Array.from(document.querySelectorAll('.otp-field')).map(i => i.value.trim()).join('');
+    if (code.length < 6) { showToast("Please enter all 6 verification digits."); return; }
+    showToast("Validating submission entries…");
+    
+    confirmationResult.confirm(code)
+      .then(result => {
+        showToast("Profile authorized! Welcome to SevaSarthi 🎉");
+        
+        // Swap your interactive navigation elements smoothly
+        const navBtns = document.querySelectorAll('nav .btn');
+        navBtns.forEach(b => b.style.display = 'none');
+        const loggedInChip = document.createElement('div');
+        loggedInChip.className = 'provider-chip';
+        loggedInChip.innerHTML = '<div class="provider-avatar" style="background:var(--accent);">Me</div><div style="font-size:13px;font-weight:600;color:var(--text);">Signed in</div>';
+        document.querySelector('nav > div:last-child')?.appendChild(loggedInChip);
+        closeModal();
+      })
+      .catch(err => {
+        console.error("Verification Token error:", err);
+        showToast("Invalid code selection. Please request a new text token.");
+      });
+  };
+</script>
+ 
 </body>
 </html>
