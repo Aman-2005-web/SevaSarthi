@@ -759,11 +759,14 @@
 <div class="toast" id="toast"></div>
 
 <script>
-  // Global reference variable
+  // Global reference variables accessible securely across the layout tree
   let map;
   let toastTimer;
 
-  // Initialize theme & utility UI functions
+  // Track dynamic login/register interactive step switches
+  window._authMode = 'login';
+  window._currentAuthStep = 'credentials';
+
   function toggleTheme() {
     const d = document.documentElement;
     const isDark = d.getAttribute('data-theme') === 'dark';
@@ -799,7 +802,116 @@
     showToast('Menu controller accessed');
   }
 
-  // Geolocation handling 
+  /* ── Automatically writes the category into the search box ── */
+  function setQuickSearch(val) {
+    const inp = document.getElementById('search-input');
+    if (inp) { 
+      inp.value = val; 
+      inp.focus(); 
+    }
+    showToast('Showing nearby results for: ' + val + ' 🔍');
+  }
+
+  /* ── Modals & Intent Toggle Routing State Engines ── */
+  function openModal(type) {
+    const m = document.getElementById('modal');
+    if (!m) return;
+    m.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    if (type === 'register' || type === 'register-provider') {
+      switchModalTab(type === 'register-provider' ? 'provider' : 'consumer');
+      toggleAuthIntent('register');
+    } else {
+      switchModalTab('consumer');
+      toggleAuthIntent('login');
+    }
+  }
+
+  function closeModal() {
+    const m = document.getElementById('modal');
+    if (m) m.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  function closeModalIfOverlay(e) {
+    if (e.target === document.getElementById('modal')) closeModal();
+  }
+
+  function switchModalTab(tab) {
+    document.querySelectorAll('.modal-tab').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.modal-pane').forEach(p => p.classList.remove('active'));
+    const tabBtn = document.getElementById('modal-tab-' + tab);
+    const tabPane = document.getElementById('modal-' + tab);
+    if (tabBtn) tabBtn.classList.add('active');
+    if (tabPane) tabPane.classList.add('active');
+    backToPhone();
+  }
+
+  function toggleAuthIntent(mode) {
+    window._authMode = mode;
+    backToPhone();
+
+    const title     = document.getElementById('modal-title');
+    const sub       = document.getElementById('modal-sub');
+    const btn       = document.getElementById('primary-auth-btn');
+    const passGroup = document.getElementById('password-group');
+    const nameRow   = document.getElementById('name-row');
+    const toggleTxt = document.getElementById('auth-toggle-text');
+
+    if (mode === 'register') {
+      if (title)     title.textContent = 'Create Account';
+      if (sub)       sub.textContent   = 'Join thousands finding services daily';
+      if (btn)       btn.textContent   = 'Send Verification OTP';
+      if (passGroup) passGroup.style.display = 'none';
+      if (nameRow)   nameRow.style.display   = 'grid';
+      if (toggleTxt) toggleTxt.innerHTML = 'Already have an account? <a href="#" onclick="toggleAuthIntent(\'login\');return false;">Sign in</a>';
+    } else {
+      if (title)     title.textContent = 'Welcome back';
+      if (sub)       sub.textContent   = 'Sign in to your SevaSarthi account';
+      if (btn)       btn.textContent   = 'Sign In';
+      if (passGroup) passGroup.style.display = 'block';
+      if (nameRow)   nameRow.style.display   = 'none';
+      if (toggleTxt) toggleTxt.innerHTML = 'New to SevaSarthi? <a href="#" onclick="toggleAuthIntent(\'register\');return false;">Create account</a>';
+    }
+  }
+
+  function backToPhone() {
+    window._currentAuthStep = 'credentials';
+    const fields = document.getElementById('consumer-input-fields');
+    const otp    = document.getElementById('consumer-otp-fields');
+    if (fields) fields.style.display = 'block';
+    if (otp)    otp.style.display    = 'none';
+  }
+
+  function otpAutoTab(input) {
+    input.value = input.value.replace(/\D/g, '');
+    if (input.value.length === 1) {
+      const all = Array.from(document.querySelectorAll('.otp-field'));
+      const idx = all.indexOf(input);
+      if (idx < all.length - 1) all[idx + 1].focus();
+    }
+  }
+
+  // Routes layouts events to your live background Firebase module
+  function handleAuthSubmission() {
+    if (window._authMode === 'login') {
+      const mobile = (document.getElementById('auth-mobile') || {}).value || '';
+      const pass   = (document.getElementById('auth-password') || {}).value || '';
+      if (!mobile.trim() || !pass.trim()) {
+        showToast('Please enter your mobile number and password.');
+        return;
+      }
+      showToast('Validating profile credentials… 🔐');
+    } else {
+      if (window._currentAuthStep === 'credentials') {
+        if (typeof window.triggerFirebaseOTP === 'function') {
+          window.triggerFirebaseOTP();
+        }
+      }
+    }
+  }
+
+  /* ── NATIVE LOCATION PROMPT & MAP SYNC ── */
   function getUserLocation() {
     if (!navigator.geolocation) {
       showToast("Geolocation is not supported by your browser");
@@ -822,41 +934,29 @@
         fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`)
           .then(response => response.json())
           .then(data => {
-            if (locationSpan) {
-              if (data && data.address) {
-                const city = data.address.city || data.address.town || data.address.village || data.address.suburb || "Unknown City";
-                const stateCode = data.address.state ? data.address.state.substring(0, 2).toUpperCase() : "";
-                const formattedLocation = stateCode ? `${city}, ${stateCode}` : city;
-                
-                locationSpan.textContent = formattedLocation;
-                showToast(`Location updated to: ${formattedLocation}`);
-              } else {
-                locationSpan.textContent = "Location Found";
-              }
+            if (locationSpan && data && data.address) {
+              const city = data.address.city || data.address.town || data.address.village || data.address.suburb || "Unknown City";
+              const stateCode = data.address.state ? data.address.state.substring(0, 2).toUpperCase() : "";
+              const formattedLocation = stateCode ? city + ", " + stateCode : city;
+              
+              locationSpan.textContent = formattedLocation;
+              showToast('Location synced: ' + formattedLocation);
             }
           })
           .catch(error => {
             console.error("Geocoding Error:", error);
-            if (locationSpan) locationSpan.textContent = `${lat.toFixed(2)}, ${lon.toFixed(2)}`;
-            showToast("Position found, but could not retrieve street address name.");
+            if (locationSpan) locationSpan.textContent = lat.toFixed(2) + ", " + lon.toFixed(2);
           });
       },
       function(error) {
         if (locationSpan) {
-          if (error.code === error.PERMISSION_DENIED) {
-            showToast("Location access permission denied");
-            locationSpan.textContent = "Permission Denied";
-          } else {
-            locationSpan.textContent = "Location Error";
-          }
+          locationSpan.textContent = error.code === error.PERMISSION_DENIED ? "Permission Denied" : "Location Error";
         }
       }
     );
   }
 
-  // Safely trigger elements when DOM ecosystem is stable
   document.addEventListener("DOMContentLoaded", function() {
-    // 1. Core Map Assembly
     map = L.map('map', { zoomControl: false }).setView([23.7957, 86.4304], 13);
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -865,16 +965,9 @@
     
     setTimeout(() => { map.invalidateSize(); }, 400);
 
-    // 2. Structural Scroll Reveal Setup
     const obs = new IntersectionObserver(entries => {
-      entries.forEach(e => { 
-        if (e.isIntersecting) { 
-          e.target.classList.add('revealed'); 
-          obs.unobserve(e.target); 
-        } 
-      });
+      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('revealed'); obs.unobserve(e.target); } });
     }, { threshold: 0.12 });
-    
     document.querySelectorAll('.scroll-reveal').forEach(el => obs.observe(el));
   });
 </script>
