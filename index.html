@@ -651,14 +651,16 @@ const firebaseConfig = {
   const auth = getAuth(app);
  
 onAuthStateChanged(auth, (user) => {
-  console.log("AUTH STATE:", user);
+
   const status = document.getElementById("user-status");
- const signin = document.getElementById("signin-btn");
-const register = document.getElementById("register-btn");
+  const signin = document.getElementById("signin-btn");
+  const register = document.getElementById("register-btn");
+
   if (user) {
-    console.log("USER LOGGED IN");
-   signin.style.display = "none";
-  register.style.display = "none";
+
+    if (signin) signin.style.display = "none";
+    if (register) register.style.display = "none";
+
     if (status) {
       status.style.display = "inline-block";
       status.textContent =
@@ -667,9 +669,14 @@ const register = document.getElementById("register-btn");
         user.email ||
         "Logged In";
     }
+
   } else {
-    console.log("NO USER FOUND");
+
+    if (status) status.style.display = "none";
+    if (signin) signin.style.display = "inline-block";
+    if (register) register.style.display = "inline-block";
   }
+
 });
  
   const googleProvider = new GoogleAuthProvider();
@@ -727,6 +734,7 @@ window._recaptchaVerifier = new RecaptchaVerifier(
     showToast("Validating entries…");
 
     window.verifyFirebaseOTP = function () {
+
   if (!confirmationResult) {
     showToast("Request an OTP first.");
     return;
@@ -740,8 +748,29 @@ window._recaptchaVerifier = new RecaptchaVerifier(
     showToast("Enter all 6 digits.");
     return;
   }
-
   showToast("Validating entries…");
+     
+  confirmationResult.confirm(code)
+    .then((result) => {
+      const user = result.user;
+      const status = document.getElementById("user-status");
+      if (status) {
+        status.style.display = "inline-block";
+        status.textContent =
+          user.phoneNumber ||
+          user.displayName ||
+          user.email ||
+          "Logged In";
+      }
+      showToast("Profile authorized! Welcome to SevaSarthi 🎉");
+      closeModal();
+    })
+    .catch((error) => {
+      console.error(error);
+      showToast("Invalid code entry.");
+    });
+};
+
 
   confirmationResult.confirm(code)
     .then((result) => {
