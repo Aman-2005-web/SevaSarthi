@@ -63,7 +63,7 @@
     display: flex; align-items: center; justify-content: space-between;
     height: 64px;
   }
- 
+  
   .logo {
     font-family: var(--font-display);
     font-size: 22px; font-weight: 800;
@@ -71,7 +71,7 @@
     text-decoration: none;
     display: flex; align-items: center; gap: 8px;
   }
- 
+  
   .logo span { color: var(--accent); }
   .logo-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); display: inline-block; }
   .btn { display: inline-flex; align-items: center; gap: 6px; padding: 9px 18px; border-radius: var(--radius-sm); font-size: 14px; font-weight: 600; cursor: pointer; border: none; transition: all 0.2s; text-decoration: none; }
@@ -79,6 +79,8 @@
   .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
   .btn-primary { background: var(--accent); color: #fff; }
   .btn-primary:hover { background: #c73d22; transform: translateY(-1px); }
+  .btn-green { background: var(--green); color: #fff; }
+  .btn-green:hover { background: #146c3d; }
   
   .theme-toggle, .hamburger { background: var(--surface2); border: none; cursor: pointer; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; color: var(--text2); }
   .hamburger { display: none; }
@@ -126,19 +128,6 @@
   .map-container { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; position: relative; height: 520px; }
   #map { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 1; }
 
-  .map-overlay-pin { position: absolute; display: flex; flex-direction: column; align-items: center; cursor: pointer; z-index: 1000; }
-  .mop-circle { width: 44px; height: 44px; border-radius: 50%; border: 3px solid #fff; display: flex; align-items: center; justify-content: center; font-size: 18px; box-shadow: 0 4px 12px rgba(0,0,0,0.25); }
-  .mop-label { margin-top: 4px; background: var(--surface); border: 1px solid var(--border); padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 600; color: var(--text); }
-  .map-user-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); z-index: 999; }
-  .map-user-center-dot { width: 20px; height: 20px; border-radius: 50%; background: var(--accent); border: 3px solid #fff; box-shadow: 0 0 0 8px rgba(232,75,47,0.2); }
-  .map-controls, .map-filter-bar { position: absolute; z-index: 1000; display: flex; gap: 6px; }
-  .map-controls { top: 16px; right: 16px; flex-direction: column; }
-  .map-filter-bar { top: 16px; left: 16px; }
-  .map-ctrl-btn, .mf-chip { background: var(--surface); border: 1px solid var(--border); cursor: pointer; color: var(--text); font-weight: 600; }
-  .map-ctrl-btn { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
-  .mf-chip { padding: 6px 12px; border-radius: 99px; font-size: 12px; }
-  .mf-chip.on { background: var(--accent); color: #fff; border-color: var(--accent); }
-
   .trust-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; max-width: 1200px; margin: 40px auto 0; }
   .trust-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px 20px; display: flex; gap: 16px; }
   .trust-icon { width: 46px; height: 46px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px; background: rgba(27,138,78,0.12); }
@@ -170,23 +159,23 @@
   .toast { position: fixed; bottom: 24px; right: 24px; z-index: 5000; background: var(--text); color: var(--bg); padding: 14px 20px; border-radius: 12px; font-size: 14px; box-shadow: 0 4px 24px rgba(0,0,0,0.25); transform: translateY(100px); opacity: 0; transition: all 0.3s ease; }
   .toast.show { transform: none; opacity: 1; }
 
+  /* ─── PROVIDER MODE CSS ─── */
+  .provider-mode .hide-on-provider { display: none !important; }
+  .provider-dashboard { display: none; padding: 60px 5%; max-width: 1200px; margin: 0 auto; }
+  .provider-mode .provider-dashboard { display: block; }
+
   @media (max-width: 900px) {
     .hero { grid-template-columns: 1fr; text-align: center; gap: 40px; }
     .hero-cta, .hero-stats { justify-content: center; }
     .hero-visual { display: none; }
     .map-demo { grid-template-columns: 1fr; }
+    .provider-grid { grid-template-columns: 1fr !important; }
   }
   @media (max-width: 640px) {
     .hamburger { display: flex; }
-    .map-filter-bar { display: none; }
     nav { padding: 0 3%; }
     nav .logo { font-size: 17px; }
-    #user-status {
-      max-width: 110px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
+    #user-status { max-width: 110px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     #signout-btn { padding: 8px 10px; font-size: 12px; }
   }
 </style>
@@ -199,150 +188,181 @@
   </a>
   <div style="display:flex;gap:8px;align-items:center;">
     <button class="theme-toggle" onclick="toggleTheme()">🌙</button>
-    <button id="signin-btn"
-            class="btn btn-outline"
-            onclick="openModal('login')">
-      Sign In
-    </button>
-    <button id="register-btn"
-            class="btn btn-primary"
-            onclick="openModal('register')">
-      Get Started
-    </button>
-    <span id="user-status"
-          style="display:none;
-                 padding:6px 14px;
-                 background:#ecfdf5;
-                 color:#065f46;
-                 border-radius:20px;
-                 font-size:14px;
-                 font-weight:600;"
-          title="Signed-in account">
-    </span>
-    <button id="signout-btn"
-            class="btn btn-outline"
-            style="display:none;"
-            onclick="window.signOutUser()">
-      Sign Out
-    </button>
+    <button id="signin-btn" class="btn btn-outline" onclick="openModal('login')">Sign In</button>
+    <button id="register-btn" class="btn btn-primary" onclick="openModal('register')">Get Started</button>
+    
+    <span id="user-status" style="display:none; padding:6px 14px; background:#ecfdf5; color:#065f46; border-radius:20px; font-size:14px; font-weight:600;" title="Signed-in account"></span>
+    <button id="signout-btn" class="btn btn-outline" style="display:none;" onclick="window.signOutUser()">Sign Out</button>
+    
     <button class="hamburger" onclick="toggleMenu()">☰</button>
   </div>
 </nav>
 
-<div class="hero">
-  <div>
-    <div class="hero-eyebrow">🇮🇳 Trusted in 200+ Cities Across India</div>
-    <h1>Find <em>Skilled Workers</em> Near You — Instantly</h1>
-    <p>Electricians, plumbers, carpenters, home tutors, labors and 40+ more services. Verified, rated, and just minutes away.</p>
-    <div class="hero-cta">
-      <button class="btn btn-primary" onclick="document.getElementById('search-input').focus()">🔍 Find a Service</button>
-      <button class="btn btn-outline" onclick="openModal('register-provider')">Work With Us →</button>
+<div class="hide-on-provider">
+  <div class="hero">
+    <div>
+      <div class="hero-eyebrow">🇮🇳 Trusted in 200+ Cities Across India</div>
+      <h1>Find <em>Skilled Workers</em> Near You — Instantly</h1>
+      <p>Electricians, plumbers, carpenters, home tutors, labors and 40+ more services. Verified, rated, and just minutes away.</p>
+      <div class="hero-cta">
+        <button class="btn btn-primary" onclick="document.getElementById('search-input').focus()">🔍 Find a Service</button>
+        <button class="btn btn-outline" onclick="openModal('register-provider')">Work With Us →</button>
+      </div>
+      <div class="hero-stats">
+        <div class="stat-item"><div class="stat-num">50K+</div><div class="stat-label">Verified Providers</div></div>
+        <div class="stat-item"><div class="stat-num">4.8★</div><div class="stat-label">Avg. Rating</div></div>
+        <div class="stat-item"><div class="stat-num">2M+</div><div class="stat-label">Jobs Completed</div></div>
+      </div>
     </div>
-    <div class="hero-stats">
-      <div class="stat-item"><div class="stat-num">50K+</div><div class="stat-label">Verified Providers</div></div>
-      <div class="stat-item"><div class="stat-num">4.8★</div><div class="stat-label">Avg. Rating</div></div>
-      <div class="stat-item"><div class="stat-num">2M+</div><div class="stat-label">Jobs Completed</div></div>
+
+    <div class="hero-visual">
+      <div class="hero-card">
+        <div class="hero-map-mockup">
+          <div class="map-pin pin-elec"><div class="map-pin-dot">⚡</div><div class="map-pin-label">Ramesh</div></div>
+          <div class="map-pin pin-plumb"><div class="map-pin-dot">🔧</div><div class="map-pin-label">Suresh</div></div>
+          <div class="map-user-pin"></div>
+        </div>
+      </div>
     </div>
   </div>
 
-  <div class="hero-visual">
+  <div class="search-section">
+    <div class="search-wrap">
+      <div class="search-box">
+        <input type="text" id="search-input" placeholder="Search electrician, plumber, carpenter, tutor…" aria-label="Search for services">
+        <div class="search-divider"></div>
+        <div class="search-location" onclick="getUserLocation()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--accent); flex-shrink: 0;">
+            <path d="M12 22s-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 8.2c0 7.3-8 11.8-8 11.8z"/>
+            <circle cx="12" cy="10" r="3"/>
+          </svg>
+          <span id="location-text">Find Location</span>
+        </div>
+        <button class="btn btn-primary" style="white-space: nowrap;" onclick="handleSearch()">Search</button>
+      </div>
+      <div class="search-chips" style="display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap;">
+        <button class="chip" onclick="setQuickSearch('Mechanic')">🔧 Mechanic</button>
+        <button class="chip" onclick="setQuickSearch('Labour')">👷 Labour</button>
+        <button class="chip" onclick="setQuickSearch('Home Tutor')">📚 Home Tutor</button>
+        <button class="chip" onclick="setQuickSearch('Painter')">🎨 Painter</button>
+        <button class="chip" onclick="setQuickSearch('Electrician')">⚡ Electrician</button>
+        <button class="chip" onclick="setQuickSearch('Plumber')">🪠 Plumber</button>
+      </div>
+    </div>
+  </div>
+
+  <section id="map-section" class="map-section">
+    <div class="map-demo">
+      <div class="map-sidebar">
+        <div class="map-sidebar-header">
+          <div class="map-sidebar-title">Nearby Providers</div>
+          <div class="map-sidebar-sub">Dhanbad Area Listings</div>
+        </div>
+        <div class="map-provider-list">
+          <div class="map-provider-item" onclick="showToast('Opening Ramesh\'s profile…')">
+            <div class="mpi-avatar" style="background:#E84B2F;">RK</div>
+            <div class="mpi-info"><div class="mpi-name">Ramesh Kumar</div><div class="mpi-role">Electrician</div><div class="mpi-dist">● 0.8 km</div></div>
+          </div>
+          <div class="map-provider-item" onclick="showToast('Opening Suresh\'s profile…')">
+            <div class="mpi-avatar" style="background:#1A5FD4;">SV</div>
+            <div class="mpi-info"><div class="mpi-name">Suresh Verma</div><div class="mpi-role">Plumber</div><div class="mpi-dist">● 1.2 km</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="map-container">
+        <div id="map"></div>
+        <div class="map-overlay-pin" style="top:25%; left:28%;" onclick="showToast('Ramesh Kumar — Electrician ⚡')">
+          <div class="mop-circle" style="background:#FEF3C7;">⚡</div><div class="mop-label">Ramesh</div>
+        </div>
+        <div class="map-overlay-pin" style="top:52%; left:55%;" onclick="showToast('Suresh Verma — Plumber 🔧')">
+          <div class="mop-circle" style="background:#DBEAFE;">🔧</div><div class="mop-label">Suresh</div>
+        </div>
+        <div class="map-user-center"><div class="map-user-center-dot"></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section style="background:var(--surface);">
+    <div class="trust-grid">
+      <div class="trust-card">
+        <div class="trust-icon">✅</div>
+        <div>
+          <h4>ID-Verified Providers</h4>
+          <p>Every worker goes through secure registration check and background check before appearing in results.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div id="provider-dashboard" class="provider-dashboard">
+  <div style="margin-bottom: 30px;">
+    <h2>Welcome to your Workspace</h2>
+    <p style="color: var(--text2);">Manage your skills, location, and accept new local service requests.</p>
+  </div>
+  
+  <div class="provider-grid" style="display: grid; grid-template-columns: 1fr 1.5fr; gap: 30px;">
     <div class="hero-card">
-      <div class="hero-map-mockup">
-        <div class="map-pin pin-elec"><div class="map-pin-dot">⚡</div><div class="map-pin-label">Ramesh</div></div>
-        <div class="map-pin pin-plumb"><div class="map-pin-dot">🔧</div><div class="map-pin-label">Suresh</div></div>
-        <div class="map-user-pin"></div>
+      <h3 style="margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 10px;">Your Profile Details</h3>
+      <div class="form-group">
+        <label class="form-label">Work Experience (in Years)</label>
+        <input type="number" class="form-input" placeholder="e.g. 5">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Service Category</label>
+        <input type="text" class="form-input" placeholder="e.g. Electrician, Carpenter">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Operating Location (City/Area)</label>
+        <input type="text" class="form-input" placeholder="e.g. Dhanbad, Bank More">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Hourly/Visit Rate (₹)</label>
+        <input type="number" class="form-input" placeholder="e.g. 300">
+      </div>
+      <button class="btn btn-green" style="width: 100%; justify-content: center;" onclick="showToast('Profile and Location Updated! 📍')">Save Details</button>
+    </div>
+
+    <div class="hero-card">
+      <h3 style="margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 10px; display: flex; justify-content: space-between; align-items: center;">
+        Incoming Requests
+        <span style="background:var(--accent); color:white; padding: 4px 10px; border-radius: 20px; font-size: 12px;">2 Pending</span>
+      </h3>
+      
+      <div style="display: flex; flex-direction: column; gap: 15px;">
+        <div style="border: 1px solid var(--border); padding: 16px; border-radius: var(--radius-sm); background: var(--surface2);">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+            <div>
+              <strong style="font-size: 16px;">Aman Kumar</strong>
+              <div style="font-size: 13px; color: var(--text2); margin-top: 4px;">📍 1.2 km away • Posted 10 mins ago</div>
+            </div>
+            <div style="font-weight: 800; color: var(--accent);">Est: ₹450</div>
+          </div>
+          <p style="font-size: 14px; margin-bottom: 15px;"><strong>Need:</strong> Electrical wiring check in the kitchen. Urgent requirement.</p>
+          <div style="display: flex; gap: 10px;">
+            <button class="btn btn-primary" onclick="showToast('Job Accepted! Contact details unlocked.')" style="flex: 1; justify-content: center;">Accept Job</button>
+            <button class="btn btn-outline" onclick="showToast('Job Rejected.')" style="flex: 1; justify-content: center;">Reject</button>
+          </div>
+        </div>
+
+        <div style="border: 1px solid var(--border); padding: 16px; border-radius: var(--radius-sm); background: var(--surface2);">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+            <div>
+              <strong style="font-size: 16px;">Riya Singh</strong>
+              <div style="font-size: 13px; color: var(--text2); margin-top: 4px;">📍 3.5 km away • Posted 1 hr ago</div>
+            </div>
+            <div style="font-weight: 800; color: var(--accent);">Est: ₹250</div>
+          </div>
+          <p style="font-size: 14px; margin-bottom: 15px;"><strong>Need:</strong> Fan regulator replacement in the bedroom.</p>
+          <div style="display: flex; gap: 10px;">
+            <button class="btn btn-primary" onclick="showToast('Job Accepted! Contact details unlocked.')" style="flex: 1; justify-content: center;">Accept Job</button>
+            <button class="btn btn-outline" onclick="showToast('Job Rejected.')" style="flex: 1; justify-content: center;">Reject</button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </div>
-
-<div class="search-section">
-  <div class="search-wrap">
-    <div class="search-box">
-      <input type="text" id="search-input" placeholder="Search electrician, plumber, carpenter, tutor…" aria-label="Search for services">
-      <div class="search-divider"></div>
-      
-      <div class="search-location" onclick="getUserLocation()">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--accent); flex-shrink: 0;">
-          <path d="M12 22s-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 8.2c0 7.3-8 11.8-8 11.8z"/>
-          <circle cx="12" cy="10" r="3"/>
-        </svg>
-        <span id="location-text">Find Location</span>
-      </div>
-      
-      <button class="btn btn-primary" style="white-space: nowrap;" onclick="handleSearch()">Search</button>
-    </div>
-
-    <div class="search-chips" style="display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap;">
-      <button class="chip" onclick="setQuickSearch('Mechanic')">🔧 Mechanic</button>
-      <button class="chip" onclick="setQuickSearch('Labour')">👷 Labour</button>
-      <button class="chip" onclick="setQuickSearch('Home Tutor')">📚 Home Tutor</button>
-      <button class="chip" onclick="setQuickSearch('Painter')">🎨 Painter</button>
-      <button class="chip" onclick="setQuickSearch('Electrician')">⚡ Electrician</button>
-      <button class="chip" onclick="setQuickSearch('Plumber')">🪠 Plumber</button>
-    </div>
-  </div>
-</div>
-
-<section id="map-section" class="map-section">
-  <div class="map-demo">
-    <div class="map-sidebar">
-      <div class="map-sidebar-header">
-        <div class="map-sidebar-title">Nearby Providers</div>
-        <div class="map-sidebar-sub">Dhanbad Area Listings</div>
-      </div>
-      <div class="map-provider-list">
-        <div class="map-provider-item" onclick="showToast('Opening Ramesh\'s profile…')">
-          <div class="mpi-avatar" style="background:#E84B2F;">RK</div>
-          <div class="mpi-info"><div class="mpi-name">Ramesh Kumar</div><div class="mpi-role">Electrician</div><div class="mpi-dist">● 0.8 km</div></div>
-        </div>
-        <div class="map-provider-item" onclick="showToast('Opening Suresh\'s profile…')">
-          <div class="mpi-avatar" style="background:#1A5FD4;">SV</div>
-          <div class="mpi-info"><div class="mpi-name">Suresh Verma</div><div class="mpi-role">Plumber</div><div class="mpi-dist">● 1.2 km</div></div>
-        </div>
-      </div>
-    </div>
-
-    <div class="map-container">
-      <div id="map"></div>
-
-      <div class="map-overlay-pin" style="top:25%; left:28%;" onclick="showToast('Ramesh Kumar — Electrician ⚡')">
-        <div class="mop-circle" style="background:#FEF3C7;">⚡</div>
-        <div class="mop-label">Ramesh</div>
-      </div>
-      <div class="map-overlay-pin" style="top:52%; left:55%;" onclick="showToast('Suresh Verma — Plumber 🔧')">
-        <div class="mop-circle" style="background:#DBEAFE;">🔧</div>
-        <div class="mop-label">Suresh</div>
-      </div>
-
-      <div class="map-user-center"><div class="map-user-center-dot"></div></div>
-
-      <div class="map-filter-bar">
-        <div class="mf-chip on" onclick="filterMap(this)">All</div>
-        <div class="mf-chip" onclick="filterMap(this)">⚡ Electric</div>
-        <div class="mf-chip" onclick="filterMap(this)">🔧 Plumbing</div>
-      </div>
-
-      <div class="map-controls">
-        <button class="map-ctrl-btn" onclick="if(map) map.zoomIn()">+</button>
-        <button class="map-ctrl-btn" onclick="if(map) map.zoomOut()">−</button>
-        <button class="map-ctrl-btn" onclick="getUserLocation()">📍</button>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section style="background:var(--surface);">
-  <div class="trust-grid">
-    <div class="trust-card">
-      <div class="trust-icon">✅</div>
-      <div>
-        <h4>ID-Verified Providers</h4>
-        <p>Every worker goes through secure registration check and background check before appearing in results.</p>
-      </div>
-    </div>
-  </div>
-</section>
 
 <footer>
   <a href="#" class="logo" style="justify-content: center; margin-bottom: 10px;">Seva<span>Sarthi</span><span class="logo-dot"></span></a>
@@ -383,12 +403,7 @@
             <input type="tel" id="auth-mobile" class="form-input" placeholder="98765 43210" maxlength="10">
           </div>
 
-          <div class="form-group" id="password-group" style="display:none;">
-            <label class="form-label">Password *</label>
-            <input type="password" id="auth-password" class="form-input" placeholder="Enter password">
-          </div>
-
-          <button class="btn btn-primary" id="primary-auth-btn" style="width:100%; justify-content:center; padding:13px;" onclick="handleAuthSubmission()">Send Login OTP</button>
+          <button class="btn btn-primary" id="primary-auth-btn" style="width:100%; justify-content:center; padding:13px;" onclick="window.triggerFirebaseOTP()">Send Login OTP</button>
           <div id="recaptcha-container"></div>
 
           <div class="form-divider">or continue with</div>
@@ -439,6 +454,13 @@
           </div>
           <button class="btn btn-primary" id="provider-auth-btn" style="width:100%; justify-content:center; padding:13px;" onclick="window.triggerProviderOTP()">Send Login OTP</button>
           <div id="provider-recaptcha-container"></div>
+
+          <div class="form-divider">or sign up without OTP</div>
+          <button class="social-btn" onclick="window.initiateProviderGoogleAuth()">
+            <svg width="18" height="18" viewBox="0 0 18 18"><path d="M17.64 9.2a10.34 10.34 0 0 0-.16-1.84H9v3.48h4.84A4.14 4.14 0 0 1 12.07 13v2.26h2.88A8.72 8.72 0 0 0 17.64 9.2z" fill="#4285F4"/><path d="M9 18a8.59 8.59 0 0 0 5.95-2.18L12.07 13a5.43 5.43 0 0 1-8.07-2.85H1.08v2.33A9 9 0 0 0 9 18z" fill="#34A853"/><path d="M4 10.15a5.34 5.34 0 0 1 0-3.41V4.4H1.08a9 9 0 0 0 0 8.09z" fill="#FBBC05"/><path d="M9 3.58a4.86 4.86 0 0 1 3.44 1.35l2.58-2.58A8.66 8.66 0 0 0 9 0 9 9 0 0 0 1.08 4.4L4 6.73A5.37 5.37 0 0 1 9 3.58z" fill="#EA4335"/></svg>
+            Continue with Google
+          </button>
+
           <div class="form-footer" id="provider-auth-toggle-text">
             New provider? <a href="#" onclick="toggleProviderAuthIntent('register');return false;">Create provider account</a>
           </div>
@@ -459,11 +481,8 @@
 <div class="toast" id="toast"></div>
 
 <script>
-  // Global reference variables accessible securely across the layout tree
   let map;
   let toastTimer;
-
-  // Global authentication states track hooks
   window._authMode = 'login';
   window._providerAuthMode = 'login';
   window._currentAuthStep = 'credentials';
@@ -499,27 +518,16 @@
     }
   }
 
-  function toggleMenu() {
-    showToast('Menu controller accessed');
-  }
-
-  /* ── Search Input Box Handler ── */
+  function toggleMenu() { showToast('Menu controller accessed'); }
   function setQuickSearch(val) {
     const inp = document.getElementById('search-input');
-    if (inp) { 
-      inp.value = val; 
-      inp.focus(); 
-    }
+    if (inp) { inp.value = val; inp.focus(); }
     showToast('Showing nearby results for: ' + val + ' 🔍');
   }
 
-  /* ── Modals Trigger Window Controllers ── */
   function openModal(type) {
     const m = document.getElementById('modal');
-    if (!m) {
-      console.error("Fatal Error: Modal container element 'id=modal' missing from HTML structure!");
-      return;
-    }
+    if (!m) return;
     m.classList.add('open');
     document.body.style.overflow = 'hidden';
     if (type === 'register' || type === 'register-provider') {
@@ -537,9 +545,7 @@
     document.body.style.overflow = '';
   }
 
-  function closeModalIfOverlay(e) {
-    if (e.target === document.getElementById('modal')) closeModal();
-  }
+  function closeModalIfOverlay(e) { if (e.target === document.getElementById('modal')) closeModal(); }
 
   function switchModalTab(tab) {
     document.querySelectorAll('.modal-tab').forEach(b => b.classList.remove('active'));
@@ -581,27 +587,23 @@
   function toggleAuthIntent(mode) {
     window._authMode = mode;
     backToPhone();
-
-    const title     = document.getElementById('modal-title');
-    const sub       = document.getElementById('modal-sub');
-    const btn       = document.getElementById('primary-auth-btn');
-    const passGroup = document.getElementById('password-group');
-    const nameRow   = document.getElementById('name-row');
+    const title = document.getElementById('modal-title');
+    const sub = document.getElementById('modal-sub');
+    const btn = document.getElementById('primary-auth-btn');
+    const nameRow = document.getElementById('name-row');
     const toggleTxt = document.getElementById('auth-toggle-text');
 
     if (mode === 'register') {
-      if (title)     title.textContent = 'Create Account';
-      if (sub)       sub.textContent   = 'Join thousands finding services daily';
-      if (btn)       btn.textContent   = 'Send Verification OTP';
-      if (passGroup) passGroup.style.display = 'none';
-      if (nameRow)   nameRow.style.display   = 'grid';
+      if (title) title.textContent = 'Create Account';
+      if (sub) sub.textContent = 'Join thousands finding services daily';
+      if (btn) btn.textContent = 'Send Verification OTP';
+      if (nameRow) nameRow.style.display = 'grid';
       if (toggleTxt) toggleTxt.innerHTML = 'Already have an account? <a href="#" onclick="toggleAuthIntent(\'login\');return false;">Sign in</a>';
     } else {
-      if (title)     title.textContent = 'Welcome back';
-      if (sub)       sub.textContent   = 'Sign in to your SevaSarthi account';
-      if (btn)       btn.textContent   = 'Send Login OTP';
-      if (passGroup) passGroup.style.display = 'none';
-      if (nameRow)   nameRow.style.display   = 'none';
+      if (title) title.textContent = 'Welcome back';
+      if (sub) sub.textContent = 'Sign in to your SevaSarthi account';
+      if (btn) btn.textContent = 'Send Login OTP';
+      if (nameRow) nameRow.style.display = 'none';
       if (toggleTxt) toggleTxt.innerHTML = 'New to SevaSarthi? <a href="#" onclick="toggleAuthIntent(\'register\');return false;">Create account</a>';
     }
   }
@@ -609,9 +611,9 @@
   function backToPhone() {
     window._currentAuthStep = 'credentials';
     const fields = document.getElementById('consumer-input-fields');
-    const otp    = document.getElementById('consumer-otp-fields');
+    const otp = document.getElementById('consumer-otp-fields');
     if (fields) fields.style.display = 'block';
-    if (otp)    otp.style.display    = 'none';
+    if (otp) otp.style.display = 'none';
   }
 
   function otpAutoTab(input) {
@@ -623,11 +625,6 @@
     }
   }
 
-  function handleAuthSubmission() {
-  window.triggerFirebaseOTP();
-}
- 
-  /* ── GEOLOCATION CONTROLLER ── */
   function getUserLocation() {
     if (!navigator.geolocation) {
       showToast("Geolocation is not supported by your browser");
@@ -652,13 +649,9 @@
               showToast('Location synced: ' + city);
             }
           })
-          .catch(() => { 
-            if (span) span.textContent = lat.toFixed(2) + ", " + lon.toFixed(2); 
-          });
+          .catch(() => { if (span) span.textContent = lat.toFixed(2) + ", " + lon.toFixed(2); });
       },
-      function() { 
-        if (span) span.textContent = "Location Error"; 
-      }
+      function() { if (span) span.textContent = "Location Error"; }
     );
   }
 
@@ -668,69 +661,44 @@
       attribution: '© OpenStreetMap contributors'
     }).addTo(map);
     setTimeout(() => { map.invalidateSize(); }, 400);
-
-    const obs = new IntersectionObserver(entries => {
-      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('revealed'); obs.unobserve(e.target); } });
-    }, { threshold: 0.12 });
-    document.querySelectorAll('.scroll-reveal').forEach(el => obs.observe(el));
   });
 </script>
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import {
-  getAuth,
-  signInWithPopup,
-  GoogleAuthProvider,
-  RecaptchaVerifier,
-  signInWithPhoneNumber,
-  onAuthStateChanged,
-  setPersistence,
-  browserLocalPersistence,
-  signOut,
-  updateProfile
-} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
- 
-  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-  apiKey: "AIzaSyDiVK2-HG9cTajZ4vRLVtOezSelWkK9XNA",
-  authDomain: "sevasarthi-5e78c.firebaseapp.com",
-  projectId: "sevasarthi-5e78c",
-  storageBucket: "sevasarthi-5e78c.firebasestorage.app",
-  messagingSenderId: "905980173042",
-  appId: "1:905980173042:web:ae8021710f803e9758ce6b",
-  measurementId: "G-WN5MJ0ESC7"
-};
- 
+  import {
+    getAuth, signInWithPopup, GoogleAuthProvider, RecaptchaVerifier,
+    signInWithPhoneNumber, onAuthStateChanged, setPersistence, browserLocalPersistence, signOut, updateProfile
+  } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+  
+  const firebaseConfig = {
+    apiKey: "AIzaSyDiVK2-HG9cTajZ4vRLVtOezSelWkK9XNA",
+    authDomain: "sevasarthi-5e78c.firebaseapp.com",
+    projectId: "sevasarthi-5e78c",
+    storageBucket: "sevasarthi-5e78c.firebasestorage.app",
+    messagingSenderId: "905980173042",
+    appId: "1:905980173042:web:ae8021710f803e9758ce6b",
+    measurementId: "G-WN5MJ0ESC7"
+  };
+  
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
   window.auth = auth;
   auth.useDeviceLanguage();
 
-  setPersistence(auth, browserLocalPersistence).catch((error) => {
-    console.error("Could not enable persistent login:", error);
-  });
+  setPersistence(auth, browserLocalPersistence).catch((error) => console.error("Persistence error:", error));
 
   function getAuthErrorMessage(error) {
     const messages = {
-      "auth/billing-not-enabled": "Real SMS requires Firebase Blaze billing.",
-      "auth/captcha-check-failed": "reCAPTCHA verification failed. Please try again.",
-      "auth/invalid-app-credential": "Firebase could not verify this website. Check the authorized domain and reCAPTCHA.",
       "auth/invalid-phone-number": "Enter a valid phone number.",
-      "auth/missing-phone-number": "Enter your phone number.",
-      "auth/operation-not-allowed": "Enable this sign-in provider in Firebase Authentication.",
-      "auth/popup-blocked": "The browser blocked the Google sign-in popup. Allow popups and try again.",
+      "auth/popup-blocked": "Allow popups and try again.",
       "auth/popup-closed-by-user": "Google sign-in was cancelled.",
-      "auth/quota-exceeded": "The SMS quota has been exceeded.",
-      "auth/too-many-requests": "Too many attempts. Wait before trying again.",
-      "auth/unauthorized-domain": "Add this GitHub Pages domain to Firebase Authentication authorized domains."
     };
-
-    return messages[error?.code] || `${error?.message || "Authentication failed."} (${error?.code || "unknown error"})`;
+    return messages[error?.code] || `${error?.message || "Authentication failed."}`;
   }
 
+  // UI Transformation Handler based on Role
   onAuthStateChanged(auth, (user) => {
-    console.log("AUTH CALLBACK FIRED", user);
     const status = document.getElementById("user-status");
     const signin = document.getElementById("signin-btn");
     const register = document.getElementById("register-btn");
@@ -739,172 +707,147 @@ const firebaseConfig = {
     if (user) {
       status.style.display = "inline-block";
       const role = localStorage.getItem(`role:${user.uid}`);
-      const identity = user.displayName || user.email || user.phoneNumber || `User ${user.uid.slice(0, 8)}`;
+      const identity = user.displayName || user.email || user.phoneNumber || `User`;
       status.textContent = role === "provider" ? `${identity} (Provider)` : identity;
-      status.title = `Firebase user ID: ${user.uid}`;
       signin.style.display = "none";
       register.style.display = "none";
       signout.style.display = "inline-flex";
+      
+      // NEW: Apply UI changes if Provider
+      if (role === "provider") {
+        document.body.classList.add('provider-mode');
+      } else {
+        document.body.classList.remove('provider-mode');
+      }
+      
       closeModal();
     } else {
       status.style.display = "none";
-      status.textContent = "";
       signin.style.display = "inline-flex";
       register.style.display = "inline-flex";
       signout.style.display = "none";
+      document.body.classList.remove('provider-mode');
     }
   });
- 
+  
   const googleProvider = new GoogleAuthProvider();
   let confirmationResult = null;
   let providerConfirmationResult = null;
 
+  // Standard Customer Google Auth
   window.initiateGoogleAuth = async function () {
     showToast("Opening Google sign in...");
     try {
       const result = await signInWithPopup(auth, googleProvider);
-      showToast("Welcome " + (result.user.displayName || result.user.email || "back"));
+      localStorage.setItem(`role:${result.user.uid}`, 'customer');
+      showToast("Welcome " + (result.user.displayName || "back"));
     } catch (error) {
       console.error("Google Login Error:", error);
       showToast(getAuthErrorMessage(error));
     }
   };
 
+  // NEW: Provider Google Auth (Checks mobile field first, bypasses OTP)
+  window.initiateProviderGoogleAuth = async function() {
+    const mobileInput = document.getElementById('provider-mobile');
+    const mobileValue = mobileInput ? mobileInput.value.replace(/\D/g, '') : '';
+    
+    // Validate Mobile existence first
+    if (!/^[6-9]\d{9}$/.test(mobileValue)) {
+      showToast("Please enter a valid 10-digit mobile number above before continuing with Google.");
+      mobileInput.focus();
+      return;
+    }
+
+    showToast("Opening Google sign in...");
+    try {
+      const result = await signInWithPopup(auth, googleProvider);
+      
+      // Set Provider Role + Save Unverified Phone via LocalStorage
+      localStorage.setItem(`role:${result.user.uid}`, 'provider');
+      localStorage.setItem(`phone:${result.user.uid}`, '+91' + mobileValue);
+      
+      showToast("Provider Account created successfully!");
+      // onAuthStateChanged will handle hiding the modal and switching the UI.
+    } catch (error) {
+      console.error("Google Login Error:", error);
+      showToast(getAuthErrorMessage(error));
+    }
+  }
+
   window.signOutUser = async function () {
     try {
       await signOut(auth);
       showToast("Signed out successfully.");
     } catch (error) {
-      console.error("Sign out error:", error);
       showToast(getAuthErrorMessage(error));
     }
   };
 
+  // ── Customer OTP Handlers ──
   window.triggerFirebaseOTP = function () {
-    const mobileEl = document.getElementById('auth-mobile');
-    if (!mobileEl) return;
-    const raw = mobileEl.value.trim().replace(/\D/g, '');
+    const raw = document.getElementById('auth-mobile').value.trim().replace(/\D/g, '');
     if (!/^[6-9]\d{9}$/.test(raw)) { showToast("Enter a valid 10-digit Indian number."); return; }
     const phone = '+91' + raw;
+    document.getElementById('otp-phone-display').textContent = '+91 ' + raw.slice(0, 5) + ' ' + raw.slice(5);
+    
+    if (!window._recaptchaVerifier) { window._recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', { size: 'invisible' }); }
 
-    const disp = document.getElementById('otp-phone-display');
-    if (disp) disp.textContent = '+91 ' + raw.slice(0, 5) + ' ' + raw.slice(5);
-    showToast("Checking security parameters...");
-
-    if (!window._recaptchaVerifier) {
-      window._recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', { size: 'invisible' });
-    }
-
-    signInWithPhoneNumber(auth, phone, window._recaptchaVerifier)
-      .then(result => {
-        confirmationResult = result;
-        window._currentAuthStep = 'otp';
-        document.getElementById('consumer-input-fields').style.display = 'none';
-        document.getElementById('consumer-otp-fields').style.display = 'block';
-        showToast("OTP sent successfully!");
-      })
-      .catch(err => {
-        console.error("Phone OTP error:", err);
-        showToast(getAuthErrorMessage(err));
-        if (window._recaptchaVerifier) { window._recaptchaVerifier.clear(); window._recaptchaVerifier = null; }
-      });
+    signInWithPhoneNumber(auth, phone, window._recaptchaVerifier).then(result => {
+      confirmationResult = result;
+      document.getElementById('consumer-input-fields').style.display = 'none';
+      document.getElementById('consumer-otp-fields').style.display = 'block';
+      showToast("OTP sent successfully!");
+    }).catch(err => { showToast(getAuthErrorMessage(err)); });
   };
 
   window.verifyFirebaseOTP = function () {
-    if (!confirmationResult) { showToast("Request an OTP first."); return; }
+    if (!confirmationResult) return;
     const code = Array.from(document.querySelectorAll('.otp-field')).map(i => i.value.trim()).join('');
     if (code.length < 6) { showToast("Enter all 6 digits."); return; }
-    showToast("Validating entries…");
-
-    confirmationResult.confirm(code)
-      .then((result) => {
-        showToast("Signed in as " + (result.user.phoneNumber || "customer"));
-        closeModal();
-      })
-      .catch((error) => {
-        console.error("OTP verification error:", error);
-        showToast(getAuthErrorMessage(error));
-      });
+    
+    confirmationResult.confirm(code).then((result) => {
+      localStorage.setItem(`role:${result.user.uid}`, 'customer');
+      showToast("Signed in as Customer");
+    }).catch((error) => { showToast("Invalid OTP."); });
   };
 
+  // ── Provider OTP Handlers ──
   window.triggerProviderOTP = function () {
-    const mobileEl = document.getElementById('provider-mobile');
-    const raw = mobileEl.value.trim().replace(/\D/g, '');
-    if (!/^[6-9]\d{9}$/.test(raw)) {
-      showToast("Enter a valid 10-digit Indian number.");
-      return;
-    }
-
-    if (window._providerAuthMode === 'register') {
-      const firstName = document.getElementById('provider-firstname').value.trim();
-      if (!firstName) {
-        showToast("Enter the provider's first name.");
-        return;
-      }
+    const raw = document.getElementById('provider-mobile').value.trim().replace(/\D/g, '');
+    if (!/^[6-9]\d{9}$/.test(raw)) { showToast("Enter a valid 10-digit Indian number."); return; }
+    
+    if (window._providerAuthMode === 'register' && !document.getElementById('provider-firstname').value.trim()) {
+      showToast("Enter the provider's first name."); return;
     }
 
     const phone = '+91' + raw;
-    document.getElementById('provider-otp-phone-display').textContent =
-      '+91 ' + raw.slice(0, 5) + ' ' + raw.slice(5);
-    showToast("Checking provider phone...");
+    document.getElementById('provider-otp-phone-display').textContent = '+91 ' + raw.slice(0, 5) + ' ' + raw.slice(5);
 
-    if (!window._providerRecaptchaVerifier) {
-      window._providerRecaptchaVerifier = new RecaptchaVerifier(
-        auth,
-        'provider-recaptcha-container',
-        { size: 'invisible' }
-      );
-    }
+    if (!window._providerRecaptchaVerifier) { window._providerRecaptchaVerifier = new RecaptchaVerifier(auth, 'provider-recaptcha-container', { size: 'invisible' }); }
 
-    signInWithPhoneNumber(auth, phone, window._providerRecaptchaVerifier)
-      .then((result) => {
-        providerConfirmationResult = result;
-        document.getElementById('provider-input-fields').style.display = 'none';
-        document.getElementById('provider-otp-fields').style.display = 'block';
-        showToast("Provider OTP sent successfully!");
-      })
-      .catch((error) => {
-        console.error("Provider OTP error:", error);
-        showToast(getAuthErrorMessage(error));
-        if (window._providerRecaptchaVerifier) {
-          window._providerRecaptchaVerifier.clear();
-          window._providerRecaptchaVerifier = null;
-        }
-      });
+    signInWithPhoneNumber(auth, phone, window._providerRecaptchaVerifier).then((result) => {
+      providerConfirmationResult = result;
+      document.getElementById('provider-input-fields').style.display = 'none';
+      document.getElementById('provider-otp-fields').style.display = 'block';
+      showToast("Provider OTP sent!");
+    }).catch((error) => { showToast(getAuthErrorMessage(error)); });
   };
 
   window.verifyProviderOTP = function () {
-    if (!providerConfirmationResult) {
-      showToast("Request a provider OTP first.");
-      return;
-    }
-
+    if (!providerConfirmationResult) return;
     const code = document.getElementById('provider-otp-code').value.trim();
-    if (!/^\d{6}$/.test(code)) {
-      showToast("Enter the complete 6-digit OTP.");
-      return;
-    }
+    if (!/^\d{6}$/.test(code)) { showToast("Enter the 6-digit OTP."); return; }
 
-    providerConfirmationResult.confirm(code)
-      .then(async (result) => {
-        if (window._providerAuthMode === 'register') {
-          const firstName = document.getElementById('provider-firstname').value.trim();
-          const lastName = document.getElementById('provider-lastname').value.trim();
-          await updateProfile(result.user, {
-            displayName: `${firstName} ${lastName}`.trim()
-          });
-        }
-        localStorage.setItem(`role:${result.user.uid}`, 'provider');
-        const status = document.getElementById('user-status');
-        const identity = result.user.displayName || result.user.phoneNumber || `User ${result.user.uid.slice(0, 8)}`;
-        status.textContent = `${identity} (Provider)`;
-        showToast("Provider account verified!");
-        closeModal();
-      })
-      .catch((error) => {
-        console.error("Provider OTP verification error:", error);
-        showToast(getAuthErrorMessage(error));
-      });
+    providerConfirmationResult.confirm(code).then(async (result) => {
+      if (window._providerAuthMode === 'register') {
+        const firstName = document.getElementById('provider-firstname').value.trim();
+        const lastName = document.getElementById('provider-lastname').value.trim();
+        await updateProfile(result.user, { displayName: `${firstName} ${lastName}`.trim() });
+      }
+      localStorage.setItem(`role:${result.user.uid}`, 'provider');
+      showToast("Provider account verified!");
+    }).catch((error) => { showToast("Invalid Provider OTP."); });
   };
 </script>
 </body>
