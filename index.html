@@ -63,6 +63,7 @@
     display: flex; align-items: center; justify-content: space-between;
     height: 64px;
   }
+ 
   .logo {
     font-family: var(--font-display);
     font-size: 22px; font-weight: 800;
@@ -70,6 +71,7 @@
     text-decoration: none;
     display: flex; align-items: center; gap: 8px;
   }
+ 
   .logo span { color: var(--accent); }
   .logo-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); display: inline-block; }
   .btn { display: inline-flex; align-items: center; gap: 6px; padding: 9px 18px; border-radius: var(--radius-sm); font-size: 14px; font-weight: 600; cursor: pointer; border: none; transition: all 0.2s; text-decoration: none; }
@@ -183,11 +185,30 @@
 <body>
 
 <nav>
-  <a href="#" class="logo">Seva<span>Sarthi</span><span class="logo-dot"></span></a>
+  <a href="#" class="logo">
+    Seva<span>Sarthi</span><span class="logo-dot"></span>
+  </a>
   <div style="display:flex;gap:8px;align-items:center;">
     <button class="theme-toggle" onclick="toggleTheme()">🌙</button>
-    <button class="btn btn-outline" onclick="openModal('login')">Sign In</button>
-    <button class="btn btn-primary" onclick="openModal('register')">Get Started</button>
+    <button id="signin-btn"
+            class="btn btn-outline"
+            onclick="openModal('login')">
+      Sign In
+    </button>
+    <button id="register-btn"
+            class="btn btn-primary"
+            onclick="openModal('register')">
+      Get Started
+    </button>
+    <span id="user-status"
+          style="display:none;
+                 padding:6px 14px;
+                 background:#ecfdf5;
+                 color:#065f46;
+                 border-radius:20px;
+                 font-size:14px;
+                 font-weight:600;">
+    </span>
     <button class="hamburger" onclick="toggleMenu()">☰</button>
   </div>
 </nav>
