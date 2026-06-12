@@ -179,6 +179,15 @@
   @media (max-width: 640px) {
     .hamburger { display: flex; }
     .map-filter-bar { display: none; }
+    nav { padding: 0 3%; }
+    nav .logo { font-size: 17px; }
+    #user-status {
+      max-width: 110px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    #signout-btn { padding: 8px 10px; font-size: 12px; }
   }
 </style>
 </head>
@@ -207,7 +216,8 @@
                  color:#065f46;
                  border-radius:20px;
                  font-size:14px;
-                 font-weight:600;">
+                 font-weight:600;"
+          title="Signed-in account">
     </span>
     <button id="signout-btn"
             class="btn btn-outline"
