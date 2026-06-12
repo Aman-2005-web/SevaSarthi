@@ -664,57 +664,72 @@
   });
 </script>
 
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-  import {
-    getAuth, signInWithPopup, GoogleAuthProvider, RecaptchaVerifier,
-    signInWithPhoneNumber, onAuthStateChanged, setPersistence, browserLocalPersistence, signOut, updateProfile
-  } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-  
-  const firebaseConfig = {
-    apiKey: "AIzaSyDiVK2-HG9cTajZ4vRLVtOezSelWkK9XNA",
-    authDomain: "sevasarthi-5e78c.firebaseapp.com",
-    projectId: "sevasarthi-5e78c",
-    storageBucket: "sevasarthi-5e78c.firebasestorage.app",
-    messagingSenderId: "905980173042",
-    appId: "1:905980173042:web:ae8021710f803e9758ce6b",
-    measurementId: "G-WN5MJ0ESC7"
-  };
-  
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  window.auth = auth;
-  auth.useDeviceLanguage();
+<script>
+ 
+  const SUPABASE_URL = "https://fekvrxxhspbntjriwiha.supabase.co";
+  const SUPABASE_ANON_KEY = "sb_publishable_YrjBg24OxoW--XxfI71EBg_nCqm3lMo";
 
-  setPersistence(auth, browserLocalPersistence).catch((error) => console.error("Persistence error:", error));
+  const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-  function getAuthErrorMessage(error) {
-    const messages = {
-      "auth/invalid-phone-number": "Enter a valid phone number.",
-      "auth/popup-blocked": "Allow popups and try again.",
-      "auth/popup-closed-by-user": "Google sign-in was cancelled.",
-    };
-    return messages[error?.code] || `${error?.message || "Authentication failed."}`;
-  }
-
-  // UI Transformation Handler based on Role
-  onAuthStateChanged(auth, (user) => {
+  // Global Auth State Observer & Database Sync
+  supabase.auth.onAuthStateChange(async (event, session) => {
     const status = document.getElementById("user-status");
     const signin = document.getElementById("signin-btn");
     const register = document.getElementById("register-btn");
     const signout = document.getElementById("signout-btn");
 
-    if (user) {
+    if (session && session.user) {
+      // 1. Check if user is coming back from Google Sign-In with pending data
+      const pendingRole = localStorage.getItem('pending_role');
+      const pendingPhone = localStorage.getItem('pending_phone');
+
+      if (pendingRole || pendingPhone) {
+        // Auth Metadata Update karein
+        await supabase.auth.updateUser({
+          data: { 
+            role: pendingRole || 'customer',
+            saved_phone: pendingPhone || '' 
+          }
+        });
+        localStorage.removeItem('pending_role');
+        localStorage.removeItem('pending_phone');
+        
+        // Session ko turant local update karein
+        if (pendingRole) session.user.user_metadata.role = pendingRole;
+        if (pendingPhone) session.user.user_metadata.saved_phone = pendingPhone;
+      }
+
+      // 2. Fetch final data
+      const userId = session.user.id; // Supabase default unique ID
+      const userRole = session.user.user_metadata?.role || 'customer';
+      const userPhone = session.user.user_metadata?.saved_phone || session.user.phone || '';
+      const userName = session.user.user_metadata?.full_name || 'User';
+
+      // 🚨 3. DATA KO DATABASE COLUMNS MEIN SAVE KAREIN (UPSERT)
+      // Ye code check karega: agar user naya hai toh row banayega, purana hai toh update karega
+      const { error: dbError } = await supabase
+        .from('profiles') // Tumhara table name
+        .upsert([
+          { 
+            id: userId, 
+            full_name: userName, 
+            mobile: userPhone, 
+            role: userRole 
+          }
+        ]);
+        
+      if (dbError) console.error("Database save error:", dbError.message);
+
+      // 4. UI Update karein
+      const identity = userName !== 'User' ? userName : (userPhone || "Logged In");
       status.style.display = "inline-block";
-      const role = localStorage.getItem(`role:${user.uid}`);
-      const identity = user.displayName || user.email || user.phoneNumber || `User`;
-      status.textContent = role === "provider" ? `${identity} (Provider)` : identity;
+      status.textContent = userRole === "provider" ? `${identity} (Provider)` : identity;
       signin.style.display = "none";
       register.style.display = "none";
       signout.style.display = "inline-flex";
       
-      // NEW: Apply UI changes if Provider
-      if (role === "provider") {
+      // Dashboard UI Switch Logic
+      if (userRole === "provider") {
         document.body.classList.add('provider-mode');
       } else {
         document.body.classList.remove('provider-mode');
@@ -722,6 +737,7 @@
       
       closeModal();
     } else {
+      // Logged out state
       status.style.display = "none";
       signin.style.display = "inline-flex";
       register.style.display = "inline-flex";
@@ -729,126 +745,96 @@
       document.body.classList.remove('provider-mode');
     }
   });
-  
-  const googleProvider = new GoogleAuthProvider();
-  let confirmationResult = null;
-  let providerConfirmationResult = null;
 
-  // Standard Customer Google Auth
-  window.initiateGoogleAuth = async function () {
-    showToast("Opening Google sign in...");
-    try {
-      const result = await signInWithPopup(auth, googleProvider);
-      localStorage.setItem(`role:${result.user.uid}`, 'customer');
-      showToast("Welcome " + (result.user.displayName || "back"));
-    } catch (error) {
-      console.error("Google Login Error:", error);
-      showToast(getAuthErrorMessage(error));
+  /* ── GOOGLE AUTH HANDLER (With Mobile Check for Providers) ── */
+  window.initiateGoogleAuth = async function (role) {
+    if (role === 'provider') {
+      const mobileInput = document.getElementById('provider-mobile');
+      const mobileValue = mobileInput ? mobileInput.value.replace(/\D/g, '') : '';
+      
+      if (!/^[6-9]\d{9}$/.test(mobileValue)) {
+        showToast("Please enter a valid 10-digit mobile number above before continuing with Google.");
+        if(mobileInput) mobileInput.focus();
+        return;
+      }
+      // Temporary memory for redirect
+      localStorage.setItem('pending_role', 'provider');
+      localStorage.setItem('pending_phone', '+91' + mobileValue);
+    } else {
+      localStorage.setItem('pending_role', 'customer');
+    }
+
+    showToast("Opening Google portal securely...");
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: { redirectTo: window.location.origin + window.location.pathname }
+    });
+    if (error) showToast("Google Login Error: " + error.message);
+  };
+
+  /* ── PHONE OTP SENDER ── */
+  window.triggerSupabaseOTP = async function (role) {
+    const inputId = role === 'provider' ? 'provider-mobile' : 'auth-mobile';
+    const displayId = role === 'provider' ? 'provider-otp-phone-display' : 'otp-phone-display';
+    const inputFieldsId = role === 'provider' ? 'provider-input-fields' : 'consumer-input-fields';
+    const otpFieldsId = role === 'provider' ? 'provider-otp-fields' : 'consumer-otp-fields';
+
+    const raw = document.getElementById(inputId).value.trim().replace(/\D/g, '');
+    if (!/^[6-9]\d{9}$/.test(raw)) { showToast("Enter a valid 10-digit Indian number."); return; }
+    
+    window._globalCurrentAuthPhone = '+91' + raw;
+    document.getElementById(displayId).textContent = window._globalCurrentAuthPhone;
+    showToast("Requesting Supabase SMS Gateway… 🚀");
+
+    const { error } = await supabase.auth.signInWithOtp({ phone: window._globalCurrentAuthPhone });
+
+    if (error) {
+      showToast("Supabase Error: " + error.message);
+    } else {
+      document.getElementById(inputFieldsId).style.display = 'none';
+      document.getElementById(otpFieldsId).style.display = 'block';
+      showToast(`OTP token sent successfully! 📱`);
     }
   };
 
-  // NEW: Provider Google Auth (Checks mobile field first, bypasses OTP)
-  window.initiateProviderGoogleAuth = async function() {
-    const mobileInput = document.getElementById('provider-mobile');
-    const mobileValue = mobileInput ? mobileInput.value.replace(/\D/g, '') : '';
-    
-    // Validate Mobile existence first
-    if (!/^[6-9]\d{9}$/.test(mobileValue)) {
-      showToast("Please enter a valid 10-digit mobile number above before continuing with Google.");
-      mobileInput.focus();
-      return;
+  /* ── PHONE OTP VERIFIER ── */
+  window.verifySupabaseOTP = async function (role) {
+    if (!window._globalCurrentAuthPhone) return;
+
+    let code = '';
+    if (role === 'provider') {
+      code = document.getElementById('provider-otp-code').value.trim();
+    } else {
+      code = Array.from(document.querySelectorAll('.otp-field')).map(i => i.value.trim()).join('');
     }
 
-    showToast("Opening Google sign in...");
-    try {
-      const result = await signInWithPopup(auth, googleProvider);
-      
-      // Set Provider Role + Save Unverified Phone via LocalStorage
-      localStorage.setItem(`role:${result.user.uid}`, 'provider');
-      localStorage.setItem(`phone:${result.user.uid}`, '+91' + mobileValue);
-      
-      showToast("Provider Account created successfully!");
-      // onAuthStateChanged will handle hiding the modal and switching the UI.
-    } catch (error) {
-      console.error("Google Login Error:", error);
-      showToast(getAuthErrorMessage(error));
+    if (code.length < 6) { showToast("Enter all 6 digits."); return; }
+    showToast("Verifying with Supabase...");
+
+    const { data, error } = await supabase.auth.verifyOtp({
+      phone: window._globalCurrentAuthPhone,
+      token: code,
+      type: 'sms'
+    });
+
+    if (error) {
+      showToast("Invalid OTP or Token Expired.");
+    } else {
+      // Save role into auth metadata
+      await supabase.auth.updateUser({ data: { role: role } });
+      showToast(role === 'provider' ? "Provider Account Verified!" : "Signed in successfully!");
     }
-  }
+  };
 
   window.signOutUser = async function () {
     try {
-      await signOut(auth);
+      await supabase.auth.signOut();
       showToast("Signed out successfully.");
     } catch (error) {
-      showToast(getAuthErrorMessage(error));
+      showToast("Sign out error.");
     }
-  };
-
-  // ── Customer OTP Handlers ──
-  window.triggerFirebaseOTP = function () {
-    const raw = document.getElementById('auth-mobile').value.trim().replace(/\D/g, '');
-    if (!/^[6-9]\d{9}$/.test(raw)) { showToast("Enter a valid 10-digit Indian number."); return; }
-    const phone = '+91' + raw;
-    document.getElementById('otp-phone-display').textContent = '+91 ' + raw.slice(0, 5) + ' ' + raw.slice(5);
-    
-    if (!window._recaptchaVerifier) { window._recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', { size: 'invisible' }); }
-
-    signInWithPhoneNumber(auth, phone, window._recaptchaVerifier).then(result => {
-      confirmationResult = result;
-      document.getElementById('consumer-input-fields').style.display = 'none';
-      document.getElementById('consumer-otp-fields').style.display = 'block';
-      showToast("OTP sent successfully!");
-    }).catch(err => { showToast(getAuthErrorMessage(err)); });
-  };
-
-  window.verifyFirebaseOTP = function () {
-    if (!confirmationResult) return;
-    const code = Array.from(document.querySelectorAll('.otp-field')).map(i => i.value.trim()).join('');
-    if (code.length < 6) { showToast("Enter all 6 digits."); return; }
-    
-    confirmationResult.confirm(code).then((result) => {
-      localStorage.setItem(`role:${result.user.uid}`, 'customer');
-      showToast("Signed in as Customer");
-    }).catch((error) => { showToast("Invalid OTP."); });
-  };
-
-  // ── Provider OTP Handlers ──
-  window.triggerProviderOTP = function () {
-    const raw = document.getElementById('provider-mobile').value.trim().replace(/\D/g, '');
-    if (!/^[6-9]\d{9}$/.test(raw)) { showToast("Enter a valid 10-digit Indian number."); return; }
-    
-    if (window._providerAuthMode === 'register' && !document.getElementById('provider-firstname').value.trim()) {
-      showToast("Enter the provider's first name."); return;
-    }
-
-    const phone = '+91' + raw;
-    document.getElementById('provider-otp-phone-display').textContent = '+91 ' + raw.slice(0, 5) + ' ' + raw.slice(5);
-
-    if (!window._providerRecaptchaVerifier) { window._providerRecaptchaVerifier = new RecaptchaVerifier(auth, 'provider-recaptcha-container', { size: 'invisible' }); }
-
-    signInWithPhoneNumber(auth, phone, window._providerRecaptchaVerifier).then((result) => {
-      providerConfirmationResult = result;
-      document.getElementById('provider-input-fields').style.display = 'none';
-      document.getElementById('provider-otp-fields').style.display = 'block';
-      showToast("Provider OTP sent!");
-    }).catch((error) => { showToast(getAuthErrorMessage(error)); });
-  };
-
-  window.verifyProviderOTP = function () {
-    if (!providerConfirmationResult) return;
-    const code = document.getElementById('provider-otp-code').value.trim();
-    if (!/^\d{6}$/.test(code)) { showToast("Enter the 6-digit OTP."); return; }
-
-    providerConfirmationResult.confirm(code).then(async (result) => {
-      if (window._providerAuthMode === 'register') {
-        const firstName = document.getElementById('provider-firstname').value.trim();
-        const lastName = document.getElementById('provider-lastname').value.trim();
-        await updateProfile(result.user, { displayName: `${firstName} ${lastName}`.trim() });
-      }
-      localStorage.setItem(`role:${result.user.uid}`, 'provider');
-      showToast("Provider account verified!");
-    }).catch((error) => { showToast("Invalid Provider OTP."); });
   };
 </script>
+ 
 </body>
 </html>
