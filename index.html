@@ -422,15 +422,35 @@
       </div>
 
       <div class="modal-pane" id="modal-provider">
-        <div class="form-group">
-          <label class="form-label">Mobile Number *</label>
-          <input type="tel" id="provider-mobile" class="form-input" placeholder="98765 43210" maxlength="10">
+        <div id="provider-input-fields">
+          <div class="form-row" id="provider-name-row" style="display:none; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+            <div class="form-group" style="margin:0;">
+              <label class="form-label">First Name *</label>
+              <input type="text" id="provider-firstname" class="form-input" placeholder="Ravi">
+            </div>
+            <div class="form-group" style="margin:0;">
+              <label class="form-label">Last Name</label>
+              <input type="text" id="provider-lastname" class="form-input" placeholder="Sharma">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Mobile Number *</label>
+            <input type="tel" id="provider-mobile" class="form-input" placeholder="98765 43210" maxlength="10">
+          </div>
+          <button class="btn btn-primary" id="provider-auth-btn" style="width:100%; justify-content:center; padding:13px;" onclick="window.triggerProviderOTP()">Send Login OTP</button>
+          <div id="provider-recaptcha-container"></div>
+          <div class="form-footer" id="provider-auth-toggle-text">
+            New provider? <a href="#" onclick="toggleProviderAuthIntent('register');return false;">Create provider account</a>
+          </div>
         </div>
-        <div class="form-group">
-          <label class="form-label">Password *</label>
-          <input type="password" id="provider-password" class="form-input" placeholder="Enter password">
+
+        <div id="provider-otp-fields" style="display:none; text-align:center;">
+          <div style="font-size:16px; font-weight:700;">Enter provider OTP</div>
+          <div style="font-size:13px; color:var(--text2); margin:6px 0 20px;">We sent a code to <strong id="provider-otp-phone-display">your number</strong></div>
+          <input type="text" id="provider-otp-code" class="form-input" maxlength="6" inputmode="numeric" placeholder="6-digit OTP" style="text-align:center; margin-bottom:20px;">
+          <button class="btn btn-primary" style="width:100%; justify-content:center; padding:13px;" onclick="window.verifyProviderOTP()">Verify &amp; Continue as Provider</button>
+          <div style="margin-top:14px;"><a href="#" onclick="backToProviderPhone();return false;" style="font-size:13px; color:var(--accent); text-decoration:none;">← Change number</a></div>
         </div>
-        <button class="btn btn-green" style="width:100%; justify-content:center; padding:13px;" onclick="showToast('Signing in as Provider…')">Sign In as Provider</button>
       </div>
     </div>
   </div>
@@ -445,6 +465,7 @@
 
   // Global authentication states track hooks
   window._authMode = 'login';
+  window._providerAuthMode = 'login';
   window._currentAuthStep = 'credentials';
 
   function toggleTheme() {
@@ -528,6 +549,33 @@
     if (tabBtn) tabBtn.classList.add('active');
     if (tabPane) tabPane.classList.add('active');
     backToPhone();
+    backToProviderPhone();
+    if (tab === 'provider') toggleProviderAuthIntent(window._providerAuthMode);
+  }
+
+  function toggleProviderAuthIntent(mode) {
+    window._providerAuthMode = mode;
+    backToProviderPhone();
+    const nameRow = document.getElementById('provider-name-row');
+    const btn = document.getElementById('provider-auth-btn');
+    const toggleTxt = document.getElementById('provider-auth-toggle-text');
+
+    if (mode === 'register') {
+      nameRow.style.display = 'grid';
+      btn.textContent = 'Send Registration OTP';
+      toggleTxt.innerHTML = 'Already a provider? <a href="#" onclick="toggleProviderAuthIntent(\'login\');return false;">Sign in</a>';
+    } else {
+      nameRow.style.display = 'none';
+      btn.textContent = 'Send Login OTP';
+      toggleTxt.innerHTML = 'New provider? <a href="#" onclick="toggleProviderAuthIntent(\'register\');return false;">Create provider account</a>';
+    }
+  }
+
+  function backToProviderPhone() {
+    const fields = document.getElementById('provider-input-fields');
+    const otp = document.getElementById('provider-otp-fields');
+    if (fields) fields.style.display = 'block';
+    if (otp) otp.style.display = 'none';
   }
 
   function toggleAuthIntent(mode) {
@@ -639,7 +687,8 @@ import {
   onAuthStateChanged,
   setPersistence,
   browserLocalPersistence,
-  signOut
+  signOut,
+  updateProfile
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
  
   // For Firebase JS SDK v7.20.0 and later, measurementId is optional
@@ -689,7 +738,9 @@ const firebaseConfig = {
 
     if (user) {
       status.style.display = "inline-block";
-      status.textContent = user.displayName || user.email || user.phoneNumber || `User ${user.uid.slice(0, 8)}`;
+      const role = localStorage.getItem(`role:${user.uid}`);
+      const identity = user.displayName || user.email || user.phoneNumber || `User ${user.uid.slice(0, 8)}`;
+      status.textContent = role === "provider" ? `${identity} (Provider)` : identity;
       status.title = `Firebase user ID: ${user.uid}`;
       signin.style.display = "none";
       register.style.display = "none";
@@ -706,6 +757,7 @@ const firebaseConfig = {
  
   const googleProvider = new GoogleAuthProvider();
   let confirmationResult = null;
+  let providerConfirmationResult = null;
 
   window.initiateGoogleAuth = async function () {
     showToast("Opening Google sign in...");
@@ -771,6 +823,86 @@ const firebaseConfig = {
       })
       .catch((error) => {
         console.error("OTP verification error:", error);
+        showToast(getAuthErrorMessage(error));
+      });
+  };
+
+  window.triggerProviderOTP = function () {
+    const mobileEl = document.getElementById('provider-mobile');
+    const raw = mobileEl.value.trim().replace(/\D/g, '');
+    if (!/^[6-9]\d{9}$/.test(raw)) {
+      showToast("Enter a valid 10-digit Indian number.");
+      return;
+    }
+
+    if (window._providerAuthMode === 'register') {
+      const firstName = document.getElementById('provider-firstname').value.trim();
+      if (!firstName) {
+        showToast("Enter the provider's first name.");
+        return;
+      }
+    }
+
+    const phone = '+91' + raw;
+    document.getElementById('provider-otp-phone-display').textContent =
+      '+91 ' + raw.slice(0, 5) + ' ' + raw.slice(5);
+    showToast("Checking provider phone...");
+
+    if (!window._providerRecaptchaVerifier) {
+      window._providerRecaptchaVerifier = new RecaptchaVerifier(
+        auth,
+        'provider-recaptcha-container',
+        { size: 'invisible' }
+      );
+    }
+
+    signInWithPhoneNumber(auth, phone, window._providerRecaptchaVerifier)
+      .then((result) => {
+        providerConfirmationResult = result;
+        document.getElementById('provider-input-fields').style.display = 'none';
+        document.getElementById('provider-otp-fields').style.display = 'block';
+        showToast("Provider OTP sent successfully!");
+      })
+      .catch((error) => {
+        console.error("Provider OTP error:", error);
+        showToast(getAuthErrorMessage(error));
+        if (window._providerRecaptchaVerifier) {
+          window._providerRecaptchaVerifier.clear();
+          window._providerRecaptchaVerifier = null;
+        }
+      });
+  };
+
+  window.verifyProviderOTP = function () {
+    if (!providerConfirmationResult) {
+      showToast("Request a provider OTP first.");
+      return;
+    }
+
+    const code = document.getElementById('provider-otp-code').value.trim();
+    if (!/^\d{6}$/.test(code)) {
+      showToast("Enter the complete 6-digit OTP.");
+      return;
+    }
+
+    providerConfirmationResult.confirm(code)
+      .then(async (result) => {
+        if (window._providerAuthMode === 'register') {
+          const firstName = document.getElementById('provider-firstname').value.trim();
+          const lastName = document.getElementById('provider-lastname').value.trim();
+          await updateProfile(result.user, {
+            displayName: `${firstName} ${lastName}`.trim()
+          });
+        }
+        localStorage.setItem(`role:${result.user.uid}`, 'provider');
+        const status = document.getElementById('user-status');
+        const identity = result.user.displayName || result.user.phoneNumber || `User ${result.user.uid.slice(0, 8)}`;
+        status.textContent = `${identity} (Provider)`;
+        showToast("Provider account verified!");
+        closeModal();
+      })
+      .catch((error) => {
+        console.error("Provider OTP verification error:", error);
         showToast(getAuthErrorMessage(error));
       });
   };
