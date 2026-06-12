@@ -314,9 +314,20 @@
     <div class="modal-body">
       <div class="modal-pane active" id="modal-consumer">
         <div id="consumer-input-fields">
+          <div class="form-row" id="name-row" style="display:none; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+            <div class="form-group" style="margin:0;">
+              <label class="form-label">First Name *</label>
+              <input type="text" id="auth-firstname" class="form-input" placeholder="Ravi">
+            </div>
+            <div class="form-group" style="margin:0;">
+              <label class="form-label">Last Name</label>
+              <input type="text" id="auth-lastname" class="form-input" placeholder="Sharma">
+            </div>
+          </div>
+
           <div class="form-group"><label class="form-label">Mobile Number *</label><input type="tel" id="auth-mobile" class="form-input" placeholder="98765 43210" maxlength="10"></div>
           
-          <button class="btn btn-primary" style="width:100%; justify-content:center; padding:13px;" onclick="window.triggerSupabaseOTP('customer')">Send Login OTP</button>
+          <button class="btn btn-primary" id="primary-auth-btn" style="width:100%; justify-content:center; padding:13px;" onclick="window.triggerSupabaseOTP('customer')">Send Login OTP</button>
 
           <div class="form-divider">or continue with</div>
           
@@ -324,6 +335,10 @@
             <svg width="18" height="18" viewBox="0 0 18 18"><path d="M17.64 9.2a10.34 10.34 0 0 0-.16-1.84H9v3.48h4.84A4.14 4.14 0 0 1 12.07 13v2.26h2.88A8.72 8.72 0 0 0 17.64 9.2z" fill="#4285F4"/><path d="M9 18a8.59 8.59 0 0 0 5.95-2.18L12.07 13a5.43 5.43 0 0 1-8.07-2.85H1.08v2.33A9 9 0 0 0 9 18z" fill="#34A853"/><path d="M4 10.15a5.34 5.34 0 0 1 0-3.41V4.4H1.08a9 9 0 0 0 0 8.09z" fill="#FBBC05"/><path d="M9 3.58a4.86 4.86 0 0 1 3.44 1.35l2.58-2.58A8.66 8.66 0 0 0 9 0 9 9 0 0 0 1.08 4.4L4 6.73A5.37 5.37 0 0 1 9 3.58z" fill="#EA4335"/></svg>
             Continue with Google
           </button>
+
+          <div class="form-footer" id="auth-toggle-text" style="text-align:center; margin-top:20px; font-size:14px; color:var(--text2);">
+            New to SevaSarthi? <a href="#" onclick="toggleAuthIntent('register');return false;" style="color:var(--accent); text-decoration:none; font-weight:600;">Create account</a>
+          </div>
         </div>
 
         <div id="consumer-otp-fields" style="display:none; text-align: center;">
@@ -347,9 +362,20 @@
 
       <div class="modal-pane" id="modal-provider">
         <div id="provider-input-fields">
+          <div class="form-row" id="provider-name-row" style="display:none; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+            <div class="form-group" style="margin:0;">
+              <label class="form-label">First Name *</label>
+              <input type="text" id="provider-firstname" class="form-input" placeholder="Ravi">
+            </div>
+            <div class="form-group" style="margin:0;">
+              <label class="form-label">Last Name</label>
+              <input type="text" id="provider-lastname" class="form-input" placeholder="Sharma">
+            </div>
+          </div>
+
           <div class="form-group"><label class="form-label">Mobile Number *</label><input type="tel" id="provider-mobile" class="form-input" placeholder="98765 43210" maxlength="10"></div>
           
-          <button class="btn btn-primary" style="width:100%; justify-content:center; padding:13px;" onclick="window.triggerSupabaseOTP('provider')">Send Login OTP</button>
+          <button class="btn btn-primary" id="provider-auth-btn" style="width:100%; justify-content:center; padding:13px;" onclick="window.triggerSupabaseOTP('provider')">Send Login OTP</button>
 
           <div class="form-divider">or sign up without OTP</div>
           
@@ -357,6 +383,10 @@
             <svg width="18" height="18" viewBox="0 0 18 18"><path d="M17.64 9.2a10.34 10.34 0 0 0-.16-1.84H9v3.48h4.84A4.14 4.14 0 0 1 12.07 13v2.26h2.88A8.72 8.72 0 0 0 17.64 9.2z" fill="#4285F4"/><path d="M9 18a8.59 8.59 0 0 0 5.95-2.18L12.07 13a5.43 5.43 0 0 1-8.07-2.85H1.08v2.33A9 9 0 0 0 9 18z" fill="#34A853"/><path d="M4 10.15a5.34 5.34 0 0 1 0-3.41V4.4H1.08a9 9 0 0 0 0 8.09z" fill="#FBBC05"/><path d="M9 3.58a4.86 4.86 0 0 1 3.44 1.35l2.58-2.58A8.66 8.66 0 0 0 9 0 9 9 0 0 0 1.08 4.4L4 6.73A5.37 5.37 0 0 1 9 3.58z" fill="#EA4335"/></svg>
             Continue with Google
           </button>
+
+          <div class="form-footer" id="provider-auth-toggle-text" style="text-align:center; margin-top:20px; font-size:14px; color:var(--text2);">
+            New provider? <a href="#" onclick="toggleProviderAuthIntent('register');return false;" style="color:var(--accent); text-decoration:none; font-weight:600;">Create provider account</a>
+          </div>
         </div>
 
         <div id="provider-otp-fields" style="display:none; text-align:center;">
@@ -425,6 +455,47 @@
     document.getElementById('provider-otp-fields').style.display = 'none';
   }
 
+  // FIX: Functions to handle UI text changes when switching to 'Register'
+  function toggleAuthIntent(mode) {
+    backToPhone();
+    const title = document.getElementById('modal-title');
+    const sub = document.getElementById('modal-sub');
+    const btn = document.getElementById('primary-auth-btn');
+    const nameRow = document.getElementById('name-row');
+    const toggleTxt = document.getElementById('auth-toggle-text');
+
+    if (mode === 'register') {
+      title.textContent = 'Create Account';
+      sub.textContent = 'Join thousands finding services daily';
+      btn.textContent = 'Send Verification OTP';
+      nameRow.style.display = 'grid';
+      toggleTxt.innerHTML = 'Already have an account? <a href="#" onclick="toggleAuthIntent(\'login\');return false;" style="color:var(--accent); text-decoration:none; font-weight:600;">Sign in</a>';
+    } else {
+      title.textContent = 'Welcome back';
+      sub.textContent = 'Sign in to your account';
+      btn.textContent = 'Send Login OTP';
+      nameRow.style.display = 'none';
+      toggleTxt.innerHTML = 'New to SevaSarthi? <a href="#" onclick="toggleAuthIntent(\'register\');return false;" style="color:var(--accent); text-decoration:none; font-weight:600;">Create account</a>';
+    }
+  }
+
+  function toggleProviderAuthIntent(mode) {
+    backToProviderPhone();
+    const nameRow = document.getElementById('provider-name-row');
+    const btn = document.getElementById('provider-auth-btn');
+    const toggleTxt = document.getElementById('provider-auth-toggle-text');
+
+    if (mode === 'register') {
+      nameRow.style.display = 'grid';
+      btn.textContent = 'Send Registration OTP';
+      toggleTxt.innerHTML = 'Already a provider? <a href="#" onclick="toggleProviderAuthIntent(\'login\');return false;" style="color:var(--accent); text-decoration:none; font-weight:600;">Sign in</a>';
+    } else {
+      nameRow.style.display = 'none';
+      btn.textContent = 'Send Login OTP';
+      toggleTxt.innerHTML = 'New provider? <a href="#" onclick="toggleProviderAuthIntent(\'register\');return false;" style="color:var(--accent); text-decoration:none; font-weight:600;">Create provider account</a>';
+    }
+  }
+
   function otpAutoTab(input) {
     input.value = input.value.replace(/\D/g, '');
     if (input.value.length === 1) {
@@ -442,8 +513,9 @@
 </script>
 
 <script>
-  const SUPABASE_URL = "https://fekvrxxhspbntjriwiha.supabase.co";
-  const SUPABASE_ANON_KEY = "sb_publishable_YrjBg24OxoW--XxfI71EBg_nCqm3lMo";
+  // 🚨 IMPORTANT: YAHAN APNA SUPABASE URL AUR ANON KEY DAALNA 🚨
+  const SUPABASE_URL = "https://YOUR_PROJECT_ID.supabase.co";
+  const SUPABASE_ANON_KEY = "YOUR_ANON_PUBLIC_KEY";
 
   const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -457,15 +529,28 @@
     if (session && session.user) {
       const pendingRole = localStorage.getItem('pending_role');
       const pendingPhone = localStorage.getItem('pending_phone');
+      
+      // Grab names from registration fields if they exist
+      const tempFirstName = localStorage.getItem('temp_firstname') || '';
+      const tempLastName = localStorage.getItem('temp_lastname') || '';
+      const pendingName = (tempFirstName + " " + tempLastName).trim();
 
-      if (pendingRole || pendingPhone) {
+      if (pendingRole || pendingPhone || pendingName) {
         await supabaseClient.auth.updateUser({
-          data: { role: pendingRole || 'customer', saved_phone: pendingPhone || '' }
+          data: { 
+            role: pendingRole || 'customer', 
+            saved_phone: pendingPhone || '',
+            full_name: pendingName || session.user.user_metadata?.full_name || ''
+          }
         });
         localStorage.removeItem('pending_role');
         localStorage.removeItem('pending_phone');
+        localStorage.removeItem('temp_firstname');
+        localStorage.removeItem('temp_lastname');
+        
         if (pendingRole) session.user.user_metadata.role = pendingRole;
         if (pendingPhone) session.user.user_metadata.saved_phone = pendingPhone;
+        if (pendingName) session.user.user_metadata.full_name = pendingName;
       }
 
       const userId = session.user.id;
@@ -508,8 +593,18 @@
       }
       localStorage.setItem('pending_role', 'provider');
       localStorage.setItem('pending_phone', '+91' + mobileValue);
+      
+      const fName = document.getElementById('provider-firstname');
+      const lName = document.getElementById('provider-lastname');
+      if(fName && fName.value) localStorage.setItem('temp_firstname', fName.value);
+      if(lName && lName.value) localStorage.setItem('temp_lastname', lName.value);
+
     } else {
       localStorage.setItem('pending_role', 'customer');
+      const fName = document.getElementById('auth-firstname');
+      const lName = document.getElementById('auth-lastname');
+      if(fName && fName.value) localStorage.setItem('temp_firstname', fName.value);
+      if(lName && lName.value) localStorage.setItem('temp_lastname', lName.value);
     }
 
     showToast("Opening Google...");
@@ -528,6 +623,14 @@
     const raw = document.getElementById(inputId).value.trim().replace(/\D/g, '');
     if (!/^[6-9]\d{9}$/.test(raw)) { showToast("Enter a valid 10-digit Indian number."); return; }
     
+    // Save names if they are registering
+    const fNameId = role === 'provider' ? 'provider-firstname' : 'auth-firstname';
+    const lNameId = role === 'provider' ? 'provider-lastname' : 'auth-lastname';
+    const fName = document.getElementById(fNameId);
+    const lName = document.getElementById(lNameId);
+    if(fName && fName.value) localStorage.setItem('temp_firstname', fName.value);
+    if(lName && lName.value) localStorage.setItem('temp_lastname', lName.value);
+
     window._globalCurrentAuthPhone = '+91' + raw;
     document.getElementById(displayId).textContent = window._globalCurrentAuthPhone;
     showToast("Requesting OTP...");
