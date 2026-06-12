@@ -4,6 +4,8 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SevaSarthi – Find Trusted Local Services & Skilled Workers Near You</title>
@@ -240,14 +242,6 @@
         </div>
         <button class="btn btn-primary" style="white-space: nowrap;" onclick="handleSearch()">Search</button>
       </div>
-      <div class="search-chips" style="display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap;">
-        <button class="chip" onclick="setQuickSearch('Mechanic')">🔧 Mechanic</button>
-        <button class="chip" onclick="setQuickSearch('Labour')">👷 Labour</button>
-        <button class="chip" onclick="setQuickSearch('Home Tutor')">📚 Home Tutor</button>
-        <button class="chip" onclick="setQuickSearch('Painter')">🎨 Painter</button>
-        <button class="chip" onclick="setQuickSearch('Electrician')">⚡ Electrician</button>
-        <button class="chip" onclick="setQuickSearch('Plumber')">🪠 Plumber</button>
-      </div>
     </div>
   </div>
 
@@ -256,40 +250,16 @@
       <div class="map-sidebar">
         <div class="map-sidebar-header">
           <div class="map-sidebar-title">Nearby Providers</div>
-          <div class="map-sidebar-sub">Dhanbad Area Listings</div>
         </div>
         <div class="map-provider-list">
-          <div class="map-provider-item" onclick="showToast('Opening Ramesh\'s profile…')">
+          <div class="map-provider-item">
             <div class="mpi-avatar" style="background:#E84B2F;">RK</div>
             <div class="mpi-info"><div class="mpi-name">Ramesh Kumar</div><div class="mpi-role">Electrician</div><div class="mpi-dist">● 0.8 km</div></div>
-          </div>
-          <div class="map-provider-item" onclick="showToast('Opening Suresh\'s profile…')">
-            <div class="mpi-avatar" style="background:#1A5FD4;">SV</div>
-            <div class="mpi-info"><div class="mpi-name">Suresh Verma</div><div class="mpi-role">Plumber</div><div class="mpi-dist">● 1.2 km</div></div>
           </div>
         </div>
       </div>
       <div class="map-container">
         <div id="map"></div>
-        <div class="map-overlay-pin" style="top:25%; left:28%;" onclick="showToast('Ramesh Kumar — Electrician ⚡')">
-          <div class="mop-circle" style="background:#FEF3C7;">⚡</div><div class="mop-label">Ramesh</div>
-        </div>
-        <div class="map-overlay-pin" style="top:52%; left:55%;" onclick="showToast('Suresh Verma — Plumber 🔧')">
-          <div class="mop-circle" style="background:#DBEAFE;">🔧</div><div class="mop-label">Suresh</div>
-        </div>
-        <div class="map-user-center"><div class="map-user-center-dot"></div></div>
-      </div>
-    </div>
-  </section>
-
-  <section style="background:var(--surface);">
-    <div class="trust-grid">
-      <div class="trust-card">
-        <div class="trust-icon">✅</div>
-        <div>
-          <h4>ID-Verified Providers</h4>
-          <p>Every worker goes through secure registration check and background check before appearing in results.</p>
-        </div>
       </div>
     </div>
   </section>
@@ -304,77 +274,34 @@
   <div class="provider-grid" style="display: grid; grid-template-columns: 1fr 1.5fr; gap: 30px;">
     <div class="hero-card">
       <h3 style="margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 10px;">Your Profile Details</h3>
-      <div class="form-group">
-        <label class="form-label">Work Experience (in Years)</label>
-        <input type="number" class="form-input" placeholder="e.g. 5">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Service Category</label>
-        <input type="text" class="form-input" placeholder="e.g. Electrician, Carpenter">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Operating Location (City/Area)</label>
-        <input type="text" class="form-input" placeholder="e.g. Dhanbad, Bank More">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Hourly/Visit Rate (₹)</label>
-        <input type="number" class="form-input" placeholder="e.g. 300">
-      </div>
+      <div class="form-group"><label class="form-label">Work Experience (Years)</label><input type="number" class="form-input" placeholder="e.g. 5"></div>
+      <div class="form-group"><label class="form-label">Service Category</label><input type="text" class="form-input" placeholder="e.g. Electrician"></div>
+      <div class="form-group"><label class="form-label">Location</label><input type="text" class="form-input" placeholder="e.g. Dhanbad"></div>
       <button class="btn btn-green" style="width: 100%; justify-content: center;" onclick="showToast('Profile and Location Updated! 📍')">Save Details</button>
     </div>
 
     <div class="hero-card">
-      <h3 style="margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 10px; display: flex; justify-content: space-between; align-items: center;">
-        Incoming Requests
-        <span style="background:var(--accent); color:white; padding: 4px 10px; border-radius: 20px; font-size: 12px;">2 Pending</span>
-      </h3>
-      
-      <div style="display: flex; flex-direction: column; gap: 15px;">
-        <div style="border: 1px solid var(--border); padding: 16px; border-radius: var(--radius-sm); background: var(--surface2);">
-          <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
-            <div>
-              <strong style="font-size: 16px;">Aman Kumar</strong>
-              <div style="font-size: 13px; color: var(--text2); margin-top: 4px;">📍 1.2 km away • Posted 10 mins ago</div>
-            </div>
-            <div style="font-weight: 800; color: var(--accent);">Est: ₹450</div>
-          </div>
-          <p style="font-size: 14px; margin-bottom: 15px;"><strong>Need:</strong> Electrical wiring check in the kitchen. Urgent requirement.</p>
-          <div style="display: flex; gap: 10px;">
-            <button class="btn btn-primary" onclick="showToast('Job Accepted! Contact details unlocked.')" style="flex: 1; justify-content: center;">Accept Job</button>
-            <button class="btn btn-outline" onclick="showToast('Job Rejected.')" style="flex: 1; justify-content: center;">Reject</button>
-          </div>
+      <h3 style="margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 10px;">Incoming Requests</h3>
+      <div style="border: 1px solid var(--border); padding: 16px; border-radius: var(--radius-sm); background: var(--surface2);">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+          <div><strong>Aman Kumar</strong><div style="font-size: 13px; color: var(--text2);">📍 1.2 km away</div></div>
+          <div style="font-weight: 800; color: var(--accent);">Est: ₹450</div>
         </div>
-
-        <div style="border: 1px solid var(--border); padding: 16px; border-radius: var(--radius-sm); background: var(--surface2);">
-          <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
-            <div>
-              <strong style="font-size: 16px;">Riya Singh</strong>
-              <div style="font-size: 13px; color: var(--text2); margin-top: 4px;">📍 3.5 km away • Posted 1 hr ago</div>
-            </div>
-            <div style="font-weight: 800; color: var(--accent);">Est: ₹250</div>
-          </div>
-          <p style="font-size: 14px; margin-bottom: 15px;"><strong>Need:</strong> Fan regulator replacement in the bedroom.</p>
-          <div style="display: flex; gap: 10px;">
-            <button class="btn btn-primary" onclick="showToast('Job Accepted! Contact details unlocked.')" style="flex: 1; justify-content: center;">Accept Job</button>
-            <button class="btn btn-outline" onclick="showToast('Job Rejected.')" style="flex: 1; justify-content: center;">Reject</button>
-          </div>
+        <p style="font-size: 14px; margin-bottom: 15px;"><strong>Need:</strong> Electrical wiring check.</p>
+        <div style="display: flex; gap: 10px;">
+          <button class="btn btn-primary" onclick="showToast('Job Accepted!')" style="flex: 1; justify-content: center;">Accept Job</button>
         </div>
       </div>
     </div>
   </div>
 </div>
 
-<footer>
-  <a href="#" class="logo" style="justify-content: center; margin-bottom: 10px;">Seva<span>Sarthi</span><span class="logo-dot"></span></a>
-  <p>© 2026 SevaSarthi Technologies. Empowering local skilled workers.</p>
-</footer>
-
 <div class="modal-overlay" id="modal" onclick="closeModalIfOverlay(event)">
   <div class="modal">
     <div class="modal-header">
       <div>
         <div class="modal-title" id="modal-title">Welcome back</div>
-        <div class="modal-sub" id="modal-sub">Sign in to your SevaSarthi account</div>
+        <div class="modal-sub" id="modal-sub">Sign in to your account</div>
       </div>
       <button class="modal-close" onclick="closeModal()">✕</button>
     </div>
@@ -387,34 +314,16 @@
     <div class="modal-body">
       <div class="modal-pane active" id="modal-consumer">
         <div id="consumer-input-fields">
-          <div class="form-row" id="name-row" style="display:none; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
-            <div class="form-group" style="margin:0;">
-              <label class="form-label">First Name *</label>
-              <input type="text" id="auth-firstname" class="form-input" placeholder="Ravi">
-            </div>
-            <div class="form-group" style="margin:0;">
-              <label class="form-label">Last Name</label>
-              <input type="text" id="auth-lastname" class="form-input" placeholder="Sharma">
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label">Mobile Number *</label>
-            <input type="tel" id="auth-mobile" class="form-input" placeholder="98765 43210" maxlength="10">
-          </div>
-
-          <button class="btn btn-primary" id="primary-auth-btn" style="width:100%; justify-content:center; padding:13px;" onclick="window.triggerFirebaseOTP()">Send Login OTP</button>
-          <div id="recaptcha-container"></div>
+          <div class="form-group"><label class="form-label">Mobile Number *</label><input type="tel" id="auth-mobile" class="form-input" placeholder="98765 43210" maxlength="10"></div>
+          
+          <button class="btn btn-primary" style="width:100%; justify-content:center; padding:13px;" onclick="window.triggerSupabaseOTP('customer')">Send Login OTP</button>
 
           <div class="form-divider">or continue with</div>
-          <button class="social-btn" onclick="window.initiateGoogleAuth()">
+          
+          <button class="social-btn" onclick="window.initiateGoogleAuth('customer')">
             <svg width="18" height="18" viewBox="0 0 18 18"><path d="M17.64 9.2a10.34 10.34 0 0 0-.16-1.84H9v3.48h4.84A4.14 4.14 0 0 1 12.07 13v2.26h2.88A8.72 8.72 0 0 0 17.64 9.2z" fill="#4285F4"/><path d="M9 18a8.59 8.59 0 0 0 5.95-2.18L12.07 13a5.43 5.43 0 0 1-8.07-2.85H1.08v2.33A9 9 0 0 0 9 18z" fill="#34A853"/><path d="M4 10.15a5.34 5.34 0 0 1 0-3.41V4.4H1.08a9 9 0 0 0 0 8.09z" fill="#FBBC05"/><path d="M9 3.58a4.86 4.86 0 0 1 3.44 1.35l2.58-2.58A8.66 8.66 0 0 0 9 0 9 9 0 0 0 1.08 4.4L4 6.73A5.37 5.37 0 0 1 9 3.58z" fill="#EA4335"/></svg>
             Continue with Google
           </button>
-
-          <div class="form-footer" id="auth-toggle-text">
-            New to SevaSarthi? <a href="#" onclick="toggleAuthIntent('register');return false;">Create account</a>
-          </div>
         </div>
 
         <div id="consumer-otp-fields" style="display:none; text-align: center;">
@@ -431,46 +340,31 @@
             <input type="text" class="otp-field form-input" maxlength="1" inputmode="numeric" style="width:40px; text-align:center; padding:10px 0;" oninput="otpAutoTab(this)">
           </div>
 
-          <button class="btn btn-primary" style="width:100%; justify-content:center; padding:13px;" onclick="window.verifyFirebaseOTP()">Verify &amp; Sign In</button>
+          <button class="btn btn-primary" style="width:100%; justify-content:center; padding:13px;" onclick="window.verifySupabaseOTP('customer')">Verify &amp; Sign In</button>
           <div style="margin-top: 14px;"><a href="#" onclick="backToPhone();return false;" style="font-size:13px; color:var(--accent); text-decoration:none;">← Change number</a></div>
         </div>
       </div>
 
       <div class="modal-pane" id="modal-provider">
         <div id="provider-input-fields">
-          <div class="form-row" id="provider-name-row" style="display:none; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
-            <div class="form-group" style="margin:0;">
-              <label class="form-label">First Name *</label>
-              <input type="text" id="provider-firstname" class="form-input" placeholder="Ravi">
-            </div>
-            <div class="form-group" style="margin:0;">
-              <label class="form-label">Last Name</label>
-              <input type="text" id="provider-lastname" class="form-input" placeholder="Sharma">
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Mobile Number *</label>
-            <input type="tel" id="provider-mobile" class="form-input" placeholder="98765 43210" maxlength="10">
-          </div>
-          <button class="btn btn-primary" id="provider-auth-btn" style="width:100%; justify-content:center; padding:13px;" onclick="window.triggerProviderOTP()">Send Login OTP</button>
-          <div id="provider-recaptcha-container"></div>
+          <div class="form-group"><label class="form-label">Mobile Number *</label><input type="tel" id="provider-mobile" class="form-input" placeholder="98765 43210" maxlength="10"></div>
+          
+          <button class="btn btn-primary" style="width:100%; justify-content:center; padding:13px;" onclick="window.triggerSupabaseOTP('provider')">Send Login OTP</button>
 
           <div class="form-divider">or sign up without OTP</div>
-          <button class="social-btn" onclick="window.initiateProviderGoogleAuth()">
+          
+          <button class="social-btn" onclick="window.initiateGoogleAuth('provider')">
             <svg width="18" height="18" viewBox="0 0 18 18"><path d="M17.64 9.2a10.34 10.34 0 0 0-.16-1.84H9v3.48h4.84A4.14 4.14 0 0 1 12.07 13v2.26h2.88A8.72 8.72 0 0 0 17.64 9.2z" fill="#4285F4"/><path d="M9 18a8.59 8.59 0 0 0 5.95-2.18L12.07 13a5.43 5.43 0 0 1-8.07-2.85H1.08v2.33A9 9 0 0 0 9 18z" fill="#34A853"/><path d="M4 10.15a5.34 5.34 0 0 1 0-3.41V4.4H1.08a9 9 0 0 0 0 8.09z" fill="#FBBC05"/><path d="M9 3.58a4.86 4.86 0 0 1 3.44 1.35l2.58-2.58A8.66 8.66 0 0 0 9 0 9 9 0 0 0 1.08 4.4L4 6.73A5.37 5.37 0 0 1 9 3.58z" fill="#EA4335"/></svg>
             Continue with Google
           </button>
-
-          <div class="form-footer" id="provider-auth-toggle-text">
-            New provider? <a href="#" onclick="toggleProviderAuthIntent('register');return false;">Create provider account</a>
-          </div>
         </div>
 
         <div id="provider-otp-fields" style="display:none; text-align:center;">
           <div style="font-size:16px; font-weight:700;">Enter provider OTP</div>
           <div style="font-size:13px; color:var(--text2); margin:6px 0 20px;">We sent a code to <strong id="provider-otp-phone-display">your number</strong></div>
           <input type="text" id="provider-otp-code" class="form-input" maxlength="6" inputmode="numeric" placeholder="6-digit OTP" style="text-align:center; margin-bottom:20px;">
-          <button class="btn btn-primary" style="width:100%; justify-content:center; padding:13px;" onclick="window.verifyProviderOTP()">Verify &amp; Continue as Provider</button>
+          
+          <button class="btn btn-primary" style="width:100%; justify-content:center; padding:13px;" onclick="window.verifySupabaseOTP('provider')">Verify &amp; Continue</button>
           <div style="margin-top:14px;"><a href="#" onclick="backToProviderPhone();return false;" style="font-size:13px; color:var(--accent); text-decoration:none;">← Change number</a></div>
         </div>
       </div>
@@ -483,15 +377,11 @@
 <script>
   let map;
   let toastTimer;
-  window._authMode = 'login';
-  window._providerAuthMode = 'login';
-  window._currentAuthStep = 'credentials';
 
   function toggleTheme() {
     const d = document.documentElement;
     const isDark = d.getAttribute('data-theme') === 'dark';
     d.setAttribute('data-theme', isDark ? '' : 'dark');
-    localStorage.setItem('theme', isDark ? 'light' : 'dark');
   }
 
   function showToast(msg) {
@@ -503,45 +393,14 @@
     toastTimer = setTimeout(() => t.classList.remove('show'), 3200);
   }
 
-  function filterMap(el) {
-    document.querySelectorAll('.mf-chip').forEach(c => c.classList.remove('on'));
-    el.classList.add('on');
-    showToast('Filtering map: ' + el.textContent);
-  }
-
-  function handleSearch() {
-    const inp = document.getElementById('search-input');
-    if (inp && inp.value.trim()) {
-      showToast('Searching for matches: "' + inp.value.trim() + '"');
-    } else {
-      showToast('Please type a service skill to search.');
-    }
-  }
-
-  function toggleMenu() { showToast('Menu controller accessed'); }
-  function setQuickSearch(val) {
-    const inp = document.getElementById('search-input');
-    if (inp) { inp.value = val; inp.focus(); }
-    showToast('Showing nearby results for: ' + val + ' 🔍');
-  }
-
   function openModal(type) {
-    const m = document.getElementById('modal');
-    if (!m) return;
-    m.classList.add('open');
+    document.getElementById('modal').classList.add('open');
     document.body.style.overflow = 'hidden';
-    if (type === 'register' || type === 'register-provider') {
-      switchModalTab(type === 'register-provider' ? 'provider' : 'consumer');
-      toggleAuthIntent('register');
-    } else {
-      switchModalTab('consumer');
-      toggleAuthIntent('login');
-    }
+    switchModalTab(type === 'register-provider' ? 'provider' : 'consumer');
   }
 
   function closeModal() {
-    const m = document.getElementById('modal');
-    if (m) m.classList.remove('open');
+    document.getElementById('modal').classList.remove('open');
     document.body.style.overflow = '';
   }
 
@@ -550,70 +409,20 @@
   function switchModalTab(tab) {
     document.querySelectorAll('.modal-tab').forEach(b => b.classList.remove('active'));
     document.querySelectorAll('.modal-pane').forEach(p => p.classList.remove('active'));
-    const tabBtn = document.getElementById('modal-tab-' + tab);
-    const tabPane = document.getElementById('modal-' + tab);
-    if (tabBtn) tabBtn.classList.add('active');
-    if (tabPane) tabPane.classList.add('active');
+    document.getElementById('modal-tab-' + tab).classList.add('active');
+    document.getElementById('modal-' + tab).classList.add('active');
     backToPhone();
     backToProviderPhone();
-    if (tab === 'provider') toggleProviderAuthIntent(window._providerAuthMode);
-  }
-
-  function toggleProviderAuthIntent(mode) {
-    window._providerAuthMode = mode;
-    backToProviderPhone();
-    const nameRow = document.getElementById('provider-name-row');
-    const btn = document.getElementById('provider-auth-btn');
-    const toggleTxt = document.getElementById('provider-auth-toggle-text');
-
-    if (mode === 'register') {
-      nameRow.style.display = 'grid';
-      btn.textContent = 'Send Registration OTP';
-      toggleTxt.innerHTML = 'Already a provider? <a href="#" onclick="toggleProviderAuthIntent(\'login\');return false;">Sign in</a>';
-    } else {
-      nameRow.style.display = 'none';
-      btn.textContent = 'Send Login OTP';
-      toggleTxt.innerHTML = 'New provider? <a href="#" onclick="toggleProviderAuthIntent(\'register\');return false;">Create provider account</a>';
-    }
-  }
-
-  function backToProviderPhone() {
-    const fields = document.getElementById('provider-input-fields');
-    const otp = document.getElementById('provider-otp-fields');
-    if (fields) fields.style.display = 'block';
-    if (otp) otp.style.display = 'none';
-  }
-
-  function toggleAuthIntent(mode) {
-    window._authMode = mode;
-    backToPhone();
-    const title = document.getElementById('modal-title');
-    const sub = document.getElementById('modal-sub');
-    const btn = document.getElementById('primary-auth-btn');
-    const nameRow = document.getElementById('name-row');
-    const toggleTxt = document.getElementById('auth-toggle-text');
-
-    if (mode === 'register') {
-      if (title) title.textContent = 'Create Account';
-      if (sub) sub.textContent = 'Join thousands finding services daily';
-      if (btn) btn.textContent = 'Send Verification OTP';
-      if (nameRow) nameRow.style.display = 'grid';
-      if (toggleTxt) toggleTxt.innerHTML = 'Already have an account? <a href="#" onclick="toggleAuthIntent(\'login\');return false;">Sign in</a>';
-    } else {
-      if (title) title.textContent = 'Welcome back';
-      if (sub) sub.textContent = 'Sign in to your SevaSarthi account';
-      if (btn) btn.textContent = 'Send Login OTP';
-      if (nameRow) nameRow.style.display = 'none';
-      if (toggleTxt) toggleTxt.innerHTML = 'New to SevaSarthi? <a href="#" onclick="toggleAuthIntent(\'register\');return false;">Create account</a>';
-    }
   }
 
   function backToPhone() {
-    window._currentAuthStep = 'credentials';
-    const fields = document.getElementById('consumer-input-fields');
-    const otp = document.getElementById('consumer-otp-fields');
-    if (fields) fields.style.display = 'block';
-    if (otp) otp.style.display = 'none';
+    document.getElementById('consumer-input-fields').style.display = 'block';
+    document.getElementById('consumer-otp-fields').style.display = 'none';
+  }
+
+  function backToProviderPhone() {
+    document.getElementById('provider-input-fields').style.display = 'block';
+    document.getElementById('provider-otp-fields').style.display = 'none';
   }
 
   function otpAutoTab(input) {
@@ -625,89 +434,47 @@
     }
   }
 
-  function getUserLocation() {
-    if (!navigator.geolocation) {
-      showToast("Geolocation is not supported by your browser");
-      return;
-    }
-    const span = document.getElementById('location-text');
-    if (span) span.textContent = "Locating...";
-    showToast('Locating your position… 📍');
-
-    navigator.geolocation.getCurrentPosition(
-      function(pos) {
-        const lat = pos.coords.latitude; 
-        const lon = pos.coords.longitude;
-        if (map) map.setView([lat, lon], 14);
-        
-        fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`)
-          .then(r => r.json())
-          .then(data => {
-            if (span && data && data.address) {
-              const city = data.address.city || data.address.town || data.address.village || "Unknown City";
-              span.textContent = city; 
-              showToast('Location synced: ' + city);
-            }
-          })
-          .catch(() => { if (span) span.textContent = lat.toFixed(2) + ", " + lon.toFixed(2); });
-      },
-      function() { if (span) span.textContent = "Location Error"; }
-    );
-  }
-
   document.addEventListener("DOMContentLoaded", function() {
     map = L.map('map', { zoomControl: false }).setView([23.7957, 86.4304], 13);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '© OpenStreetMap contributors'
-    }).addTo(map);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
     setTimeout(() => { map.invalidateSize(); }, 400);
   });
 </script>
 
- <script>
+<script>
   const SUPABASE_URL = "https://fekvrxxhspbntjriwiha.supabase.co";
   const SUPABASE_ANON_KEY = "sb_publishable_YrjBg24OxoW--XxfI71EBg_nCqm3lMo";
 
-  const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-  // Global Auth State Observer & Database Sync
-  supabase.auth.onAuthStateChange(async (event, session) => {
+  // Auth Observer
+  supabaseClient.auth.onAuthStateChange(async (event, session) => {
     const status = document.getElementById("user-status");
     const signin = document.getElementById("signin-btn");
     const register = document.getElementById("register-btn");
     const signout = document.getElementById("signout-btn");
 
     if (session && session.user) {
-      // 1. Google Sign-In Pending Data Check
       const pendingRole = localStorage.getItem('pending_role');
       const pendingPhone = localStorage.getItem('pending_phone');
 
       if (pendingRole || pendingPhone) {
-        await supabase.auth.updateUser({
-          data: { 
-            role: pendingRole || 'customer',
-            saved_phone: pendingPhone || '' 
-          }
+        await supabaseClient.auth.updateUser({
+          data: { role: pendingRole || 'customer', saved_phone: pendingPhone || '' }
         });
         localStorage.removeItem('pending_role');
         localStorage.removeItem('pending_phone');
-        
         if (pendingRole) session.user.user_metadata.role = pendingRole;
         if (pendingPhone) session.user.user_metadata.saved_phone = pendingPhone;
       }
 
-      // 2. Fetch final data
       const userId = session.user.id;
       const userRole = session.user.user_metadata?.role || 'customer';
       const userPhone = session.user.user_metadata?.saved_phone || session.user.phone || '';
       const userName = session.user.user_metadata?.full_name || 'User';
 
-      // 3. Save to Database Table
-      const { error: dbError } = await supabase
-        .from('profiles')
-        .upsert([{ id: userId, full_name: userName, mobile: userPhone, role: userRole }]);
+      await supabaseClient.from('profiles').upsert([{ id: userId, full_name: userName, mobile: userPhone, role: userRole }]);
 
-      // 4. Update UI
       const identity = userName !== 'User' ? userName : (userPhone || "Logged In");
       status.style.display = "inline-block";
       status.textContent = userRole === "provider" ? `${identity} (Provider)` : identity;
@@ -715,13 +482,11 @@
       register.style.display = "none";
       signout.style.display = "inline-flex";
       
-      // UI Switch Logic based on Role
       if (userRole === "provider") {
         document.body.classList.add('provider-mode');
       } else {
         document.body.classList.remove('provider-mode');
       }
-      
       closeModal();
     } else {
       status.style.display = "none";
@@ -732,14 +497,12 @@
     }
   });
 
-  /* ── GOOGLE AUTH HANDLER ── */
-  window.initiateGoogleAuth = async function (role) {
+  window.initiateGoogleAuth = async function (role = 'customer') {
     if (role === 'provider') {
       const mobileInput = document.getElementById('provider-mobile');
       const mobileValue = mobileInput ? mobileInput.value.replace(/\D/g, '') : '';
-      
       if (!/^[6-9]\d{9}$/.test(mobileValue)) {
-        showToast("Please enter a valid 10-digit mobile number above before continuing with Google.");
+        showToast("Enter a valid 10-digit mobile number before continuing with Google.");
         if(mobileInput) mobileInput.focus();
         return;
       }
@@ -749,16 +512,14 @@
       localStorage.setItem('pending_role', 'customer');
     }
 
-    showToast("Opening Google portal securely...");
-    const { error } = await supabase.auth.signInWithOAuth({
+    showToast("Opening Google...");
+    const { error } = await supabaseClient.auth.signInWithOAuth({
       provider: 'google',
       options: { redirectTo: window.location.origin + window.location.pathname }
     });
-    if (error) showToast("Google Login Error: " + error.message);
   };
 
-  /* ── PHONE OTP SENDER ── */
-  window.triggerSupabaseOTP = async function (role) {
+  window.triggerSupabaseOTP = async function (role = 'customer') {
     const inputId = role === 'provider' ? 'provider-mobile' : 'auth-mobile';
     const displayId = role === 'provider' ? 'provider-otp-phone-display' : 'otp-phone-display';
     const inputFieldsId = role === 'provider' ? 'provider-input-fields' : 'consumer-input-fields';
@@ -769,69 +530,44 @@
     
     window._globalCurrentAuthPhone = '+91' + raw;
     document.getElementById(displayId).textContent = window._globalCurrentAuthPhone;
-    showToast("Requesting Supabase SMS Gateway… 🚀");
+    showToast("Requesting OTP...");
 
-    const { error } = await supabase.auth.signInWithOtp({ phone: window._globalCurrentAuthPhone });
-
-    if (error) {
-      showToast("Supabase Error: " + error.message);
-    } else {
+    const { error } = await supabaseClient.auth.signInWithOtp({ phone: window._globalCurrentAuthPhone });
+    if (error) { showToast("Error: " + error.message); } 
+    else {
       document.getElementById(inputFieldsId).style.display = 'none';
       document.getElementById(otpFieldsId).style.display = 'block';
-      showToast(`OTP token sent successfully! 📱`);
+      showToast("OTP sent successfully!");
     }
   };
 
-  /* ── PHONE OTP VERIFIER (FIXED RACE CONDITION) ── */
-  window.verifySupabaseOTP = async function (role) {
+  window.verifySupabaseOTP = async function (role = 'customer') {
     if (!window._globalCurrentAuthPhone) return;
-
-    let code = '';
-    if (role === 'provider') {
-      code = document.getElementById('provider-otp-code').value.trim();
-    } else {
-      code = Array.from(document.querySelectorAll('.otp-field')).map(i => i.value.trim()).join('');
-    }
+    let code = role === 'provider' 
+      ? document.getElementById('provider-otp-code').value.trim() 
+      : Array.from(document.querySelectorAll('.otp-field')).map(i => i.value.trim()).join('');
 
     if (code.length < 6) { showToast("Enter all 6 digits."); return; }
-    showToast("Verifying with Supabase...");
+    showToast("Verifying...");
 
-    const { data, error } = await supabase.auth.verifyOtp({
-      phone: window._globalCurrentAuthPhone,
-      token: code,
-      type: 'sms'
-    });
+    const { error } = await supabaseClient.auth.verifyOtp({ phone: window._globalCurrentAuthPhone, token: code, type: 'sms' });
 
-    if (error) {
-      showToast("Invalid OTP or Token Expired.");
-    } else {
-      // 1. Instantly Update Role in Database
-      await supabase.auth.updateUser({ data: { role: role } });
+    if (error) { showToast("Invalid OTP."); } 
+    else {
+      await supabaseClient.auth.updateUser({ data: { role: role } });
+      if (role === 'provider') document.body.classList.add('provider-mode');
+      else document.body.classList.remove('provider-mode');
       
-      // 2. Instantly Force UI Change without waiting for background sync
-      if (role === 'provider') {
-        document.body.classList.add('provider-mode');
-      } else {
-        document.body.classList.remove('provider-mode');
-      }
-      
-      showToast(role === 'provider' ? "Provider Account Verified! 💼" : "Signed in successfully! 🎉");
+      showToast("Verified!");
       closeModal();
-      
-      // Optional: Refresh database layout connection securely
       setTimeout(() => { window.location.reload(); }, 1200);
     }
   };
 
   window.signOutUser = async function () {
-    try {
-      await supabase.auth.signOut();
-      showToast("Signed out successfully.");
-    } catch (error) {
-      showToast("Sign out error.");
-    }
+    await supabaseClient.auth.signOut();
+    showToast("Signed out.");
   };
 </script>
- 
 </body>
 </html>
