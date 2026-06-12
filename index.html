@@ -209,6 +209,12 @@
                  font-size:14px;
                  font-weight:600;">
     </span>
+    <button id="signout-btn"
+            class="btn btn-outline"
+            style="display:none;"
+            onclick="window.signOutUser()">
+      Sign Out
+    </button>
     <button class="hamburger" onclick="toggleMenu()">☰</button>
   </div>
 </nav>
@@ -367,12 +373,13 @@
             <input type="tel" id="auth-mobile" class="form-input" placeholder="98765 43210" maxlength="10">
           </div>
 
-          <div class="form-group" id="password-group">
+          <div class="form-group" id="password-group" style="display:none;">
             <label class="form-label">Password *</label>
             <input type="password" id="auth-password" class="form-input" placeholder="Enter password">
           </div>
 
-          <button class="btn btn-primary" id="primary-auth-btn" style="width:100%; justify-content:center; padding:13px;" onclick="handleAuthSubmission()">Sign In</button>
+          <button class="btn btn-primary" id="primary-auth-btn" style="width:100%; justify-content:center; padding:13px;" onclick="handleAuthSubmission()">Send Login OTP</button>
+          <div id="recaptcha-container"></div>
 
           <div class="form-divider">or continue with</div>
           <button class="social-btn" onclick="window.initiateGoogleAuth()">
@@ -534,8 +541,8 @@
     } else {
       if (title)     title.textContent = 'Welcome back';
       if (sub)       sub.textContent   = 'Sign in to your SevaSarthi account';
-      if (btn)       btn.textContent   = 'Sign In';
-      if (passGroup) passGroup.style.display = 'block';
+      if (btn)       btn.textContent   = 'Send Login OTP';
+      if (passGroup) passGroup.style.display = 'none';
       if (nameRow)   nameRow.style.display   = 'none';
       if (toggleTxt) toggleTxt.innerHTML = 'New to SevaSarthi? <a href="#" onclick="toggleAuthIntent(\'register\');return false;">Create account</a>';
     }
@@ -615,12 +622,14 @@
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import {
   getAuth,
-  signInWithRedirect,
+  signInWithPopup,
   GoogleAuthProvider,
   RecaptchaVerifier,
   signInWithPhoneNumber,
   onAuthStateChanged,
-  getRedirectResult
+  setPersistence,
+  browserLocalPersistence,
+  signOut
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
  
   // For Firebase JS SDK v7.20.0 and later, measurementId is optional
@@ -637,44 +646,76 @@ const firebaseConfig = {
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
   window.auth = auth;
+  auth.useDeviceLanguage();
 
- onAuthStateChanged(auth, (user) => {
-  console.log("AUTH CALLBACK FIRED", user);
-  const status = document.getElementById("user-status");
-  const signin = document.getElementById("signin-btn");
-  const register = document.getElementById("register-btn");
-  if (user) {
-    status.style.display = "inline-block";
-    status.textContent =
-      user.displayName ||
-      user.email ||
-      user.phoneNumber ||
-      "Logged In";
-    signin.style.display = "none";
-    register.style.display = "none";
+  setPersistence(auth, browserLocalPersistence).catch((error) => {
+    console.error("Could not enable persistent login:", error);
+  });
+
+  function getAuthErrorMessage(error) {
+    const messages = {
+      "auth/billing-not-enabled": "Real SMS requires Firebase Blaze billing.",
+      "auth/captcha-check-failed": "reCAPTCHA verification failed. Please try again.",
+      "auth/invalid-app-credential": "Firebase could not verify this website. Check the authorized domain and reCAPTCHA.",
+      "auth/invalid-phone-number": "Enter a valid phone number.",
+      "auth/missing-phone-number": "Enter your phone number.",
+      "auth/operation-not-allowed": "Enable this sign-in provider in Firebase Authentication.",
+      "auth/popup-blocked": "The browser blocked the Google sign-in popup. Allow popups and try again.",
+      "auth/popup-closed-by-user": "Google sign-in was cancelled.",
+      "auth/quota-exceeded": "The SMS quota has been exceeded.",
+      "auth/too-many-requests": "Too many attempts. Wait before trying again.",
+      "auth/unauthorized-domain": "Add this GitHub Pages domain to Firebase Authentication authorized domains."
+    };
+
+    return messages[error?.code] || `${error?.message || "Authentication failed."} (${error?.code || "unknown error"})`;
   }
-});
- 
- getRedirectResult(auth)
-  .then((result) => {
-    if (result?.user) {
-      console.log("Google User:", result.user);
-      showToast(
-        "Welcome " +
-        (result.user.displayName || result.user.email)
-      );
+
+  onAuthStateChanged(auth, (user) => {
+    console.log("AUTH CALLBACK FIRED", user);
+    const status = document.getElementById("user-status");
+    const signin = document.getElementById("signin-btn");
+    const register = document.getElementById("register-btn");
+    const signout = document.getElementById("signout-btn");
+
+    if (user) {
+      status.style.display = "inline-block";
+      status.textContent = user.displayName || user.email || user.phoneNumber || `User ${user.uid.slice(0, 8)}`;
+      status.title = `Firebase user ID: ${user.uid}`;
+      signin.style.display = "none";
+      register.style.display = "none";
+      signout.style.display = "inline-flex";
+      closeModal();
+    } else {
+      status.style.display = "none";
+      status.textContent = "";
+      signin.style.display = "inline-flex";
+      register.style.display = "inline-flex";
+      signout.style.display = "none";
     }
-  })
-  .catch((error) => {
-    console.error("Google Login Error:", error);
   });
  
   const googleProvider = new GoogleAuthProvider();
   let confirmationResult = null;
 
-  window.initiateGoogleAuth = function () {
-    showToast("Launching secure Google account portal…");
-    signInWithRedirect(auth, googleProvider);
+  window.initiateGoogleAuth = async function () {
+    showToast("Opening Google sign in...");
+    try {
+      const result = await signInWithPopup(auth, googleProvider);
+      showToast("Welcome " + (result.user.displayName || result.user.email || "back"));
+    } catch (error) {
+      console.error("Google Login Error:", error);
+      showToast(getAuthErrorMessage(error));
+    }
+  };
+
+  window.signOutUser = async function () {
+    try {
+      await signOut(auth);
+      showToast("Signed out successfully.");
+    } catch (error) {
+      console.error("Sign out error:", error);
+      showToast(getAuthErrorMessage(error));
+    }
   };
 
   window.triggerFirebaseOTP = function () {
@@ -686,10 +727,10 @@ const firebaseConfig = {
 
     const disp = document.getElementById('otp-phone-display');
     if (disp) disp.textContent = '+91 ' + raw.slice(0, 5) + ' ' + raw.slice(5);
-    showToast("Checking security parameters… 🤖");
+    showToast("Checking security parameters...");
 
     if (!window._recaptchaVerifier) {
-      window._recaptchaVerifier = new RecaptchaVerifier(auth, 'primary-auth-btn', { size: 'invisible' });
+      window._recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', { size: 'invisible' });
     }
 
     signInWithPhoneNumber(auth, phone, window._recaptchaVerifier)
@@ -698,11 +739,11 @@ const firebaseConfig = {
         window._currentAuthStep = 'otp';
         document.getElementById('consumer-input-fields').style.display = 'none';
         document.getElementById('consumer-otp-fields').style.display = 'block';
-        showToast("OTP sent successfully! 📱");
+        showToast("OTP sent successfully!");
       })
       .catch(err => {
-        console.error(err); 
-        showToast("Failed to send OTP. Check authorized domains.");
+        console.error("Phone OTP error:", err);
+        showToast(getAuthErrorMessage(err));
         if (window._recaptchaVerifier) { window._recaptchaVerifier.clear(); window._recaptchaVerifier = null; }
       });
   };
@@ -714,11 +755,14 @@ const firebaseConfig = {
     showToast("Validating entries…");
 
     confirmationResult.confirm(code)
-      .then(() => {
-        showToast("Profile authorized! Welcome to SevaSarthi 🎉");
+      .then((result) => {
+        showToast("Signed in as " + (result.user.phoneNumber || "customer"));
         closeModal();
       })
-      .catch(() => { showToast("Invalid code entry."); });
+      .catch((error) => {
+        console.error("OTP verification error:", error);
+        showToast(getAuthErrorMessage(error));
+      });
   };
 </script>
 </body>
