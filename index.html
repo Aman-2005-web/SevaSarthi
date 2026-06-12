@@ -538,25 +538,9 @@
   }
 
   function handleAuthSubmission() {
-    if (window._authMode === 'login') {
-      const mobile = (document.getElementById('auth-mobile') || {}).value || '';
-      const pass   = (document.getElementById('auth-password') || {}).value || '';
-      if (!mobile.trim() || !pass.trim()) {
-        showToast('Please enter your mobile number and password.');
-        return;
-      }
-      showToast('Validating profile credentials… 🔐');
-    } else {
-      if (window._currentAuthStep === 'credentials') {
-        if (typeof window.triggerFirebaseOTP === 'function') {
-          window.triggerFirebaseOTP();
-        } else {
-          showToast('Firebase engine module loading, please wait…');
-        }
-      }
-    }
-  }
-
+  window.triggerFirebaseOTP();
+}
+ 
   /* ── GEOLOCATION CONTROLLER ── */
   function getUserLocation() {
     if (!navigator.geolocation) {
@@ -611,17 +595,32 @@
   import { getAuth, signInWithRedirect, GoogleAuthProvider, RecaptchaVerifier, signInWithPhoneNumber } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
   const firebaseConfig = {
-    apiKey:            "AIzaSyDiVK2-HG9cTajZ4vRLVtOezSelWkk9XNA",
-    authDomain:        "sevasarthi-5e78c.firebaseapp.com",
-    projectId:         "sevasarthi-5e78c",
-    storageBucket:     "sevasarthi-5e78c.firebasestorage.app",
-    messagingSenderId: "905980173042",
-    appId:             "1:905980173042:web:ae8021710f803e9758ce6b",
-    measurementId:     "G-WN5MJ0ESC7"
-  };
+  apiKey: "AIzaSyDiVK2-HG9cTajZ4vRLVtOezSelWkK9XNA",
+  authDomain: "sevasarthi-5e78c.firebaseapp.com",
+  projectId: "sevasarthi-5e78c",
+  storageBucket: "sevasarthi-5e78c.firebasestorage.app",
+  messagingSenderId: "905980173042",
+  appId: "1:905980173042:web:ae8021710f803e9758ce6b",
+  measurementId: "G-WN5MJ0ESC7"
+};
 
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
+ 
+ getRedirectResult(auth)
+  .then((result) => {
+    if (result?.user) {
+      console.log("Google User:", result.user);
+      showToast(
+        "Welcome " +
+        (result.user.displayName || result.user.email)
+      );
+    }
+  })
+  .catch((error) => {
+    console.error("Google Login Error:", error);
+  });
+ 
   const googleProvider = new GoogleAuthProvider();
   let confirmationResult = null;
 
@@ -674,8 +673,5 @@
       .catch(() => { showToast("Invalid code entry."); });
   };
 </script>
-</body>
-</html>
-
 </body>
 </html>
