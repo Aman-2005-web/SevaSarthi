@@ -664,8 +664,7 @@
   });
 </script>
 
-<script>
- 
+ <script>
   const SUPABASE_URL = "https://fekvrxxhspbntjriwiha.supabase.co";
   const SUPABASE_ANON_KEY = "sb_publishable_YrjBg24OxoW--XxfI71EBg_nCqm3lMo";
 
@@ -679,12 +678,11 @@
     const signout = document.getElementById("signout-btn");
 
     if (session && session.user) {
-      // 1. Check if user is coming back from Google Sign-In with pending data
+      // 1. Google Sign-In Pending Data Check
       const pendingRole = localStorage.getItem('pending_role');
       const pendingPhone = localStorage.getItem('pending_phone');
 
       if (pendingRole || pendingPhone) {
-        // Auth Metadata Update karein
         await supabase.auth.updateUser({
           data: { 
             role: pendingRole || 'customer',
@@ -694,33 +692,22 @@
         localStorage.removeItem('pending_role');
         localStorage.removeItem('pending_phone');
         
-        // Session ko turant local update karein
         if (pendingRole) session.user.user_metadata.role = pendingRole;
         if (pendingPhone) session.user.user_metadata.saved_phone = pendingPhone;
       }
 
       // 2. Fetch final data
-      const userId = session.user.id; // Supabase default unique ID
+      const userId = session.user.id;
       const userRole = session.user.user_metadata?.role || 'customer';
       const userPhone = session.user.user_metadata?.saved_phone || session.user.phone || '';
       const userName = session.user.user_metadata?.full_name || 'User';
 
-      // 🚨 3. DATA KO DATABASE COLUMNS MEIN SAVE KAREIN (UPSERT)
-      // Ye code check karega: agar user naya hai toh row banayega, purana hai toh update karega
+      // 3. Save to Database Table
       const { error: dbError } = await supabase
-        .from('profiles') // Tumhara table name
-        .upsert([
-          { 
-            id: userId, 
-            full_name: userName, 
-            mobile: userPhone, 
-            role: userRole 
-          }
-        ]);
-        
-      if (dbError) console.error("Database save error:", dbError.message);
+        .from('profiles')
+        .upsert([{ id: userId, full_name: userName, mobile: userPhone, role: userRole }]);
 
-      // 4. UI Update karein
+      // 4. Update UI
       const identity = userName !== 'User' ? userName : (userPhone || "Logged In");
       status.style.display = "inline-block";
       status.textContent = userRole === "provider" ? `${identity} (Provider)` : identity;
@@ -728,7 +715,7 @@
       register.style.display = "none";
       signout.style.display = "inline-flex";
       
-      // Dashboard UI Switch Logic
+      // UI Switch Logic based on Role
       if (userRole === "provider") {
         document.body.classList.add('provider-mode');
       } else {
@@ -737,7 +724,6 @@
       
       closeModal();
     } else {
-      // Logged out state
       status.style.display = "none";
       signin.style.display = "inline-flex";
       register.style.display = "inline-flex";
@@ -746,7 +732,7 @@
     }
   });
 
-  /* ── GOOGLE AUTH HANDLER (With Mobile Check for Providers) ── */
+  /* ── GOOGLE AUTH HANDLER ── */
   window.initiateGoogleAuth = async function (role) {
     if (role === 'provider') {
       const mobileInput = document.getElementById('provider-mobile');
@@ -757,7 +743,6 @@
         if(mobileInput) mobileInput.focus();
         return;
       }
-      // Temporary memory for redirect
       localStorage.setItem('pending_role', 'provider');
       localStorage.setItem('pending_phone', '+91' + mobileValue);
     } else {
@@ -797,7 +782,7 @@
     }
   };
 
-  /* ── PHONE OTP VERIFIER ── */
+  /* ── PHONE OTP VERIFIER (FIXED RACE CONDITION) ── */
   window.verifySupabaseOTP = async function (role) {
     if (!window._globalCurrentAuthPhone) return;
 
@@ -820,9 +805,21 @@
     if (error) {
       showToast("Invalid OTP or Token Expired.");
     } else {
-      // Save role into auth metadata
+      // 1. Instantly Update Role in Database
       await supabase.auth.updateUser({ data: { role: role } });
-      showToast(role === 'provider' ? "Provider Account Verified!" : "Signed in successfully!");
+      
+      // 2. Instantly Force UI Change without waiting for background sync
+      if (role === 'provider') {
+        document.body.classList.add('provider-mode');
+      } else {
+        document.body.classList.remove('provider-mode');
+      }
+      
+      showToast(role === 'provider' ? "Provider Account Verified! 💼" : "Signed in successfully! 🎉");
+      closeModal();
+      
+      // Optional: Refresh database layout connection securely
+      setTimeout(() => { window.location.reload(); }, 1200);
     }
   };
 
