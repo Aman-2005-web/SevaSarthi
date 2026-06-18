@@ -553,7 +553,7 @@ window.askCustomerLocation = function() {
     }
   };
 
-  /* ── BUSINESS LOGIC: LOAD 10KM PROVIDERS ON MAP & SIDEBAR ── */
+ /* ── BUSINESS LOGIC: LOAD PROVIDERS ON MAP & SIDEBAR ── */
 window.loadLiveProvidersOnMap = async function(customerLat = null, customerLng = null) {
   const listContainer = document.getElementById('customer-provider-list');
   if(!listContainer) return;
@@ -564,26 +564,37 @@ window.loadLiveProvidersOnMap = async function(customerLat = null, customerLng =
     return;
   }
 
-  const { data: providers, error } = await supabaseClient.from('profiles').select('*').eq('role', 'provider');
-  if (error || !providers) return;
+  // Use 'ilike' instead of 'eq' just in case 'Provider' is saved with capital 'P'
+  const { data: providers, error } = await supabaseClient.from('profiles').select('*').ilike('role', 'provider');
+  
+  if (error || !providers) {
+    console.error("Supabase Error fetching providers:", error);
+    return;
+  }
 
   listContainer.innerHTML = ''; 
   let foundNearby = false;
 
   providers.forEach(p => {
     if(p.latitude && p.longitude) {
-      // Distance Check
-      const dist = calculateDistance(customerLat, customerLng, p.latitude, p.longitude);
+      // Forcefully convert database values to clean numbers
+      const pLat = parseFloat(p.latitude);
+      const pLng = parseFloat(p.longitude);
       
-      // Sirf wahi dikhenge jo 10 km ke andar hain
-      if (dist <= 10) {
+      const dist = calculateDistance(customerLat, customerLng, pLat, pLng);
+      
+      // DEBUG: Tumhe dikhane ke liye ki system exact kitni doori dekh raha hai
+      console.log(`Checking ${p.full_name} -> Distance is: ${dist.toFixed(2)} KM`);
+      
+      // Testing ke liye 50 KM kar diya hai taaki Desktop/Mobile difference se fail na ho
+      if (dist <= 50) { 
         foundNearby = true;
-        const marker = L.marker([p.latitude, p.longitude]).addTo(map);
+        const marker = L.marker([pLat, pLng]).addTo(map);
         marker.bindPopup(`<b>${p.full_name || 'Verified Provider'}</b><br>${p.service_category || 'Service'}<br>📞 ${p.mobile}<br>📍 ${dist.toFixed(1)} km away`);
 
         const item = document.createElement('div');
         item.className = 'map-provider-item';
-        item.onclick = () => { map.setView([p.latitude, p.longitude], 15); marker.openPopup(); };
+        item.onclick = () => { map.setView([pLat, pLng], 15); marker.openPopup(); };
         item.innerHTML = `
           <div class="mpi-avatar" style="background:var(--accent);">${(p.full_name||'P').substring(0,2).toUpperCase()}</div>
           <div class="mpi-info">
@@ -598,10 +609,10 @@ window.loadLiveProvidersOnMap = async function(customerLat = null, customerLng =
   });
 
   if(!foundNearby) {
-     listContainer.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--text3);">No providers found within 10 km of your location yet.</div>';
+     listContainer.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--text3);">No providers found nearby right now. Distance might be too far!</div>';
   }
 };
-  
+
  /* ── BUSINESS LOGIC: LOAD PROVIDER DASHBOARD DATA ── */
   window.loadProviderDashboard = async function() {
     const { data: { session } } = await supabaseClient.auth.getSession();
