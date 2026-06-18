@@ -4,6 +4,7 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
+<!-- SUPABASE JS -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <meta charset="UTF-8">
@@ -33,19 +34,6 @@
     --font-body: 'Inter', sans-serif;
   }
 
-  [data-theme="dark"] {
-    --bg: #111110;
-    --surface: #1C1C1A;
-    --surface2: #252522;
-    --text: #F0EFE8;
-    --text2: #A8A8A0;
-    --text3: #6A6A64;
-    --border: rgba(240,239,232,0.1);
-    --border2: rgba(240,239,232,0.05);
-    --shadow: 0 2px 16px rgba(0,0,0,0.4);
-    --shadow-lg: 0 8px 40px rgba(0,0,0,0.5);
-  }
-
   html { scroll-behavior: smooth; }
 
   body {
@@ -54,7 +42,6 @@
     color: var(--text);
     line-height: 1.6;
     min-height: 100vh;
-    transition: background 0.3s, color 0.3s;
   }
 
   nav {
@@ -66,46 +53,27 @@
     height: 64px;
   }
   
-  .logo {
-    font-family: var(--font-display);
-    font-size: 22px; font-weight: 800;
-    color: var(--text);
-    text-decoration: none;
-    display: flex; align-items: center; gap: 8px;
-  }
-  
+  .logo { font-family: var(--font-display); font-size: 22px; font-weight: 800; color: var(--text); text-decoration: none; display: flex; align-items: center; gap: 8px; }
   .logo span { color: var(--accent); }
   .logo-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); display: inline-block; }
+  
   .btn { display: inline-flex; align-items: center; gap: 6px; padding: 9px 18px; border-radius: var(--radius-sm); font-size: 14px; font-weight: 600; cursor: pointer; border: none; transition: all 0.2s; text-decoration: none; }
   .btn-outline { background: transparent; border: 1.5px solid var(--border); color: var(--text); }
   .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
   .btn-primary { background: var(--accent); color: #fff; }
   .btn-primary:hover { background: #c73d22; transform: translateY(-1px); }
   .btn-green { background: var(--green); color: #fff; }
-  .btn-green:hover { background: #146c3d; }
   
-  .theme-toggle, .hamburger { background: var(--surface2); border: none; cursor: pointer; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; color: var(--text2); }
-  .hamburger { display: none; }
-
   .hero { padding: 80px 5% 60px; display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; max-width: 1200px; margin: 0 auto; }
   .hero-eyebrow { display: inline-flex; align-items: center; gap: 8px; background: rgba(232,75,47,0.1); color: var(--accent); padding: 6px 14px; border-radius: 99px; font-size: 12px; font-weight: 600; text-transform: uppercase; margin-bottom: 20px; }
   .hero h1 { font-family: var(--font-display); font-size: clamp(36px, 5vw, 58px); font-weight: 800; line-height: 1.1; margin-bottom: 20px; }
   .hero h1 em { font-style: normal; color: var(--accent); }
   .hero p { font-size: 17px; color: var(--text2); margin-bottom: 32px; max-width: 480px; }
   .hero-cta { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 40px; }
-  .hero-stats { display: flex; gap: 32px; }
-  .stat-num { font-family: var(--font-display); font-size: 26px; font-weight: 800; }
-  .stat-label { font-size: 12px; color: var(--text3); }
 
   .hero-visual { position: relative; }
   .hero-card { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 20px; box-shadow: var(--shadow-lg); }
   .hero-map-mockup { background: linear-gradient(135deg, #d4e8ff 0%, #b8d4ff 50%, #d4f0e8 100%); border-radius: 14px; height: 220px; position: relative; overflow: hidden; }
-  .map-pin { position: absolute; display: flex; flex-direction: column; align-items: center; }
-  .map-pin-dot { width: 36px; height: 36px; border-radius: 50% 50% 50% 0; transform: rotate(-45deg); display: flex; align-items: center; justify-content: center; background: #FEF3C7; }
-  .map-pin-label { margin-top: 6px; font-size: 11px; font-weight: 600; background: var(--surface); padding: 3px 8px; border-radius: 6px; border: 1px solid var(--border); white-space: nowrap; }
-  .pin-elec { top: 20px; left: 30%; }
-  .pin-plumb { top: 50%; left: 55%; }
-  .map-user-pin { position: absolute; top: 45%; left: 45%; width: 18px; height: 18px; border-radius: 50%; background: var(--accent); border: 3px solid #fff; }
 
   .search-section { background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 24px 5%; }
   .search-wrap { max-width: 900px; margin: 0 auto; }
@@ -123,27 +91,12 @@
   .mpi-avatar { width: 42px; height: 42px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 800; color: #fff; }
   .mpi-info { flex: 1; }
   .mpi-name { font-size: 14px; font-weight: 600; }
-  .mpi-role, .mpi-dist { font-size: 12px; color: var(--text2); }
+  .mpi-role { font-size: 12px; color: var(--text2); }
 
   .map-container { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; position: relative; height: 520px; }
   #map { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 1; }
 
-  /* Center Map Pin specific for Customer */
-  .center-map-pin {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -100%);
-    z-index: 1000;
-    pointer-events: none;
-    display: none; /* Hidden by default */
-    flex-direction: column;
-    align-items: center;
-  }
-  .center-map-pin.active { display: flex; }
-  .center-map-pin-icon { font-size: 40px; text-shadow: 0 4px 10px rgba(0,0,0,0.3); }
-
-  /* ─── MODALS & TOAST ─── */
+  /* Modal & Toast CSS */
   .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 2000; display: none; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(4px); }
   .modal-overlay.open { display: flex; }
   .modal { background: var(--surface); border-radius: 20px; width: 100%; max-width: 460px; box-shadow: var(--shadow-lg); overflow: hidden; }
@@ -160,22 +113,21 @@
   .form-group { margin-bottom: 20px; text-align: left; }
   .form-label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 8px; }
   .form-input { width: 100%; padding: 11px 16px; border-radius: var(--radius-sm); border: 1.5px solid var(--border); background: var(--bg); font-size: 15px; color: var(--text); outline: none; }
-  .form-input:focus { border-color: var(--accent); }
+  .social-btn { width: 100%; padding: 11px; border: 1.5px solid var(--border); border-radius: var(--radius-sm); background: var(--surface); cursor: pointer; font-size: 14px; color: var(--text); display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 10px;}
   .form-divider { display: flex; align-items: center; gap: 12px; margin: 20px 0; color: var(--text3); font-size: 13px; }
   .form-divider::before, .form-divider::after { content:''; flex:1; height:1px; background: var(--border); }
-  .social-btn { width: 100%; padding: 11px; border: 1.5px solid var(--border); border-radius: var(--radius-sm); background: var(--surface); cursor: pointer; font-size: 14px; color: var(--text); display: flex; align-items: center; justify-content: center; gap: 10px; }
   
   .toast { position: fixed; bottom: 24px; right: 24px; z-index: 5000; background: var(--text); color: var(--bg); padding: 14px 20px; border-radius: 12px; font-size: 14px; box-shadow: 0 4px 24px rgba(0,0,0,0.25); transform: translateY(100px); opacity: 0; transition: all 0.3s ease; }
   .toast.show { transform: none; opacity: 1; }
 
-  /* ─── PROVIDER MODE CSS ─── */
+  /* Provider Mode Toggle */
   .provider-mode .hide-on-provider { display: none !important; }
   .provider-dashboard { display: none; padding: 60px 5%; max-width: 1200px; margin: 0 auto; }
   .provider-mode .provider-dashboard { display: block; }
 
   @media (max-width: 900px) {
     .hero { grid-template-columns: 1fr; text-align: center; gap: 40px; }
-    .hero-cta, .hero-stats { justify-content: center; }
+    .hero-cta { justify-content: center; }
     .hero-visual { display: none; }
     .map-demo { grid-template-columns: 1fr; }
     .provider-grid { grid-template-columns: 1fr !important; }
@@ -187,16 +139,15 @@
 <nav>
   <a href="#" class="logo">Seva<span>Sarthi</span><span class="logo-dot"></span></a>
   <div style="display:flex;gap:8px;align-items:center;">
-    <button class="theme-toggle" onclick="toggleTheme()">🌙</button>
     <button id="signin-btn" class="btn btn-outline" onclick="openModal('login')">Sign In</button>
     <button id="register-btn" class="btn btn-primary" onclick="openModal('register')">Get Started</button>
     
     <span id="user-status" style="display:none; padding:6px 14px; background:#ecfdf5; color:#065f46; border-radius:20px; font-size:14px; font-weight:600;"></span>
     <button id="signout-btn" class="btn btn-outline" style="display:none;" onclick="window.signOutUser()">Sign Out</button>
-    <button class="hamburger" onclick="toggleMenu()">☰</button>
   </div>
 </nav>
 
+<!-- CUSTOMER INTERFACE -->
 <div class="hide-on-provider">
   <div class="hero">
     <div>
@@ -207,21 +158,6 @@
         <button class="btn btn-primary" onclick="document.getElementById('search-input').focus()">🔍 Find a Service</button>
         <button class="btn btn-outline" onclick="openModal('register-provider')">Work With Us →</button>
       </div>
-      <div class="hero-stats">
-        <div class="stat-item"><div class="stat-num">50K+</div><div class="stat-label">Verified Providers</div></div>
-        <div class="stat-item"><div class="stat-num">4.8★</div><div class="stat-label">Avg. Rating</div></div>
-        <div class="stat-item"><div class="stat-num">2M+</div><div class="stat-label">Jobs Completed</div></div>
-      </div>
-    </div>
-
-    <div class="hero-visual">
-      <div class="hero-card">
-        <div class="hero-map-mockup">
-          <div class="map-pin pin-elec"><div class="map-pin-dot">⚡</div><div class="map-pin-label">Ramesh</div></div>
-          <div class="map-pin pin-plumb"><div class="map-pin-dot">🔧</div><div class="map-pin-label">Suresh</div></div>
-          <div class="map-user-pin"></div>
-        </div>
-      </div>
     </div>
   </div>
 
@@ -230,6 +166,8 @@
       <div class="search-box">
         <input type="text" id="search-input" placeholder="Search electrician, plumber, carpenter, tutor…" aria-label="Search for services">
         <div class="search-divider"></div>
+        
+        <!-- AUTO LOCATION BUTTON -->
         <div class="search-location" onclick="window.askCustomerLocation()">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--accent); flex-shrink: 0;"><path d="M12 22s-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 8.2c0 7.3-8 11.8-8 11.8z"/><circle cx="12" cy="10" r="3"/></svg>
           <span id="location-text">Locate Me</span>
@@ -250,16 +188,14 @@
         </div>
       </div>
       <div class="map-container">
+        <!-- THE MAP -->
         <div id="map"></div>
-        <div id="center-pin" class="center-map-pin">
-          <div class="center-map-pin-icon">📍</div>
-          <div style="background:var(--surface); padding: 4px 10px; border-radius:20px; font-size:12px; font-weight:700; box-shadow: var(--shadow);">Scroll to set location</div>
-        </div>
       </div>
     </div>
   </section>
 </div>
 
+<!-- PROVIDER DASHBOARD INTERFACE -->
 <div id="provider-dashboard" class="provider-dashboard">
   <div style="margin-bottom: 30px;">
     <h2>Welcome to your Workspace</h2>
@@ -277,17 +213,16 @@
 
     <div class="hero-card">
       <h3 style="margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 10px;">Incoming Requests</h3>
-      
       <div id="provider-jobs-container" style="border: 1px dashed var(--border); border-radius: var(--radius-sm); padding: 40px 20px; text-align: center; background: var(--bg);">
         <div style="font-size: 48px; margin-bottom: 12px;">📭</div>
         <h4 style="font-size: 18px; margin-bottom: 6px;">0 customers to contact yet</h4>
         <p style="color: var(--text2); font-size: 14px;">Keep your location updated. When nearby customers request your service, they will appear here instantly.</p>
       </div>
-
     </div>
   </div>
 </div>
 
+<!-- AUTHENTICATION MODAL -->
 <div class="modal-overlay" id="modal" onclick="closeModalIfOverlay(event)">
   <div class="modal">
     <div class="modal-header">
@@ -304,6 +239,7 @@
     </div>
 
     <div class="modal-body">
+      <!-- CUSTOMER LOGIN PANE -->
       <div class="modal-pane active" id="modal-consumer">
         <div id="consumer-input-fields">
           <div class="form-row" id="name-row" style="display:none; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
@@ -312,12 +248,13 @@
           </div>
           <div class="form-group"><label class="form-label">Mobile Number *</label><input type="tel" id="auth-mobile" class="form-input" placeholder="98765 43210" maxlength="10"></div>
           <button class="btn btn-primary" id="primary-auth-btn" style="width:100%; justify-content:center; padding:13px;" onclick="window.triggerSupabaseOTP('customer')">Send Login OTP</button>
+          
           <div class="form-divider">or continue with</div>
           <button class="social-btn" onclick="window.initiateGoogleAuth('customer')">
             <svg width="18" height="18" viewBox="0 0 18 18"><path d="M17.64 9.2a10.34 10.34 0 0 0-.16-1.84H9v3.48h4.84A4.14 4.14 0 0 1 12.07 13v2.26h2.88A8.72 8.72 0 0 0 17.64 9.2z" fill="#4285F4"/><path d="M9 18a8.59 8.59 0 0 0 5.95-2.18L12.07 13a5.43 5.43 0 0 1-8.07-2.85H1.08v2.33A9 9 0 0 0 9 18z" fill="#34A853"/><path d="M4 10.15a5.34 5.34 0 0 1 0-3.41V4.4H1.08a9 9 0 0 0 0 8.09z" fill="#FBBC05"/><path d="M9 3.58a4.86 4.86 0 0 1 3.44 1.35l2.58-2.58A8.66 8.66 0 0 0 9 0 9 9 0 0 0 1.08 4.4L4 6.73A5.37 5.37 0 0 1 9 3.58z" fill="#EA4335"/></svg>
             Continue with Google
           </button>
-          <div class="form-footer" id="auth-toggle-text" style="text-align:center; margin-top:20px; font-size:14px; color:var(--text2);">
+          <div class="form-footer" id="auth-toggle-text" style="text-align:center; margin-top:10px; font-size:14px; color:var(--text2);">
             New to SevaSarthi? <a href="#" onclick="toggleAuthIntent('register');return false;" style="color:var(--accent); text-decoration:none; font-weight:600;">Create account</a>
           </div>
         </div>
@@ -339,6 +276,7 @@
         </div>
       </div>
 
+      <!-- PROVIDER LOGIN PANE -->
       <div class="modal-pane" id="modal-provider">
         <div id="provider-input-fields">
           <div class="form-row" id="provider-name-row" style="display:none; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
@@ -352,7 +290,7 @@
             <svg width="18" height="18" viewBox="0 0 18 18"><path d="M17.64 9.2a10.34 10.34 0 0 0-.16-1.84H9v3.48h4.84A4.14 4.14 0 0 1 12.07 13v2.26h2.88A8.72 8.72 0 0 0 17.64 9.2z" fill="#4285F4"/><path d="M9 18a8.59 8.59 0 0 0 5.95-2.18L12.07 13a5.43 5.43 0 0 1-8.07-2.85H1.08v2.33A9 9 0 0 0 9 18z" fill="#34A853"/><path d="M4 10.15a5.34 5.34 0 0 1 0-3.41V4.4H1.08a9 9 0 0 0 0 8.09z" fill="#FBBC05"/><path d="M9 3.58a4.86 4.86 0 0 1 3.44 1.35l2.58-2.58A8.66 8.66 0 0 0 9 0 9 9 0 0 0 1.08 4.4L4 6.73A5.37 5.37 0 0 1 9 3.58z" fill="#EA4335"/></svg>
             Continue with Google
           </button>
-          <div class="form-footer" id="provider-auth-toggle-text" style="text-align:center; margin-top:20px; font-size:14px; color:var(--text2);">
+          <div class="form-footer" id="provider-auth-toggle-text" style="text-align:center; margin-top:10px; font-size:14px; color:var(--text2);">
             New provider? <a href="#" onclick="toggleProviderAuthIntent('register');return false;" style="color:var(--accent); text-decoration:none; font-weight:600;">Create provider account</a>
           </div>
         </div>
@@ -371,15 +309,11 @@
 
 <div class="toast" id="toast"></div>
 
+<!-- UI SCRIPTS & MAP INITIALIZATION -->
 <script>
   let map;
   let toastTimer;
-
-  function toggleTheme() {
-    const d = document.documentElement;
-    const isDark = d.getAttribute('data-theme') === 'dark';
-    d.setAttribute('data-theme', isDark ? '' : 'dark');
-  }
+  let customerMarker; // To store the "You are here" pin
 
   function showToast(msg) {
     const t = document.getElementById('toast');
@@ -396,20 +330,14 @@
     switchModalTab(type === 'register-provider' ? 'provider' : 'consumer');
   }
 
-  function closeModal() {
-    document.getElementById('modal').classList.remove('open');
-    document.body.style.overflow = '';
-  }
-
+  function closeModal() { document.getElementById('modal').classList.remove('open'); document.body.style.overflow = ''; }
   function closeModalIfOverlay(e) { if (e.target === document.getElementById('modal')) closeModal(); }
-
   function switchModalTab(tab) {
     document.querySelectorAll('.modal-tab').forEach(b => b.classList.remove('active'));
     document.querySelectorAll('.modal-pane').forEach(p => p.classList.remove('active'));
     document.getElementById('modal-tab-' + tab).classList.add('active');
     document.getElementById('modal-' + tab).classList.add('active');
-    backToPhone();
-    backToProviderPhone();
+    backToPhone(); backToProviderPhone();
   }
 
   function backToPhone() { document.getElementById('consumer-input-fields').style.display = 'block'; document.getElementById('consumer-otp-fields').style.display = 'none'; }
@@ -453,7 +381,7 @@
     }
   }
 
-  // Basic Leaflet Initialization
+  // Basic Leaflet Initialization (Centered to general location first)
   document.addEventListener("DOMContentLoaded", function() {
     map = L.map('map', { zoomControl: false }).setView([23.7957, 86.4304], 13);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
@@ -461,7 +389,9 @@
   });
 </script>
 
+<!-- 🔥 SUPABASE ENGINE & BUSINESS LOGIC 🔥 -->
 <script>
+  // 🚨 IMPORTANT: Apna URL aur Key yahan zaroor check kar lena
   const SUPABASE_URL = "https://fekvrxxhspbntjriwiha.supabase.co";
   const SUPABASE_ANON_KEY = "sb_publishable_YrjBg24OxoW--XxfI71EBg_nCqm3lMo";
   const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -510,13 +440,11 @@
       
       if (userRole === "provider") {
         document.body.classList.add('provider-mode');
-        // Business Logic: Load Provider details if any.
         window.loadProviderDashboard();
       } else {
         document.body.classList.remove('provider-mode');
-        // Business Logic: Ask customer location & enable Map Center Pin
-        window.askCustomerLocation();
         window.loadLiveProvidersOnMap();
+        window.askCustomerLocation(); // Auto locate customer upon login
       }
       closeModal();
     } else {
@@ -526,19 +454,42 @@
     }
   });
 
-  /* ── BUSINESS LOGIC: CUSTOMER MAP CENTER PIN ── */
+  /* ── BUSINESS LOGIC: AUTOMATIC CUSTOMER LOCATION PIN ── */
   window.askCustomerLocation = function() {
     if (navigator.geolocation) {
+      document.getElementById('location-text').textContent = "Finding...";
+      
       navigator.geolocation.getCurrentPosition((pos) => {
-        const lat = pos.coords.latitude; const lng = pos.coords.longitude;
-        map.setView([lat, lng], 15);
-        document.getElementById('center-pin').classList.add('active'); // Show fixed center pin overlay
-        showToast("Location detected. Drag the map to pinpoint exact location.");
-        document.getElementById('location-text').textContent = "Location Set";
+        const lat = pos.coords.latitude; 
+        const lng = pos.coords.longitude;
+        
+        map.setView([lat, lng], 14); // Move map to customer's exact location
+
+        // Remove old customer marker if it exists
+        if(customerMarker) { map.removeLayer(customerMarker); }
+
+        // Create a special Blue Marker for "You are here"
+        const customerIcon = L.divIcon({
+            className: 'custom-div-icon',
+            html: "<div style='background-color:#1A5FD4;width:18px;height:18px;border-radius:50%;border:3px solid white;box-shadow:0 0 10px rgba(0,0,0,0.5);'></div>",
+            iconSize: [18, 18],
+            iconAnchor: [9, 9]
+        });
+
+        customerMarker = L.marker([lat, lng], {icon: customerIcon, zIndexOffset: 1000})
+            .addTo(map)
+            .bindPopup("<b>📍 You are here</b>")
+            .openPopup();
+
+        document.getElementById('location-text').textContent = "Location Found";
+        showToast("Your location detected automatically!");
+
       }, (err) => {
-        showToast("Please allow location access to find nearby providers.");
-        document.getElementById('center-pin').classList.add('active'); // Still show it so they can drag map manually
+        showToast("Please allow location access in your browser settings to see nearby providers.");
+        document.getElementById('location-text').textContent = "Location Denied";
       });
+    } else {
+      showToast("Your browser does not support location finding.");
     }
   };
 
@@ -574,13 +525,13 @@
     }
   };
 
-  /* ── BUSINESS LOGIC: LOAD REAL-TIME PROVIDERS ON MAP ── */
+  /* ── BUSINESS LOGIC: LOAD REAL-TIME PROVIDERS ON MAP & SIDEBAR ── */
   window.loadLiveProvidersOnMap = async function() {
     const { data: providers, error } = await supabaseClient.from('profiles').select('*').eq('role', 'provider');
     if (error || !providers) return;
 
     const listContainer = document.getElementById('customer-provider-list');
-    if(listContainer) listContainer.innerHTML = ''; // Clear loading text
+    if(listContainer) listContainer.innerHTML = ''; 
 
     if(providers.length === 0 && listContainer) {
        listContainer.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--text3);">No active providers found in database.</div>';
@@ -589,11 +540,9 @@
 
     providers.forEach(p => {
       if(p.latitude && p.longitude) {
-        // Create Locked Marker (draggable: false is default in Leaflet)
         const marker = L.marker([p.latitude, p.longitude], { draggable: false }).addTo(map);
         marker.bindPopup(`<b>${p.full_name || 'Verified Provider'}</b><br>${p.service_category || 'Service Professional'}<br>📞 ${p.mobile}`);
 
-        // Add to Sidebar
         if(listContainer) {
           const item = document.createElement('div');
           item.className = 'map-provider-item';
@@ -603,7 +552,7 @@
             <div class="mpi-info">
               <div class="mpi-name">${p.full_name || 'Verified Provider'}</div>
               <div class="mpi-role">${p.service_category || 'Service Professional'}</div>
-              <div class="mpi-dist">📍 Live Map Locked</div>
+              <div style="font-size: 11px; color: var(--green); margin-top:2px;">📍 Active on map</div>
             </div>
           `;
           listContainer.appendChild(item);
@@ -612,10 +561,8 @@
     });
   };
 
-  /* ── BUSINESS LOGIC: ZERO CUSTOMER DASHBOARD ── */
+  /* ── BUSINESS LOGIC: LOAD PROVIDER DASHBOARD DATA ── */
   window.loadProviderDashboard = async function() {
-    // Basic verification - If we later add 'jobs' table, count query goes here.
-    // Right now, showing the default "0 customers" UI cleanly.
     const { data: { session } } = await supabaseClient.auth.getSession();
     if(session) {
       const { data } = await supabaseClient.from('profiles').select('service_category, experience').eq('id', session.user.id).single();
@@ -626,7 +573,7 @@
     }
   };
 
-  /* ── AUTH HELPERS ── */
+  /* ── AUTHENTICATION HELPERS ── */
   window.initiateGoogleAuth = async function (role = 'customer') {
     if (role === 'provider') {
       const mobileInput = document.getElementById('provider-mobile');
