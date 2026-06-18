@@ -206,8 +206,23 @@
     <div class="hero-card">
       <h3 style="margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 10px;">Your Professional Details</h3>
       <div class="form-group"><label class="form-label">Work Experience (Years)</label><input type="number" id="prov-exp" class="form-input" placeholder="e.g. 5"></div>
-      <div class="form-group"><label class="form-label">Service Category</label><input type="text" id="prov-cat" class="form-input" placeholder="e.g. Electrician"></div>
-      <button class="btn btn-green" id="save-prov-btn" style="width: 100%; justify-content: center;" onclick="window.saveProviderProfile()">Save Details & Lock Location 📍</button>
+<div class="form-group">
+  <label class="form-label">Service Category</label>
+  <input type="text" id="prov-cat" class="form-input" placeholder="e.g. Electrician, Plumber..." list="services-list">
+  
+  <datalist id="services-list">
+    <option value="Electrician"></option>
+    <option value="Plumber"></option>
+    <option value="Carpenter"></option>
+    <option value="Home Tutor"></option>
+    <option value="Maid / House Help"></option>
+    <option value="AC Repair & Service"></option>
+    <option value="Painter"></option>
+    <option value="Mechanic"></option>
+    <option value="Labor / Helper"></option>
+  </datalist>
+</div>
+     <button class="btn btn-green" id="save-prov-btn" style="width: 100%; justify-content: center;" onclick="window.saveProviderProfile()">Save Details & Lock Location 📍</button>
       <p style="font-size: 12px; color: var(--text3); text-align: center; margin-top: 10px;">Your map pin will be locked to your current location so customers can find you.</p>
     </div>
 
