@@ -203,28 +203,39 @@
   </div>
   
   <div class="provider-grid" style="display: grid; grid-template-columns: 1fr 1.5fr; gap: 30px;">
-    <div class="hero-card">
-      <h3 style="margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 10px;">Your Professional Details</h3>
-      <div class="form-group"><label class="form-label">Work Experience (Years)</label><input type="number" id="prov-exp" class="form-input" placeholder="e.g. 5"></div>
-<div class="form-group">
-  <label class="form-label">Service Category</label>
-  <input type="text" id="prov-cat" class="form-input" placeholder="e.g. Electrician, Plumber..." list="services-list">
+   <div class="hero-card">
+  <h3 style="margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 10px;">Your Professional Details</h3>
   
-  <datalist id="services-list">
-    <option value="Electrician"></option>
-    <option value="Plumber"></option>
-    <option value="Carpenter"></option>
-    <option value="Home Tutor"></option>
-    <option value="Maid / House Help"></option>
-    <option value="AC Repair & Service"></option>
-    <option value="Painter"></option>
-    <option value="Mechanic"></option>
-    <option value="Labor / Helper"></option>
-  </datalist>
-</div>
-     <button class="btn btn-green" id="save-prov-btn" style="width: 100%; justify-content: center;" onclick="window.saveProviderProfile()">Save Details & Lock Location 📍</button>
-      <p style="font-size: 12px; color: var(--text3); text-align: center; margin-top: 10px;">Your map pin will be locked to your current location so customers can find you.</p>
+  <div id="prov-view-mode" style="display: none; background: var(--surface2); padding: 20px; border-radius: var(--radius-sm); margin-bottom: 15px;">
+    <div style="font-size: 14px; color: var(--text2); margin-bottom: 8px;">Service Category</div>
+    <div id="view-cat" style="font-size: 18px; font-weight: 700; margin-bottom: 15px;">-</div>
+    <div style="font-size: 14px; color: var(--text2); margin-bottom: 8px;">Experience</div>
+    <div id="view-exp" style="font-size: 18px; font-weight: 700;">-</div>
+    <div style="margin-top: 20px; text-align: center; font-size: 12px; color: var(--green);">✅ Live Location Locked & Secured</div>
+  </div>
+
+  <div id="prov-edit-mode">
+    <div class="form-group">
+      <label class="form-label">Work Experience (Years)</label>
+      <input type="number" id="prov-exp" class="form-input" placeholder="e.g. 5">
     </div>
+    <div class="form-group">
+      <label class="form-label">Service Category</label>
+      <input type="text" id="prov-cat" class="form-input" placeholder="e.g. Electrician, Plumber..." list="services-list">
+      <datalist id="services-list">
+        <option value="Electrician"></option>
+        <option value="Plumber"></option>
+        <option value="Carpenter"></option>
+        <option value="Home Tutor"></option>
+      </datalist>
+    </div>
+  </div>
+
+  <button class="btn btn-green" id="save-prov-btn" style="width: 100%; justify-content: center;" onclick="window.saveProviderProfile()">Save Details & Lock Location 📍</button>
+  <button class="btn btn-outline" id="edit-prov-btn" style="width: 100%; justify-content: center; display: none; margin-top: 10px;" onclick="window.enableEditMode()">✏️ Edit Data</button>
+  
+  <p style="font-size: 12px; color: var(--text3); text-align: center; margin-top: 10px;">Security: Changes require active OTP session.</p>
+</div>
 
     <div class="hero-card">
       <h3 style="margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 10px;">Incoming Requests</h3>
@@ -614,16 +625,35 @@ window.loadLiveProvidersOnMap = async function(customerLat = null, customerLng =
 };
 
  /* ── BUSINESS LOGIC: LOAD PROVIDER DASHBOARD DATA ── */
-  window.loadProviderDashboard = async function() {
-    const { data: { session } } = await supabaseClient.auth.getSession();
-    if(session) {
-      const { data } = await supabaseClient.from('profiles').select('service_category, experience').eq('id', session.user.id).single();
-      if(data) {
-        if(data.service_category) document.getElementById('prov-cat').value = data.service_category;
-        if(data.experience) document.getElementById('prov-exp').value = data.experience;
-      }
+window.loadProviderDashboard = async function() {
+  const { data: { session } } = await supabaseClient.auth.getSession();
+  if(session) {
+    const { data } = await supabaseClient.from('profiles').select('service_category, experience').eq('id', session.user.id).single();
+    
+    // Agar provider ka data pehle se saved hai, toh usko LOCK mode mein dikhao
+    if(data && data.service_category) {
+      document.getElementById('prov-cat').value = data.service_category;
+      document.getElementById('prov-exp').value = data.experience || '';
+      
+      document.getElementById('view-cat').textContent = data.service_category;
+      document.getElementById('view-exp').textContent = data.experience ? data.experience + " Years" : "N/A";
+      
+      document.getElementById('prov-edit-mode').style.display = 'none';
+      document.getElementById('prov-view-mode').style.display = 'block';
+      document.getElementById('save-prov-btn').style.display = 'none';
+      document.getElementById('edit-prov-btn').style.display = 'flex';
     }
-  };
+  }
+};
+
+/* ── BUSINESS LOGIC: ENABLE EDIT MODE ── */
+window.enableEditMode = function() {
+  document.getElementById('prov-view-mode').style.display = 'none';
+  document.getElementById('prov-edit-mode').style.display = 'block';
+  document.getElementById('edit-prov-btn').style.display = 'none';
+  document.getElementById('save-prov-btn').style.display = 'flex';
+  document.getElementById('save-prov-btn').textContent = "Update Details & Relock 📍";
+};
 
   /* ── AUTHENTICATION HELPERS ── */
   window.initiateGoogleAuth = async function (role = 'customer') {
