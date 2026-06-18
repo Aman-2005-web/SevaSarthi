@@ -358,34 +358,39 @@
   function backToPhone() { document.getElementById('consumer-input-fields').style.display = 'block'; document.getElementById('consumer-otp-fields').style.display = 'none'; }
   function backToProviderPhone() { document.getElementById('provider-input-fields').style.display = 'block'; document.getElementById('provider-otp-fields').style.display = 'none'; }
 
-  function toggleAuthIntent(mode) {
-    backToPhone();
-    const title = document.getElementById('modal-title'); const sub = document.getElementById('modal-sub');
-    const btn = document.getElementById('primary-auth-btn'); const nameRow = document.getElementById('name-row');
-    const toggleTxt = document.getElementById('auth-toggle-text');
-    if (mode === 'register') {
-      title.textContent = 'Create Account'; sub.textContent = 'Join thousands finding services daily';
-      btn.textContent = 'Send Verification OTP'; nameRow.style.display = 'grid';
-      toggleTxt.innerHTML = 'Already have an account? <a href="#" onclick="toggleAuthIntent(\'login\');return false;" style="color:var(--accent); text-decoration:none; font-weight:600;">Sign in</a>';
-    } else {
-      title.textContent = 'Welcome back'; sub.textContent = 'Sign in to your account';
-      btn.textContent = 'Send Login OTP'; nameRow.style.display = 'none';
-      toggleTxt.innerHTML = 'New to SevaSarthi? <a href="#" onclick="toggleAuthIntent(\'register\');return false;" style="color:var(--accent); text-decoration:none; font-weight:600;">Create account</a>';
-    }
+  /* ── SMART AUTH TRACKER ── */
+let currentAuthMode = 'login'; // Default mode
+
+function toggleAuthIntent(mode) {
+  currentAuthMode = mode; // Tracker update
+  backToPhone();
+  const title = document.getElementById('modal-title'); const sub = document.getElementById('modal-sub');
+  const btn = document.getElementById('primary-auth-btn'); const nameRow = document.getElementById('name-row');
+  const toggleTxt = document.getElementById('auth-toggle-text');
+  if (mode === 'register') {
+    title.textContent = 'Create Account'; sub.textContent = 'Join thousands finding services daily';
+    btn.textContent = 'Send Verification OTP'; nameRow.style.display = 'grid';
+    toggleTxt.innerHTML = 'Already have an account? <a href="#" onclick="toggleAuthIntent(\'login\');return false;" style="color:var(--accent); text-decoration:none; font-weight:600;">Sign in</a>';
+  } else {
+    title.textContent = 'Welcome back'; sub.textContent = 'Sign in to your account';
+    btn.textContent = 'Send Login OTP'; nameRow.style.display = 'none';
+    toggleTxt.innerHTML = 'New to SevaSarthi? <a href="#" onclick="toggleAuthIntent(\'register\');return false;" style="color:var(--accent); text-decoration:none; font-weight:600;">Create account</a>';
   }
+}
 
   function toggleProviderAuthIntent(mode) {
-    backToProviderPhone();
-    const nameRow = document.getElementById('provider-name-row'); const btn = document.getElementById('provider-auth-btn');
-    const toggleTxt = document.getElementById('provider-auth-toggle-text');
-    if (mode === 'register') {
-      nameRow.style.display = 'grid'; btn.textContent = 'Send Registration OTP';
-      toggleTxt.innerHTML = 'Already a provider? <a href="#" onclick="toggleProviderAuthIntent(\'login\');return false;" style="color:var(--accent); text-decoration:none; font-weight:600;">Sign in</a>';
-    } else {
-      nameRow.style.display = 'none'; btn.textContent = 'Send Login OTP';
-      toggleTxt.innerHTML = 'New provider? <a href="#" onclick="toggleProviderAuthIntent(\'register\');return false;" style="color:var(--accent); text-decoration:none; font-weight:600;">Create provider account</a>';
-    }
+  currentAuthMode = mode; // Tracker update
+  backToProviderPhone();
+  const nameRow = document.getElementById('provider-name-row'); const btn = document.getElementById('provider-auth-btn');
+  const toggleTxt = document.getElementById('provider-auth-toggle-text');
+  if (mode === 'register') {
+    nameRow.style.display = 'grid'; btn.textContent = 'Send Registration OTP';
+    toggleTxt.innerHTML = 'Already a provider? <a href="#" onclick="toggleProviderAuthIntent(\'login\');return false;" style="color:var(--accent); text-decoration:none; font-weight:600;">Sign in</a>';
+  } else {
+    nameRow.style.display = 'none'; btn.textContent = 'Send Login OTP';
+    toggleTxt.innerHTML = 'New provider? <a href="#" onclick="toggleProviderAuthIntent(\'register\');return false;" style="color:var(--accent); text-decoration:none; font-weight:600;">Create provider account</a>';
   }
+}
 
   function otpAutoTab(input) {
     input.value = input.value.replace(/\D/g, '');
@@ -404,9 +409,8 @@
   });
 </script>
 
-<!-- 🔥 SUPABASE ENGINE & BUSINESS LOGIC 🔥 -->
+
 <script>
-  // 🚨 IMPORTANT: Apna URL aur Key yahan zaroor check kar lena
   const SUPABASE_URL = "https://fekvrxxhspbntjriwiha.supabase.co";
   const SUPABASE_ANON_KEY = "sb_publishable_YrjBg24OxoW--XxfI71EBg_nCqm3lMo";
   const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -469,45 +473,54 @@
     }
   });
 
-  /* ── BUSINESS LOGIC: AUTOMATIC CUSTOMER LOCATION PIN ── */
-  window.askCustomerLocation = function() {
-    if (navigator.geolocation) {
-      document.getElementById('location-text').textContent = "Finding...";
+ /* ── DISTANCE CALCULATOR ENGINE (Returns distance in KM) ── */
+function calculateDistance(lat1, lon1, lat2, lon2) {
+  const R = 6371; // Earth's radius in km
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+  const a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon/2) * Math.sin(dLon/2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  return R * c;
+}
+
+/* ── BUSINESS LOGIC: AUTOMATIC CUSTOMER LOCATION & AREA NAME ── */
+window.askCustomerLocation = function() {
+  if (navigator.geolocation) {
+    document.getElementById('location-text').textContent = "Finding...";
+    navigator.geolocation.getCurrentPosition(async (pos) => {
+      const lat = pos.coords.latitude; 
+      const lng = pos.coords.longitude;
       
-      navigator.geolocation.getCurrentPosition((pos) => {
-        const lat = pos.coords.latitude; 
-        const lng = pos.coords.longitude;
-        
-        map.setView([lat, lng], 14); // Move map to customer's exact location
+      map.setView([lat, lng], 13); 
+      if(window.customerMarker) { map.removeLayer(window.customerMarker); }
 
-        // Remove old customer marker if it exists
-        if(customerMarker) { map.removeLayer(customerMarker); }
+      window.customerMarker = L.marker([lat, lng], {zIndexOffset: 1000})
+          .addTo(map).bindPopup("<b>📍 You are here</b>").openPopup();
 
-        // Create a special Blue Marker for "You are here"
-        const customerIcon = L.divIcon({
-            className: 'custom-div-icon',
-            html: "<div style='background-color:#1A5FD4;width:18px;height:18px;border-radius:50%;border:3px solid white;box-shadow:0 0 10px rgba(0,0,0,0.5);'></div>",
-            iconSize: [18, 18],
-            iconAnchor: [9, 9]
-        });
+      showToast("Location detected automatically!");
 
-        customerMarker = L.marker([lat, lng], {icon: customerIcon, zIndexOffset: 1000})
-            .addTo(map)
-            .bindPopup("<b>📍 You are here</b>")
-            .openPopup();
+      // 🔥 Naya: Coordinates aane ke baad hi 10 KM filter wala map load hoga
+      window.loadLiveProvidersOnMap(lat, lng);
 
+      try {
+        const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`);
+        const data = await res.json();
+        const areaName = data.address.suburb || data.address.neighbourhood || data.address.town || data.address.city || "Location Found";
+        document.getElementById('location-text').textContent = areaName;
+      } catch (err) {
         document.getElementById('location-text').textContent = "Location Found";
-        showToast("Your location detected automatically!");
+      }
 
-      }, (err) => {
-        showToast("Please allow location access in your browser settings to see nearby providers.");
-        document.getElementById('location-text').textContent = "Location Denied";
-      });
-    } else {
-      showToast("Your browser does not support location finding.");
-    }
-  };
-
+    }, (err) => {
+      showToast("Please allow location access to see nearby providers.");
+      document.getElementById('location-text').textContent = "Find Location";
+      window.loadLiveProvidersOnMap(null, null); // Error aane par "Please allow" dikhayega
+    });
+  } else {
+    showToast("Your browser does not support location finding.");
+  }
+};
+ 
   /* ── BUSINESS LOGIC: PROVIDER LOCATION LOCK ── */
   window.saveProviderProfile = async function() {
     const exp = document.getElementById('prov-exp').value;
@@ -540,43 +553,56 @@
     }
   };
 
-  /* ── BUSINESS LOGIC: LOAD REAL-TIME PROVIDERS ON MAP & SIDEBAR ── */
-  window.loadLiveProvidersOnMap = async function() {
-    const { data: providers, error } = await supabaseClient.from('profiles').select('*').eq('role', 'provider');
-    if (error || !providers) return;
+  /* ── BUSINESS LOGIC: LOAD 10KM PROVIDERS ON MAP & SIDEBAR ── */
+window.loadLiveProvidersOnMap = async function(customerLat = null, customerLng = null) {
+  const listContainer = document.getElementById('customer-provider-list');
+  if(!listContainer) return;
 
-    const listContainer = document.getElementById('customer-provider-list');
-    if(listContainer) listContainer.innerHTML = ''; 
+  // Pre-Location UI
+  if (!customerLat || !customerLng) {
+    listContainer.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--text3); font-size: 14px;">📍 Searching providers near you...<br><br><span style="font-size:12px;">Please allow your location access to see providers within 10 km.</span></div>';
+    return;
+  }
 
-    if(providers.length === 0 && listContainer) {
-       listContainer.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--text3);">No active providers found in database.</div>';
-       return;
-    }
+  const { data: providers, error } = await supabaseClient.from('profiles').select('*').eq('role', 'provider');
+  if (error || !providers) return;
 
-    providers.forEach(p => {
-      if(p.latitude && p.longitude) {
-        const marker = L.marker([p.latitude, p.longitude], { draggable: false }).addTo(map);
-        marker.bindPopup(`<b>${p.full_name || 'Verified Provider'}</b><br>${p.service_category || 'Service Professional'}<br>📞 ${p.mobile}`);
+  listContainer.innerHTML = ''; 
+  let foundNearby = false;
 
-        if(listContainer) {
-          const item = document.createElement('div');
-          item.className = 'map-provider-item';
-          item.onclick = () => { map.setView([p.latitude, p.longitude], 15); marker.openPopup(); };
-          item.innerHTML = `
-            <div class="mpi-avatar" style="background:var(--accent);">${(p.full_name||'P').substring(0,2).toUpperCase()}</div>
-            <div class="mpi-info">
-              <div class="mpi-name">${p.full_name || 'Verified Provider'}</div>
-              <div class="mpi-role">${p.service_category || 'Service Professional'}</div>
-              <div style="font-size: 11px; color: var(--green); margin-top:2px;">📍 Active on map</div>
-            </div>
-          `;
-          listContainer.appendChild(item);
-        }
+  providers.forEach(p => {
+    if(p.latitude && p.longitude) {
+      // Distance Check
+      const dist = calculateDistance(customerLat, customerLng, p.latitude, p.longitude);
+      
+      // Sirf wahi dikhenge jo 10 km ke andar hain
+      if (dist <= 10) {
+        foundNearby = true;
+        const marker = L.marker([p.latitude, p.longitude]).addTo(map);
+        marker.bindPopup(`<b>${p.full_name || 'Verified Provider'}</b><br>${p.service_category || 'Service'}<br>📞 ${p.mobile}<br>📍 ${dist.toFixed(1)} km away`);
+
+        const item = document.createElement('div');
+        item.className = 'map-provider-item';
+        item.onclick = () => { map.setView([p.latitude, p.longitude], 15); marker.openPopup(); };
+        item.innerHTML = `
+          <div class="mpi-avatar" style="background:var(--accent);">${(p.full_name||'P').substring(0,2).toUpperCase()}</div>
+          <div class="mpi-info">
+            <div class="mpi-name">${p.full_name || 'Verified Provider'}</div>
+            <div class="mpi-role">${p.service_category || 'Service Professional'}</div>
+            <div style="font-size: 11px; color: var(--green); margin-top:2px;">📍 ${dist.toFixed(1)} km away</div>
+          </div>
+        `;
+        listContainer.appendChild(item);
       }
-    });
-  };
+    }
+  });
 
-  /* ── BUSINESS LOGIC: LOAD PROVIDER DASHBOARD DATA ── */
+  if(!foundNearby) {
+     listContainer.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--text3);">No providers found within 10 km of your location yet.</div>';
+  }
+};
+  
+ /* ── BUSINESS LOGIC: LOAD PROVIDER DASHBOARD DATA ── */
   window.loadProviderDashboard = async function() {
     const { data: { session } } = await supabaseClient.auth.getSession();
     if(session) {
@@ -590,48 +616,64 @@
 
   /* ── AUTHENTICATION HELPERS ── */
   window.initiateGoogleAuth = async function (role = 'customer') {
+  // Sirf tab number mangega jab user "Create Account" par click kiya ho
+  if (currentAuthMode === 'register') {
     if (role === 'provider') {
       const mobileInput = document.getElementById('provider-mobile');
       const mobileValue = mobileInput ? mobileInput.value.replace(/\D/g, '') : '';
-      if (!/^[6-9]\d{9}$/.test(mobileValue)) { showToast("Enter a valid 10-digit mobile number before continuing."); if(mobileInput) mobileInput.focus(); return; }
-      localStorage.setItem('pending_role', 'provider'); localStorage.setItem('pending_phone', '+91' + mobileValue);
-      const fName = document.getElementById('provider-firstname'); const lName = document.getElementById('provider-lastname');
-      if(fName && fName.value) localStorage.setItem('temp_firstname', fName.value);
-      if(lName && lName.value) localStorage.setItem('temp_lastname', lName.value);
-    } else {
-      localStorage.setItem('pending_role', 'customer');
-      const fName = document.getElementById('auth-firstname'); const lName = document.getElementById('auth-lastname');
-      if(fName && fName.value) localStorage.setItem('temp_firstname', fName.value);
-      if(lName && lName.value) localStorage.setItem('temp_lastname', lName.value);
+      if (!/^[6-9]\d{9}$/.test(mobileValue)) { showToast("Enter a valid 10-digit mobile number to register."); return; }
+      localStorage.setItem('pending_phone', '+91' + mobileValue);
     }
-    showToast("Opening Google...");
-    await supabaseClient.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.origin + window.location.pathname } });
-  };
+    localStorage.setItem('pending_role', role);
+  }
+  showToast("Opening Google...");
+  await supabaseClient.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.origin + window.location.pathname } });
+};
+ 
+  /* ── DUPLICATE PREVENTION OTP ENGINE ── */
+window.triggerSupabaseOTP = async function (role = 'customer') {
+  const inputId = role === 'provider' ? 'provider-mobile' : 'auth-mobile';
+  const displayId = role === 'provider' ? 'provider-otp-phone-display' : 'otp-phone-display';
+  const raw = document.getElementById(inputId).value.trim().replace(/\D/g, '');
+  if (!/^[6-9]\d{9}$/.test(raw)) { showToast("Enter a valid 10-digit Indian number."); return; }
+  
+  const phoneWithCode = '+91' + raw;
 
-  window.triggerSupabaseOTP = async function (role = 'customer') {
-    const inputId = role === 'provider' ? 'provider-mobile' : 'auth-mobile';
-    const displayId = role === 'provider' ? 'provider-otp-phone-display' : 'otp-phone-display';
-    const raw = document.getElementById(inputId).value.trim().replace(/\D/g, '');
-    if (!/^[6-9]\d{9}$/.test(raw)) { showToast("Enter a valid 10-digit Indian number."); return; }
-    
-    const fNameId = role === 'provider' ? 'provider-firstname' : 'auth-firstname';
-    const lNameId = role === 'provider' ? 'provider-lastname' : 'auth-lastname';
-    const fName = document.getElementById(fNameId); const lName = document.getElementById(lNameId);
-    if(fName && fName.value) localStorage.setItem('temp_firstname', fName.value);
-    if(lName && lName.value) localStorage.setItem('temp_lastname', lName.value);
+  // Database Check for Duplicates
+  const { data: existingProfile } = await supabaseClient.from('profiles').select('id').eq('mobile', phoneWithCode).single();
 
-    window._globalCurrentAuthPhone = '+91' + raw; document.getElementById(displayId).textContent = window._globalCurrentAuthPhone;
-    showToast("Requesting OTP...");
-    const { error } = await supabaseClient.auth.signInWithOtp({ phone: window._globalCurrentAuthPhone });
-    if (error) { showToast("Error: " + error.message); } 
-    else {
-      document.getElementById(role === 'provider' ? 'provider-input-fields' : 'consumer-input-fields').style.display = 'none';
-      document.getElementById(role === 'provider' ? 'provider-otp-fields' : 'consumer-otp-fields').style.display = 'block';
-      showToast("OTP sent successfully!");
-    }
-  };
+  // Agar user "Create Account" kar raha hai aur number pehle se hai
+  if (typeof currentAuthMode !== 'undefined' && currentAuthMode === 'register' && existingProfile) {
+      showToast("❌ This number already has an account! Please sign in.");
+      return; // ROK DO
+  }
+  
+  // Agar user "Login" kar raha hai aur number database mein nahi hai
+  if (typeof currentAuthMode !== 'undefined' && currentAuthMode === 'login' && !existingProfile) {
+      showToast("❌ No account found! Please create an account first.");
+      return; // ROK DO
+  }
 
-  window.verifySupabaseOTP = async function (role = 'customer') {
+  // Agar sab theek hai toh naam save karo aur OTP bhejo
+  const fNameId = role === 'provider' ? 'provider-firstname' : 'auth-firstname';
+  const lNameId = role === 'provider' ? 'provider-lastname' : 'auth-lastname';
+  const fName = document.getElementById(fNameId); const lName = document.getElementById(lNameId);
+  if(fName && fName.value) localStorage.setItem('temp_firstname', fName.value);
+  if(lName && lName.value) localStorage.setItem('temp_lastname', lName.value);
+
+  window._globalCurrentAuthPhone = phoneWithCode; document.getElementById(displayId).textContent = window._globalCurrentAuthPhone;
+  showToast("Requesting OTP...");
+  
+  const { error } = await supabaseClient.auth.signInWithOtp({ phone: window._globalCurrentAuthPhone });
+  if (error) { showToast("Error: " + error.message); } 
+  else {
+    document.getElementById(role === 'provider' ? 'provider-input-fields' : 'consumer-input-fields').style.display = 'none';
+    document.getElementById(role === 'provider' ? 'provider-otp-fields' : 'consumer-otp-fields').style.display = 'block';
+    showToast("OTP sent successfully!");
+  }
+};
+ 
+ window.verifySupabaseOTP = async function (role = 'customer') {
     if (!window._globalCurrentAuthPhone) return;
     let code = role === 'provider' ? document.getElementById('provider-otp-code').value.trim() : Array.from(document.querySelectorAll('.otp-field')).map(i => i.value.trim()).join('');
     if (code.length < 6) { showToast("Enter all 6 digits."); return; }
