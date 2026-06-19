@@ -60,8 +60,20 @@
   .btn { display: inline-flex; align-items: center; gap: 6px; padding: 9px 18px; border-radius: var(--radius-sm); font-size: 14px; font-weight: 600; cursor: pointer; border: none; transition: all 0.2s; text-decoration: none; }
   .btn-outline { background: transparent; border: 1.5px solid var(--border); color: var(--text); }
   .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
-  .btn-primary { background: var(--accent); color: #fff; }
-  .btn-primary:hover { background: #c73d22; transform: translateY(-1px); }
+  .btn-primary { 
+  background: var(--accent); 
+  color: #1096de; 
+  transition: all 0.2s ease;
+}
+.btn-primary:hover { 
+  filter: brightness(0.9); 
+  transform: translateY(-2px); 
+  box-shadow: 0 6px 16px rgba(0,0,0,0.15); 
+.btn-primary:active { 
+  filter: brightness(0.8); 
+  transform: translateY(0px); 
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
   .btn-green { background: var(--green); color: #fff; }
   
   .hero { padding: 80px 5% 60px; display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; max-width: 1200px; margin: 0 auto; }
