@@ -20,8 +20,8 @@
     --text: #1A1A18;
     --text2: #5A5A55;
     --text3: #8A8A84;
-    --accent: #E84B2F;
-    --accent2: #F5A623;
+    --accent: #1096de;
+    --accent2: #10ded7;
     --blue: #1A5FD4;
     --green: #1B8A4E;
     --border: rgba(26,26,24,0.1);
@@ -81,7 +81,15 @@
   .search-box input { flex: 1; background: none; border: none; outline: none; font-size: 15px; color: var(--text); }
   .search-divider { width: 1px; background: var(--border); height: 24px; }
   .search-location { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--text2); padding: 0 12px; cursor: pointer; white-space: nowrap; }
-
+  .quick-services { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; align-items: center; }
+  .qs-label { font-size: 13px; color: var(--text3); font-weight: 600; }
+  .qs-tag { background: var(--surface2); border: 1px solid var(--border); padding: 6px 12px; border-radius: 20px; font-size: 13px; color: var(--text2); text-decoration: none; transition: all 0.2s; }
+  .qs-tag:hover { border-color: var(--accent); color: var(--accent); background: var(--surface); }
+  
+  @media (max-width: 900px) {
+    .quick-services { justify-content: center; }
+  }
+ 
   .map-section { background: var(--surface2); padding: 64px 5%; }
   .map-demo { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 360px 1fr; gap: 20px; }
   .map-sidebar { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
@@ -137,7 +145,7 @@
 <body>
 
 <nav>
-  <a href="#" class="logo">Seva<span>Sarthi</span><span class="logo-dot"></span></a>
+  <a href="#" class="logo">Seva<span>Sarthi</span></a>
   <div style="display:flex;gap:8px;align-items:center;">
     <button id="signin-btn" class="btn btn-outline" onclick="openModal('login')">Sign In</button>
     <button id="register-btn" class="btn btn-primary" onclick="openModal('register')">Get Started</button>
@@ -151,7 +159,7 @@
 <div class="hide-on-provider">
   <div class="hero">
     <div>
-      <div class="hero-eyebrow">🇮🇳 Trusted in 200+ Cities Across India</div>
+      <div class="hero-eyebrow">🇮🇳 Trusted Across India</div>
       <h1>Find <em>Skilled Workers</em> Near You — Instantly</h1>
       <p>Electricians, plumbers, carpenters, home tutors, labors and 40+ more services. Verified, rated, and just minutes away.</p>
       <div class="hero-cta">
@@ -166,7 +174,16 @@
       <div class="search-box">
         <input type="text" id="search-input" placeholder="Search electrician, plumber, carpenter, tutor…" aria-label="Search for services">
         <div class="search-divider"></div>
-        
+       
+     <div class="quick-services">
+        <span class="qs-label">Popular:</span>
+        <a href="#" class="qs-tag" onclick="document.getElementById('search-input').value='Electrician'; return false;">⚡ Electrician</a>
+        <a href="#" class="qs-tag" onclick="document.getElementById('search-input').value='Plumber'; return false;">🔧 Plumber</a>
+        <a href="#" class="qs-tag" onclick="document.getElementById('search-input').value='Carpenter'; return false;">🪚 Carpenter</a>
+        <a href="#" class="qs-tag" onclick="document.getElementById('search-input').value='Home Tutor'; return false;">📚 Tutor</a>
+        <a href="#" class="qs-tag" onclick="document.getElementById('search-input').value='Maid'; return false;">🧹 Maid</a>
+      </div>
+       
         <!-- AUTO LOCATION BUTTON -->
         <div class="search-location" onclick="window.askCustomerLocation()">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--accent); flex-shrink: 0;"><path d="M12 22s-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 8.2c0 7.3-8 11.8-8 11.8z"/><circle cx="12" cy="10" r="3"/></svg>
@@ -203,21 +220,52 @@
   </div>
   
   <div class="provider-grid" style="display: grid; grid-template-columns: 1fr 1.5fr; gap: 30px;">
-   <div class="hero-card">
+<div class="hero-card">
   <h3 style="margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 10px;">Your Professional Details</h3>
   
   <div id="prov-view-mode" style="display: none; background: var(--surface2); padding: 20px; border-radius: var(--radius-sm); margin-bottom: 15px;">
-    <div style="font-size: 14px; color: var(--text2); margin-bottom: 8px;">Service Category</div>
-    <div id="view-cat" style="font-size: 18px; font-weight: 700; margin-bottom: 15px;">-</div>
-    <div style="font-size: 14px; color: var(--text2); margin-bottom: 8px;">Experience</div>
-    <div id="view-exp" style="font-size: 18px; font-weight: 700;">-</div>
-    <div style="margin-top: 20px; text-align: center; font-size: 12px; color: var(--green);">✅ Live Location Locked & Secured</div>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+      <div>
+        <div style="font-size: 13px; color: var(--text2); margin-bottom: 4px;">Full Name</div>
+        <div id="view-name" style="font-size: 16px; font-weight: 700;">-</div>
+      </div>
+      <div>
+        <div style="font-size: 13px; color: var(--text2); margin-bottom: 4px;">Gender</div>
+        <div id="view-gender" style="font-size: 16px; font-weight: 700;">-</div>
+      </div>
+    </div>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+      <div>
+        <div style="font-size: 13px; color: var(--text2); margin-bottom: 4px;">Service Category</div>
+        <div id="view-cat" style="font-size: 16px; font-weight: 700;">-</div>
+      </div>
+      <div>
+        <div style="font-size: 13px; color: var(--text2); margin-bottom: 4px;">Experience</div>
+        <div id="view-exp" style="font-size: 16px; font-weight: 700;">-</div>
+      </div>
+    </div>
+    <div style="margin-top: 20px; text-align: center; font-size: 12px; color: var(--green); font-weight: 600;">✅ Profile Saved & Location Locked</div>
   </div>
 
   <div id="prov-edit-mode">
     <div class="form-group">
-      <label class="form-label">Work Experience (Years)</label>
-      <input type="number" id="prov-exp" class="form-input" placeholder="e.g. 5">
+      <label class="form-label">Full Name</label>
+      <input type="text" id="prov-name" class="form-input" placeholder="e.g. Ramesh Kumar">
+    </div>
+    <div class="form-group" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+      <div style="margin: 0;">
+        <label class="form-label">Gender</label>
+        <select id="prov-gender" class="form-input" style="background-color: var(--bg);">
+          <option value="" disabled selected>Select...</option>
+          <option value="Male">Male</option>
+          <option value="Female">Female</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+      <div style="margin: 0;">
+        <label class="form-label">Experience (Years)</label>
+        <input type="number" id="prov-exp" class="form-input" placeholder="e.g. 5">
+      </div>
     </div>
     <div class="form-group">
       <label class="form-label">Service Category</label>
@@ -426,7 +474,7 @@ function toggleAuthIntent(mode) {
   const SUPABASE_ANON_KEY = "sb_publishable_YrjBg24OxoW--XxfI71EBg_nCqm3lMo";
   const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-  // Auth Observer: Real-time Database Upsert on Login
+// Auth Observer: Updated to Save Email, Name, and Phone
   supabaseClient.auth.onAuthStateChange(async (event, session) => {
     const status = document.getElementById("user-status");
     const signin = document.getElementById("signin-btn");
@@ -453,14 +501,20 @@ function toggleAuthIntent(mode) {
         if (pendingName) session.user.user_metadata.full_name = pendingName;
       }
 
+      // User ka saara data nikaalo (Google login se email bhi aayega)
       const userId = session.user.id;
       const userRole = session.user.user_metadata?.role || 'customer';
       const userPhone = session.user.user_metadata?.saved_phone || session.user.phone || '';
       const userName = session.user.user_metadata?.full_name || 'User';
+      const userEmail = session.user.email || ''; // Google login se automatic nikal aayega
 
-      // UPSERT: Saves or Updates details to database on login
+      // Database mein Name, Mobile, Role aur Email sab ek saath save karo
       await supabaseClient.from('profiles').upsert([{ 
-          id: userId, full_name: userName, mobile: userPhone, role: userRole 
+          id: userId, 
+          full_name: userName, 
+          mobile: userPhone, 
+          role: userRole,
+          email: userEmail
       }]);
 
       const identity = userName !== 'User' ? userName : (userPhone || "Logged In");
@@ -474,13 +528,13 @@ function toggleAuthIntent(mode) {
       } else {
         document.body.classList.remove('provider-mode');
         window.loadLiveProvidersOnMap();
-        window.askCustomerLocation(); // Auto locate customer upon login
+        window.askCustomerLocation(); 
       }
       closeModal();
     } else {
       status.style.display = "none"; signin.style.display = "inline-flex"; register.style.display = "inline-flex"; signout.style.display = "none";
       document.body.classList.remove('provider-mode');
-      window.loadLiveProvidersOnMap(); // Show public map
+      window.loadLiveProvidersOnMap(); 
     }
   });
 
@@ -510,7 +564,7 @@ window.askCustomerLocation = function() {
 
       showToast("Location detected automatically!");
 
-      // 🔥 Naya: Coordinates aane ke baad hi 10 KM filter wala map load hoga
+      // Coordinates aane ke baad hi 10 KM filter wala map load hoga
       window.loadLiveProvidersOnMap(lat, lng);
 
       try {
@@ -533,36 +587,52 @@ window.askCustomerLocation = function() {
 };
  
   /* ── BUSINESS LOGIC: PROVIDER LOCATION LOCK ── */
-  window.saveProviderProfile = async function() {
-    const exp = document.getElementById('prov-exp').value;
-    const cat = document.getElementById('prov-cat').value;
-    if(!cat) { showToast("Service Category is required!"); return; }
+window.saveProviderProfile = async function() {
+  const name = document.getElementById('prov-name').value.trim();
+  const gender = document.getElementById('prov-gender').value;
+  const exp = document.getElementById('prov-exp').value;
+  const cat = document.getElementById('prov-cat').value.trim();
+  
+  if(!name) { showToast("Full Name is required!"); return; }
+  if(!cat) { showToast("Service Category is required!"); return; }
 
-    const btn = document.getElementById('save-prov-btn');
-    btn.textContent = "Updating Profile & Locking Location... ⏳";
+  const btn = document.getElementById('save-prov-btn');
+  btn.textContent = "Updating Profile & Locking... ⏳";
 
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(async (pos) => {
-        const lat = pos.coords.latitude; const lng = pos.coords.longitude;
-        const { data: { session } } = await supabaseClient.auth.getSession();
-        if(session) {
-          const { error } = await supabaseClient.from('profiles').update({
-            experience: exp, service_category: cat, latitude: lat, longitude: lng
-          }).eq('id', session.user.id);
-          
-          if(error) showToast("Error saving data: " + error.message);
-          else showToast("Profile Saved & Live Location Locked! 📍");
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(async (pos) => {
+      const lat = pos.coords.latitude; const lng = pos.coords.longitude;
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      
+      if(session) {
+        // Naya Data Database mein Save karo
+        const { error } = await supabaseClient.from('profiles').update({
+          full_name: name,
+          gender: gender,
+          experience: exp, 
+          service_category: cat, 
+          latitude: lat, 
+          longitude: lng
+        }).eq('id', session.user.id);
+        
+        if(error) {
+           showToast("Error saving data: " + error.message);
+        } else {
+           showToast("Profile Saved & Live Location Locked! 📍");
+           // View mode update karne ke liye dashboard reload karo
+           window.loadProviderDashboard(); 
         }
-        btn.textContent = "Save Details & Lock Location 📍";
-      }, (err) => {
-        showToast("Location access denied! Cannot list you on map.");
-        btn.textContent = "Save Details & Lock Location 📍";
-      });
-    } else {
-      showToast("Geolocation is not supported by your browser.");
+      }
       btn.textContent = "Save Details & Lock Location 📍";
-    }
-  };
+    }, (err) => {
+      showToast("Location access denied! Cannot list you on map.");
+      btn.textContent = "Save Details & Lock Location 📍";
+    });
+  } else {
+    showToast("Geolocation is not supported by your browser.");
+    btn.textContent = "Save Details & Lock Location 📍";
+  }
+};
 
  /* ── BUSINESS LOGIC: LOAD PROVIDERS ON MAP & SIDEBAR ── */
 window.loadLiveProvidersOnMap = async function(customerLat = null, customerLng = null) {
@@ -628,24 +698,32 @@ window.loadLiveProvidersOnMap = async function(customerLat = null, customerLng =
 window.loadProviderDashboard = async function() {
   const { data: { session } } = await supabaseClient.auth.getSession();
   if(session) {
-    const { data } = await supabaseClient.from('profiles').select('service_category, experience').eq('id', session.user.id).single();
+    // Database se naye columns bhi fetch karo
+    const { data } = await supabaseClient.from('profiles').select('full_name, gender, service_category, experience').eq('id', session.user.id).single();
     
-    // Agar provider ka data pehle se saved hai, toh usko LOCK mode mein dikhao
-    if(data && data.service_category) {
-      document.getElementById('prov-cat').value = data.service_category;
-      document.getElementById('prov-exp').value = data.experience || '';
+    if(data) {
+      // Edit box mein data dalo
+      document.getElementById('prov-name').value = data.full_name || '';
+      document.getElementById('prov-gender').value = data.gender || '';
+      if(data.service_category) document.getElementById('prov-cat').value = data.service_category;
+      if(data.experience) document.getElementById('prov-exp').value = data.experience;
       
-      document.getElementById('view-cat').textContent = data.service_category;
-      document.getElementById('view-exp').textContent = data.experience ? data.experience + " Years" : "N/A";
-      
-      document.getElementById('prov-edit-mode').style.display = 'none';
-      document.getElementById('prov-view-mode').style.display = 'block';
-      document.getElementById('save-prov-btn').style.display = 'none';
-      document.getElementById('edit-prov-btn').style.display = 'flex';
+      // Agar pehle se service_category saved hai, toh View Mode dikhao
+      if(data.service_category) {
+        document.getElementById('view-name').textContent = data.full_name || 'N/A';
+        document.getElementById('view-gender').textContent = data.gender || 'N/A';
+        document.getElementById('view-cat').textContent = data.service_category;
+        document.getElementById('view-exp').textContent = data.experience ? data.experience + " Years" : "N/A";
+        
+        document.getElementById('prov-edit-mode').style.display = 'none';
+        document.getElementById('prov-view-mode').style.display = 'block';
+        document.getElementById('save-prov-btn').style.display = 'none';
+        document.getElementById('edit-prov-btn').style.display = 'flex';
+      }
     }
   }
 };
-
+ 
 /* ── BUSINESS LOGIC: ENABLE EDIT MODE ── */
 window.enableEditMode = function() {
   document.getElementById('prov-view-mode').style.display = 'none';
