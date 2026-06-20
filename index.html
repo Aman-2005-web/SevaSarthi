@@ -169,23 +169,32 @@
     </div>
   </div>
 
-  <div class="search-section">
-    <div class="search-wrap">
-      <div class="search-box" style="display: flex; align-items: center; background: var(--surface); border: 1px solid var(--border); border-radius: 50px; padding: 5px 5px 5px 20px; box-shadow: var(--shadow); max-width: 800px; margin: 0 auto;">
-  <input type="text" id="search-input" class="search-input" placeholder="Search for any service..." style="flex: 1; border: none; outline: none; font-size: 16px; background: transparent;">
-  <div class="search-location" style="display: flex; align-items: center; gap: 8px; padding: 0 15px; border-left: 1px solid var(--border); cursor: pointer;" onclick="window.askCustomerLocation()">
-    <span style="color: var(--accent);">📍</span>
-    <span id="location-text" style="font-size: 14px; font-weight: 500; color: var(--text2);">Find Location</span>
+ <div class="search-section" style="margin-bottom: 30px;">
+  <div class="search-wrap" style="max-width: 800px; margin: 0 auto; text-align: center;">
+    
+    <div class="search-box" style="display: flex; align-items: center; background: var(--surface); border: 1px solid var(--border); border-radius: 50px; padding: 5px 5px 5px 20px; box-shadow: var(--shadow); margin-bottom: 20px;">
+      
+      <input type="text" id="search-input" class="search-input" placeholder="Search for any service..." style="flex: 1; border: none; outline: none; font-size: 16px; background: transparent;">
+      
+      <div class="search-location" style="display: flex; align-items: center; gap: 8px; padding: 0 15px; border-left: 1px solid var(--border); cursor: pointer;" onclick="window.askCustomerLocation()">
+        <span style="color: var(--accent);">📍</span>
+        <span id="location-text" style="font-size: 14px; font-weight: 500; color: var(--text2);">Find Location</span>
+      </div>
+      
+      <button class="btn btn-primary" style="border-radius: 40px; padding: 12px 24px; font-weight: 600;" onclick="window.searchProviders()">Search</button>
+    </div> <div class="quick-services" style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: center; padding-top: 5px;">
+      <span style="font-size: 14px; color: var(--text3); font-weight: 600; margin-right: 5px;">Popular:</span>
+      
+      <a href="#" style="background: var(--surface); border: 1px solid var(--border); padding: 8px 16px; border-radius: 20px; font-size: 13px; color: var(--text2); text-decoration: none; box-shadow: 0 2px 5px rgba(0,0,0,0.02); display: inline-flex; align-items: center;" onclick="document.getElementById('search-input').value='Electrician'; return false;">⚡ Electrician</a>  
+      
+      <a href="#" style="background: var(--surface); border: 1px solid var(--border); padding: 8px 16px; border-radius: 20px; font-size: 13px; color: var(--text2); text-decoration: none; box-shadow: 0 2px 5px rgba(0,0,0,0.02); display: inline-flex; align-items: center;" onclick="document.getElementById('search-input').value='Plumber'; return false;">🔧 Plumber</a>
+      
+      <a href="#" style="background: var(--surface); border: 1px solid var(--border); padding: 8px 16px; border-radius: 20px; font-size: 13px; color: var(--text2); text-decoration: none; box-shadow: 0 2px 5px rgba(0,0,0,0.02); display: inline-flex; align-items: center;" onclick="document.getElementById('search-input').value='Carpenter'; return false;">🪚 Carpenter</a>
+      
+      <a href="#" style="background: var(--surface); border: 1px solid var(--border); padding: 8px 16px; border-radius: 20px; font-size: 13px; color: var(--text2); text-decoration: none; box-shadow: 0 2px 5px rgba(0,0,0,0.02); display: inline-flex; align-items: center;" onclick="document.getElementById('search-input').value='Home Tutor'; return false;">📚 Home Tutor</a>
+    </div>
+
   </div>
-    <button class="btn btn-primary" style="border-radius: 40px; padding: 12px 24px;" onclick="window.searchProviders()">Search</button>
-</div> 
-<div class="quick-services" style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; align-items: center; justify-content: center;">
-  <span style="font-size: 14px; color: var(--text3); font-weight: 600;">Popular:</span>
-  
-  <a href="#" style="background: var(--surface); border: 1px solid var(--border); padding: 8px 16px; border-radius: 20px; font-size: 13px; color: var(--text2); text-decoration: none; box-shadow: 0 2px 5px rgba(0,0,0,0.02);" onclick="document.getElementById('search-input').value='Electrician'; return false;">⚡ Electrician</a>  
-  <a href="#" style="background: var(--surface); border: 1px solid var(--border); padding: 8px 16px; border-radius: 20px; font-size: 13px; color: var(--text2); text-decoration: none; box-shadow: 0 2px 5px rgba(0,0,0,0.02);" onclick="document.getElementById('search-input').value='Plumber'; return false;">🔧 Plumber</a>
-    <a href="#" style="background: var(--surface); border: 1px solid var(--border); padding: 8px 16px; border-radius: 20px; font-size: 13px; color: var(--text2); text-decoration: none; box-shadow: 0 2px 5px rgba(0,0,0,0.02);" onclick="document.getElementById('search-input').value='Carpenter'; return false;">🪚 Carpenter</a>
-  <a href="#" style="background: var(--surface); border: 1px solid var(--border); padding: 8px 16px; border-radius: 20px; font-size: 13px; color: var(--text2); text-decoration: none; box-shadow: 0 2px 5px rgba(0,0,0,0.02);" onclick="document.getElementById('search-input').value='Home Tutor'; return false;">📚 Home Tutor</a>
 </div>
        
         <!-- AUTO LOCATION BUTTON -->
