@@ -288,7 +288,7 @@
     <div class="hero-card">
       <h3 style="margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 10px;">Incoming Requests</h3>
       <div id="provider-jobs-container" style="border: 1px dashed var(--border); border-radius: var(--radius-sm); padding: 40px 20px; text-align: center; background: var(--bg);">
-        <div style="font-size: 48px; margin-bottom: 12px;">📭</div>
+        <div id="live-requests-list" style="font-size: 48px; margin-bottom: 12px;">📭</div>
         <h4 style="font-size: 18px; margin-bottom: 6px;">0 customers to contact yet</h4>
         <p style="color: var(--text2); font-size: 14px;">Keep your location updated. When nearby customers request your service, they will appear here instantly.</p>
       </div>
@@ -707,7 +707,7 @@ window.loadLiveProvidersOnMap = async function(customerLat = null, customerLng =
             <b style="font-size: 15px;">${p.full_name || 'Verified Provider'}</b><br>
             <span style="color:var(--text2); font-size:13px;">${p.service_category || 'Service'}</span><br>
             <span style="font-size:12px; color: var(--green); font-weight:600;">📍 ${dist.toFixed(1)} km away</span><br>
-            <button class="btn btn-primary" style="margin-top:10px; width:100%; justify-content:center; padding: 6px 10px; font-size: 13px;" onclick="window.openBookingModal('${p.full_name || 'Provider'}', '${p.mobile}')">Book Now 💬</button>
+            <button class="btn btn-primary" style="margin-top:10px; width:100%; justify-content:center; padding: 6px 10px; font-size: 13px;" onclick="event.stopPropagation(); window.openBookingModal('${p.full_name || 'Provider'}', '${p.mobile}', '${p.id}')"</button>
           </div>
         `);
 
@@ -718,15 +718,15 @@ window.loadLiveProvidersOnMap = async function(customerLat = null, customerLng =
         
         // Sidebar card item ke right side mein direct "Book" call-to-action button
         // Isme event.stopPropagation() isliye lagaya hai taaki button dabane par poora card click na ho jaye
-        item.innerHTML = `
+        item.innerHTML =`
           <div class="mpi-avatar" style="background:var(--accent);">${(p.full_name||'P').substring(0,2).toUpperCase()}</div>
           <div class="mpi-info">
             <div class="mpi-name">${p.full_name || 'Verified Provider'}</div>
             <div class="mpi-role">${p.service_category || 'Service Professional'}</div>
             <div style="font-size: 11px; color: var(--green); margin-top:2px;">📍 ${dist.toFixed(1)} km away</div>
           </div>
-          <button class="btn btn-outline" style="padding: 6px 12px; font-size: 12px; border-color: var(--accent); color: var(--accent);" onclick="event.stopPropagation(); window.openBookingModal('${p.full_name || 'Provider'}', '${p.mobile}')">Book</button>
-        `;
+          <button class="btn btn-outline" style="padding: 6px 12px; font-size: 12px; border-color: var(--accent); color: var(--accent);" onclick="event.stopPropagation(); window.openBookingModal('${p.full_name || 'Provider'}', '${p.mobile}', '${p.id}')">Book</button>
+         `;
         listContainer.appendChild(item);
       }
     }
@@ -737,32 +737,70 @@ window.loadLiveProvidersOnMap = async function(customerLat = null, customerLng =
   }
 };
 
- /* ── BUSINESS LOGIC: LOAD PROVIDER DASHBOARD DATA ── */
+ /* ── BUSINESS LOGIC: LOAD PROVIDER DASHBOARD DATA & INCOMING REQUESTS ── */
 window.loadProviderDashboard = async function() {
   const { data: { session } } = await supabaseClient.auth.getSession();
-  if(session) {
-    // Database se naye columns bhi fetch karo
-    const { data } = await supabaseClient.from('profiles').select('full_name, gender, service_category, experience').eq('id', session.user.id).single();
+  if(!session) return;
+
+  const providerId = session.user.id;
+
+  // 1. Profile Details Render Section
+  const { data: profile } = await supabaseClient.from('profiles').select('full_name, gender, service_category, experience').eq('id', providerId).single();
+  if(profile) {
+    document.getElementById('prov-name').value = profile.full_name || '';
+    document.getElementById('prov-gender').value = profile.gender || '';
+    if(profile.service_category) document.getElementById('prov-cat').value = profile.service_category;
+    if(profile.experience) document.getElementById('prov-exp').value = profile.experience;
     
-    if(data) {
-      // Edit box mein data dalo
-      document.getElementById('prov-name').value = data.full_name || '';
-      document.getElementById('prov-gender').value = data.gender || '';
-      if(data.service_category) document.getElementById('prov-cat').value = data.service_category;
-      if(data.experience) document.getElementById('prov-exp').value = data.experience;
+    if(profile.service_category) {
+      document.getElementById('view-name').textContent = profile.full_name || 'N/A';
+      document.getElementById('view-gender').textContent = profile.gender || 'N/A';
+      document.getElementById('view-cat').textContent = profile.service_category;
+      document.getElementById('view-exp').textContent = profile.experience ? profile.experience + " Years" : "N/A";
       
-      // Agar pehle se service_category saved hai, toh View Mode dikhao
-      if(data.service_category) {
-        document.getElementById('view-name').textContent = data.full_name || 'N/A';
-        document.getElementById('view-gender').textContent = data.gender || 'N/A';
-        document.getElementById('view-cat').textContent = data.service_category;
-        document.getElementById('view-exp').textContent = data.experience ? data.experience + " Years" : "N/A";
-        
-        document.getElementById('prov-edit-mode').style.display = 'none';
-        document.getElementById('prov-view-mode').style.display = 'block';
-        document.getElementById('save-prov-btn').style.display = 'none';
-        document.getElementById('edit-prov-btn').style.display = 'flex';
-      }
+      document.getElementById('prov-edit-mode').style.display = 'none';
+      document.getElementById('prov-view-mode').style.display = 'block';
+      document.getElementById('save-prov-btn').style.display = 'none';
+      document.getElementById('edit-prov-btn').style.display = 'flex';
+    }
+  }
+
+  //  REAL-TIME INCOMING REQUESTS RENDER ENGINE 🔥
+  const requestContainer = document.querySelector('.hero-card:has(h3:contains("Incoming Requests"))') || document.getElementById('incoming-requests-container');
+ 
+  // Let's create or find the dynamic request list wrapper
+  let requestsListArea = document.getElementById('live-requests-list');
+  if(!requestsListArea) {
+    // Agar custom container id nahi hai, toh hum HTML card ke andar element dhoondh lenge ya aap directly card ke body par 'live-requests-list' id de sakte hain.
+    // Sabse aasan: Apne HTML mein "0 customers to contact yet" wale main placeholder div ko id="live-requests-list" de do!
+    requestsListArea = document.getElementById('live-requests-list');
+  }
+
+  if(requestsListArea) {
+    // Bookings table se is provider ke saare unique bookings uthao
+    const { data: requests, error } = await supabaseClient
+      .from('bookings')
+      .select('*')
+      .eq('provider_id', providerId)
+      .order('created_at', { ascending: false });
+
+    if(!error && requests && requests.length > 0) {
+      requestsListArea.innerHTML = '<div style="display: flex; flex-direction: column; gap: 12px; max-height:350px; overflow-y:auto; padding-top:10px;"></div>';
+      const listWrapper = requestsListArea.firstChild;
+
+      requests.forEach(r => {
+        const reqCard = document.createElement('div');
+        reqCard.style = "background: var(--surface); border: 1px solid var(--border); padding: 12px 16px; border-radius: var(--radius-sm); box-shadow: var(--shadow); display: flex; justify-content: space-between; align-items: center;";
+        reqCard.innerHTML = `
+          <div>
+            <div style="font-weight: 700; font-size: 15px; color: var(--text);">${r.customer_name}</div>
+            <div style="font-size: 12px; color: var(--accent); margin: 2px 0 6px 0; font-weight:600;">💬 ${r.message}</div>
+            <div style="font-size: 11px; color: var(--text3);">${new Date(r.created_at).toLocaleString('en-IN')}</div>
+          </div>
+          <a href="tel:${r.customer_mobile}" class="btn btn-outline" style="padding: 6px 12px; font-size: 12px; border-color: var(--accent2); color: var(--accent2);">📞 Call</a>
+        `;
+        listWrapper.appendChild(reqCard);
+      });
     }
   }
 };
@@ -850,8 +888,9 @@ window.triggerSupabaseOTP = async function (role = 'customer') {
 
  // BOOKING
 window.currentBookingPhone = "";
+window.currentProviderId = ""; 
 
-window.openBookingModal = async function(name, phone) {
+window.openBookingModal = async function(name, phone, providerId) {
   const { data: { session } } = await supabaseClient.auth.getSession();
   
   if (!session) {
@@ -862,16 +901,52 @@ window.openBookingModal = async function(name, phone) {
 
   document.getElementById('book-prov-name').textContent = name;
   window.currentBookingPhone = phone; 
+  window.currentProviderId = providerId; // ID hold kar li
   
-  // Direct Call Link set karo
-  document.getElementById('direct-call-btn').setAttribute('href', `tel:${phone}`);
+  // Direct Call Button handler with DB logging tracker
+  const callBtn = document.getElementById('direct-call-btn');
+  callBtn.setAttribute('href', `tel:${phone}`);
+  callBtn.onclick = async () => {
+     await window.logBookingToDatabase("Direct Phone Call Request");
+  };
 
   document.getElementById('booking-modal').classList.add('open');
 };
 
-window.sendWhatsAppMsg = function(message) {
+// Core Engine: Database mein entry dalne ke liye
+window.logBookingToDatabase = async function(messageText) {
+  try {
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    if(!session || !window.currentProviderId) return;
+
+    // Customer ka details nikaalo profile se
+    const { data: customerProfile } = await supabaseClient
+      .from('profiles')
+      .select('full_name, mobile')
+      .eq('id', session.user.id)
+      .single();
+
+    // Bookings table mein entry daalo
+    await supabaseClient.from('bookings').insert([{
+      provider_id: window.currentProviderId,
+      customer_name: customerProfile?.full_name || "Verified Customer",
+      customer_mobile: customerProfile?.mobile || "N/A",
+      message: messageText
+    }]);
+    
+    console.log("Booking synced with database successfully!");
+  } catch (err) {
+    console.error("Database log failed:", err);
+  }
+};
+
+window.sendWhatsAppMsg = async function(message) {
   if(!window.currentBookingPhone) return;
   
+  // 1. Pehle database mein entry save karo taaki provider dashboard par dikhe
+  await window.logBookingToDatabase(message);
+  
+  // 2. Phir regular flow ki tarah WhatsApp trigger kar do
   let phone = window.currentBookingPhone.replace(/\D/g, '');
   if(phone.length === 10) phone = '91' + phone;
   
@@ -883,7 +958,6 @@ window.sendWhatsAppMsg = function(message) {
   
   document.getElementById('booking-modal').classList.remove('open');
 };
-
   window.signOutUser = async function () { await supabaseClient.auth.signOut(); showToast("Signed out."); };
 </script>
 </body>
