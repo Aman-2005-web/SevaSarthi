@@ -20,7 +20,7 @@
     --text: #1A1A18;
     --text2: #5A5A55;
     --text3: #8A8A84;
-    --accent: #1096de;
+    --accent: ##030bfc;
     --accent2: #10ded7;
     --blue: #1A5FD4;
     --green: #1B8A4E;
@@ -381,6 +381,36 @@
   </div>
 </div>
 
+ <div class="modal-overlay" id="booking-modal" onclick="if(event.target===this) this.classList.remove('open')">
+  <div class="modal" style="max-width: 400px;">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title">Connect with Provider</div>
+        <div class="modal-sub">Choose how to contact <strong id="book-prov-name" style="color: var(--accent);">Provider</strong></div>
+      </div>
+      <button class="modal-close" onclick="document.getElementById('booking-modal').classList.remove('open')">✕</button>
+    </div>
+    <div class="modal-body">
+      
+      <label class="form-label" style="margin-bottom: 8px; display: block; font-weight: 700;">Option 1: Direct Call (Recommended)</label>
+      <a href="#" id="direct-call-btn" class="btn btn-primary" style="width: 100%; justify-content: center; padding: 12px; margin-bottom: 20px; text-decoration: none;">
+        📞 Call Now Directly
+      </a>
+
+      <hr style="border: 0; border-top: 1px solid var(--border); margin-bottom: 15px;">
+
+      <label class="form-label" style="margin-bottom: 8px; display: block; font-weight: 700;">Option 2: Send WhatsApp Message</label>
+      <p style="font-size: 12px; color: var(--text3); margin-bottom: 10px;">Select a quick message (Works if provider is on WhatsApp):</p>
+      
+      <div style="display: flex; flex-direction: column; gap: 8px;">
+        <button class="btn btn-outline" style="justify-content: flex-start; padding: 10px; font-size: 13px; font-weight: 500;" onclick="window.sendWhatsAppMsg('I want to book an appointment for today.')">📅 Appointment for today.</button>
+        <button class="btn btn-outline" style="justify-content: flex-start; padding: 10px; font-size: 13px; font-weight: 500;" onclick="window.sendWhatsAppMsg('Hi, what are your visiting/service charges?')">💰 What are your visiting charges?</button>
+        <button class="btn btn-outline" style="justify-content: flex-start; padding: 10px; font-size: 13px; font-weight: 500;" onclick="window.sendWhatsAppMsg('Please call me, I have an urgent work.')">⚡ Urgent work, please call back.</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <!-- UI SCRIPTS & MAP INITIALIZATION -->
@@ -653,7 +683,7 @@ window.loadLiveProvidersOnMap = async function(customerLat = null, customerLng =
     return;
   }
 
-  listContainer.innerHTML = ''; 
+   listContainer.innerHTML = ''; 
   let foundNearby = false;
 
   providers.forEach(p => {
@@ -664,18 +694,30 @@ window.loadLiveProvidersOnMap = async function(customerLat = null, customerLng =
       
       const dist = calculateDistance(customerLat, customerLng, pLat, pLng);
       
-      // DEBUG: Tumhe dikhane ke liye ki system exact kitni doori dekh raha hai
       console.log(`Checking ${p.full_name} -> Distance is: ${dist.toFixed(2)} KM`);
       
-      // Testing ke liye 50 KM kar diya hai taaki Desktop/Mobile difference se fail na ho
-      if (dist <= 50) { 
+      if (dist <= 10) { 
         foundNearby = true;
+        
         const marker = L.marker([pLat, pLng]).addTo(map);
-        marker.bindPopup(`<b>${p.full_name || 'Verified Provider'}</b><br>${p.service_category || 'Service'}<br>📞 ${p.mobile}<br>📍 ${dist.toFixed(1)} km away`);
+        
+        // Map ke Pop-up ke andar humne naya "Book Now" primary button jod diya hai
+        marker.bindPopup(`
+          <div style="text-align:center; min-width: 140px;">
+            <b style="font-size: 15px;">${p.full_name || 'Verified Provider'}</b><br>
+            <span style="color:var(--text2); font-size:13px;">${p.service_category || 'Service'}</span><br>
+            <span style="font-size:12px; color: var(--green); font-weight:600;">📍 ${dist.toFixed(1)} km away</span><br>
+            <button class="btn btn-primary" style="margin-top:10px; width:100%; justify-content:center; padding: 6px 10px; font-size: 13px;" onclick="window.openBookingModal('${p.full_name || 'Provider'}', '${p.mobile}')">Book Now 💬</button>
+          </div>
+        `);
 
         const item = document.createElement('div');
         item.className = 'map-provider-item';
+        item.style.alignItems = 'center'; // Layout standard symmetric karne ke liye
         item.onclick = () => { map.setView([pLat, pLng], 15); marker.openPopup(); };
+        
+        // Sidebar card item ke right side mein direct "Book" call-to-action button
+        // Isme event.stopPropagation() isliye lagaya hai taaki button dabane par poora card click na ho jaye
         item.innerHTML = `
           <div class="mpi-avatar" style="background:var(--accent);">${(p.full_name||'P').substring(0,2).toUpperCase()}</div>
           <div class="mpi-info">
@@ -683,12 +725,13 @@ window.loadLiveProvidersOnMap = async function(customerLat = null, customerLng =
             <div class="mpi-role">${p.service_category || 'Service Professional'}</div>
             <div style="font-size: 11px; color: var(--green); margin-top:2px;">📍 ${dist.toFixed(1)} km away</div>
           </div>
+          <button class="btn btn-outline" style="padding: 6px 12px; font-size: 12px; border-color: var(--accent); color: var(--accent);" onclick="event.stopPropagation(); window.openBookingModal('${p.full_name || 'Provider'}', '${p.mobile}')">Book</button>
         `;
         listContainer.appendChild(item);
       }
     }
   });
-
+ 
   if(!foundNearby) {
      listContainer.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--text3);">No providers found nearby right now. Distance might be too far!</div>';
   }
@@ -804,6 +847,42 @@ window.triggerSupabaseOTP = async function (role = 'customer') {
       showToast("Verified!"); closeModal(); setTimeout(() => { window.location.reload(); }, 1200);
     }
   };
+
+ // BOOKING
+window.currentBookingPhone = "";
+
+window.openBookingModal = async function(name, phone) {
+  const { data: { session } } = await supabaseClient.auth.getSession();
+  
+  if (!session) {
+    showToast("Please sign in or create an account to connect with this provider.");
+    openModal('consumer'); 
+    return; 
+  }
+
+  document.getElementById('book-prov-name').textContent = name;
+  window.currentBookingPhone = phone; 
+  
+  // Direct Call Link set karo
+  document.getElementById('direct-call-btn').setAttribute('href', `tel:${phone}`);
+
+  document.getElementById('booking-modal').classList.add('open');
+};
+
+window.sendWhatsAppMsg = function(message) {
+  if(!window.currentBookingPhone) return;
+  
+  let phone = window.currentBookingPhone.replace(/\D/g, '');
+  if(phone.length === 10) phone = '91' + phone;
+  
+  const finalMessage = `${message}\n\n- Sent via *SevaSarthi* 🇮🇳`;
+  const encodedMsg = encodeURIComponent(finalMessage);
+  
+  const waUrl = `https://wa.me/${phone}?text=${encodedMsg}`;
+  window.open(waUrl, '_blank');
+  
+  document.getElementById('booking-modal').classList.remove('open');
+};
 
   window.signOutUser = async function () { await supabaseClient.auth.signOut(); showToast("Signed out."); };
 </script>
