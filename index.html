@@ -144,25 +144,17 @@
 </head>
 <body>
 
-<nav style="display: flex; justify-content: space-between; align-items: center; padding: 15px 5%; background: var(--surface); box-shadow: var(--shadow); border-bottom: 1px solid var(--border);">
+<nav>
   <a href="#" class="logo">Seva<span>Sarthi</span></a>
-  
-  <div style="display: flex; gap: 12px; align-items: center;">
-    <span id="user-status" style="display: none; padding: 6px 14px; background: #ecfdf5; color: #065f46; border-radius: 20px; font-size: 14px; font-weight: 600;"></span>
+  <div style="display:flex;gap:8px;align-items:center;">
+    <button id="signin-btn" class="btn btn-outline" onclick="openModal('login')">Sign In</button>
+    <button id="register-btn" class="btn btn-primary" onclick="openModal('register')">Get Started</button>
     
-    <button id="signin-btn" class="btn btn-outline" style="padding: 10px 20px; font-weight: 600;" onclick="if(window.openModal) { window.openModal('consumer'); } else { openModal('consumer'); }">
-      Sign In
-    </button>
-    
-    <button id="register-btn" class="btn btn-primary" style="padding: 10px 20px; font-weight: 600; border-radius: var(--radius-sm);" onclick="if(window.openModal) { window.openModal('consumer'); } else { openModal('consumer'); }">
-      Get Started
-    </button>
-    
-    <button id="signout-btn" class="btn btn-outline" style="display: none; padding: 10px 20px; color: var(--accent); border-color: var(--accent);" onclick="if(window.signOutUser) { window.signOutUser(); } else if(window.supabaseClient) { supabaseClient.auth.signOut(); }">
-      Sign Out
-    </button>
+    <span id="user-status" style="display:none; padding:6px 14px; background:#ecfdf5; color:#065f46; border-radius:20px; font-size:14px; font-weight:600;"></span>
+    <button id="signout-btn" class="btn btn-outline" style="display:none;" onclick="window.signOutUser()">Sign Out</button>
   </div>
 </nav>
+
 <!-- CUSTOMER INTERFACE -->
 <div class="hide-on-provider">
   <div class="hero">
@@ -172,40 +164,39 @@
       <p>Electricians, plumbers, carpenters, home tutors, labors and 40+ more services. Verified, rated, and just minutes away.</p>
       <div class="hero-cta">
         <button class="btn btn-primary" onclick="document.getElementById('search-input').focus()">🔍 Find a Service</button>
-        <button class="btn btn-outline" onclick="window.openModal('provider')">Work With Us →</button>
+        <button class="btn btn-outline" onclick="openModal('register-provider')">Work With Us →</button>
       </div>
     </div>
   </div>
 
- <div class="search-section" style="margin-bottom: 30px;">
-  <div class="search-wrap" style="max-width: 800px; margin: 0 auto; text-align: center;">
-    
-    <div class="search-box" style="display: flex; align-items: center; background: var(--surface); border: 1px solid var(--border); border-radius: 50px; padding: 5px 5px 5px 20px; box-shadow: var(--shadow); margin-bottom: 20px;">
-      
-      <input type="text" id="search-input" class="search-input" placeholder="Search for any service..." style="flex: 1; border: none; outline: none; font-size: 16px; background: transparent;">
-      
-      <div class="search-location" style="display: flex; align-items: center; gap: 8px; padding: 0 15px; border-left: 1px solid var(--border); cursor: pointer;" onclick="window.askCustomerLocation()">
-        <span style="color: var(--accent);">📍</span>
-        <span id="location-text" style="font-size: 14px; font-weight: 500; color: var(--text2);">Find Location</span>
-      </div>
-      
-      <button class="btn btn-primary" style="border-radius: 40px; padding: 12px 24px; font-weight: 600;" onclick="window.searchProviders()">Search</button>
-    </div> <div class="quick-services" style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: center; padding-top: 5px;">
-      <span style="font-size: 14px; color: var(--text3); font-weight: 600; margin-right: 5px;">Popular:</span>
-      
-      <a href="#" style="background: var(--surface); border: 1px solid var(--border); padding: 8px 16px; border-radius: 20px; font-size: 13px; color: var(--text2); text-decoration: none; box-shadow: 0 2px 5px rgba(0,0,0,0.02); display: inline-flex; align-items: center;" onclick="document.getElementById('search-input').value='Electrician'; return false;">⚡ Electrician</a>  
-      
-      <a href="#" style="background: var(--surface); border: 1px solid var(--border); padding: 8px 16px; border-radius: 20px; font-size: 13px; color: var(--text2); text-decoration: none; box-shadow: 0 2px 5px rgba(0,0,0,0.02); display: inline-flex; align-items: center;" onclick="document.getElementById('search-input').value='Plumber'; return false;">🔧 Plumber</a>
-      
-      <a href="#" style="background: var(--surface); border: 1px solid var(--border); padding: 8px 16px; border-radius: 20px; font-size: 13px; color: var(--text2); text-decoration: none; box-shadow: 0 2px 5px rgba(0,0,0,0.02); display: inline-flex; align-items: center;" onclick="document.getElementById('search-input').value='Carpenter'; return false;">🪚 Carpenter</a>
-      
-      <a href="#" style="background: var(--surface); border: 1px solid var(--border); padding: 8px 16px; border-radius: 20px; font-size: 13px; color: var(--text2); text-decoration: none; box-shadow: 0 2px 5px rgba(0,0,0,0.02); display: inline-flex; align-items: center;" onclick="document.getElementById('search-input').value='Home Tutor'; return false;">📚 Home Tutor</a>
-    </div>
-
-  </div>
-</div>
+  <div class="search-section">
+    <div class="search-wrap">
+      <div class="search-box">
+        <input type="text" id="search-input" placeholder="Search electrician, plumber, carpenter, tutor…" aria-label="Search for services">
+        <div class="search-divider"></div>
        
-      
+       
+        <!-- AUTO LOCATION BUTTON -->
+        <div class="search-location" onclick="window.askCustomerLocation()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--accent); flex-shrink: 0;"><path d="M12 22s-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 8.2c0 7.3-8 11.8-8 11.8z"/><circle cx="12" cy="10" r="3"/></svg>
+          <span id="location-text">Locate Me</span>
+        </div>
+        <button class="btn btn-primary" style="white-space: nowrap;">Search</button>
+      </div>
+    </div>
+  </div>
+
+
+ <div class="quick-services">
+        <span class="qs-label">Popular:</span>
+        <a href="#" class="qs-tag" onclick="document.getElementById('search-input').value='Electrician'; return false;">⚡ Electrician</a>
+        <a href="#" class="qs-tag" onclick="document.getElementById('search-input').value='Plumber'; return false;">🔧 Plumber</a>
+        <a href="#" class="qs-tag" onclick="document.getElementById('search-input').value='Carpenter'; return false;">🪚 Carpenter</a>
+        <a href="#" class="qs-tag" onclick="document.getElementById('search-input').value='Home Tutor'; return false;">📚 Tutor</a>
+        <a href="#" class="qs-tag" onclick="document.getElementById('search-input').value='Maid'; return false;">🧹 Maid</a>
+        <a href="#" class="qs-tag" onclick="document.getElementById('search-input').value='Maid'; return false;">🧹Driver</a>
+      </div>
+
   <section id="map-section" class="map-section">
     <div class="map-demo">
       <div class="map-sidebar">
@@ -298,14 +289,14 @@
 </div>
 
     <div class="hero-card">
-  <h3 style="margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 10px;">Incoming Requests</h3>
-  
-  <div id="live-requests-list" style="border: 1px dashed var(--border); border-radius: var(--radius-sm); padding: 40px 20px; text-align: center; background: var(--bg);">
-    <div style="font-size: 48px; margin-bottom: 12px;">📭</div>
-    <h4 style="font-size: 18px; margin-bottom: 6px;">0 customers to contact yet</h4>
-    <p style="color: var(--text2); font-size: 14px;">Keep your location updated. When nearby customers request your service, they will appear here instantly.</p>
+      <h3 style="margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 10px;">Incoming Requests</h3>
+      <div id="provider-jobs-container" style="border: 1px dashed var(--border); border-radius: var(--radius-sm); padding: 40px 20px; text-align: center; background: var(--bg);">
+        <div id="live-requests-list" style="font-size: 48px; margin-bottom: 12px;">📭</div>
+        <h4 style="font-size: 18px; margin-bottom: 6px;">0 customers to contact yet</h4>
+        <p style="color: var(--text2); font-size: 14px;">Keep your location updated. When nearby customers request your service, they will appear here instantly.</p>
+      </div>
+    </div>
   </div>
-  
 </div>
 
 <!-- AUTHENTICATION MODAL -->
@@ -440,28 +431,11 @@
     toastTimer = setTimeout(() => t.classList.remove('show'), 3200);
   }
 
-function openModal(type) {
-  const modalEl = document.getElementById('modal');
-  if (!modalEl) {
-    console.error("Modal element with id 'modal' not found!");
-    return;
+  function openModal(type) {
+    document.getElementById('modal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+    switchModalTab(type === 'register-provider' ? 'provider' : 'consumer');
   }
-  // 1. Modal overlay ko screen par show karo
-  modalEl.classList.add('open');
-  document.body.style.overflow = 'hidden';
-  
-  // Agar input 'register-provider' ya 'provider' hai, toh direct Provider tab kholo
-  if (type === 'register-provider' || type === 'provider') {
-    switchModalTab('provider');
-    if(window.supabaseClient) localStorage.setItem('pending_role', 'provider');
-  } else {
-    // Baaki saare cases ('login', 'register', 'consumer') mein Consumer tab kholo
-    switchModalTab('consumer');
-    if(window.supabaseClient) localStorage.setItem('pending_role', 'customer');
-  }
-}
-// Global window object par link karo taaki inline HTML se hamesha access mile
-window.openModal = openModal;
 
   function closeModal() { document.getElementById('modal').classList.remove('open'); document.body.style.overflow = ''; }
   function closeModalIfOverlay(e) { if (e.target === document.getElementById('modal')) closeModal(); }
