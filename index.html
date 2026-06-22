@@ -144,17 +144,25 @@
 </head>
 <body>
 
-<nav>
+<nav style="display: flex; justify-content: space-between; align-items: center; padding: 15px 5%; background: var(--surface); box-shadow: var(--shadow); border-bottom: 1px solid var(--border);">
   <a href="#" class="logo">Seva<span>Sarthi</span></a>
-  <div style="display:flex;gap:8px;align-items:center;">
-    <button id="signin-btn" class="btn btn-outline" onclick="openModal('login')">Sign In</button>
-    <button id="register-btn" class="btn btn-primary" onclick="openModal('register')">Get Started</button>
+  
+  <div style="display: flex; gap: 12px; align-items: center;">
+    <span id="user-status" style="display: none; padding: 6px 14px; background: #ecfdf5; color: #065f46; border-radius: 20px; font-size: 14px; font-weight: 600;"></span>
     
-    <span id="user-status" style="display:none; padding:6px 14px; background:#ecfdf5; color:#065f46; border-radius:20px; font-size:14px; font-weight:600;"></span>
-    <button id="signout-btn" class="btn btn-outline" style="display:none;" onclick="window.signOutUser()">Sign Out</button>
+    <button id="signin-btn" class="btn btn-outline" style="padding: 10px 20px; font-weight: 600;" onclick="if(window.openModal) { window.openModal('consumer'); } else { openModal('consumer'); }">
+      Sign In
+    </button>
+    
+    <button id="register-btn" class="btn btn-primary" style="padding: 10px 20px; font-weight: 600; border-radius: var(--radius-sm);" onclick="if(window.openModal) { window.openModal('consumer'); } else { openModal('consumer'); }">
+      Get Started
+    </button>
+    
+    <button id="signout-btn" class="btn btn-outline" style="display: none; padding: 10px 20px; color: var(--accent); border-color: var(--accent);" onclick="if(window.signOutUser) { window.signOutUser(); } else if(window.supabaseClient) { supabaseClient.auth.signOut(); }">
+      Sign Out
+    </button>
   </div>
 </nav>
-
 <!-- CUSTOMER INTERFACE -->
 <div class="hide-on-provider">
   <div class="hero">
@@ -164,7 +172,7 @@
       <p>Electricians, plumbers, carpenters, home tutors, labors and 40+ more services. Verified, rated, and just minutes away.</p>
       <div class="hero-cta">
         <button class="btn btn-primary" onclick="document.getElementById('search-input').focus()">🔍 Find a Service</button>
-        <button class="btn btn-outline" onclick="openModal('register-provider')">Work With Us →</button>
+        <button class="btn btn-outline" onclick="window.openModal('provider')">Work With Us →</button>
       </div>
     </div>
   </div>
@@ -432,11 +440,28 @@
     toastTimer = setTimeout(() => t.classList.remove('show'), 3200);
   }
 
-  function openModal(type) {
-    document.getElementById('modal').classList.add('open');
-    document.body.style.overflow = 'hidden';
-    switchModalTab(type === 'register-provider' ? 'provider' : 'consumer');
+function openModal(type) {
+  const modalEl = document.getElementById('modal');
+  if (!modalEl) {
+    console.error("Modal element with id 'modal' not found!");
+    return;
   }
+  // 1. Modal overlay ko screen par show karo
+  modalEl.classList.add('open');
+  document.body.style.overflow = 'hidden';
+  
+  // Agar input 'register-provider' ya 'provider' hai, toh direct Provider tab kholo
+  if (type === 'register-provider' || type === 'provider') {
+    switchModalTab('provider');
+    if(window.supabaseClient) localStorage.setItem('pending_role', 'provider');
+  } else {
+    // Baaki saare cases ('login', 'register', 'consumer') mein Consumer tab kholo
+    switchModalTab('consumer');
+    if(window.supabaseClient) localStorage.setItem('pending_role', 'customer');
+  }
+}
+// Global window object par link karo taaki inline HTML se hamesha access mile
+window.openModal = openModal;
 
   function closeModal() { document.getElementById('modal').classList.remove('open'); document.body.style.overflow = ''; }
   function closeModalIfOverlay(e) { if (e.target === document.getElementById('modal')) closeModal(); }
