@@ -919,76 +919,121 @@ window.triggerSupabaseOTP = async function (role = 'customer') {
 
  // BOOKING
 window.currentBookingPhone = "";
-window.currentProviderId = ""; 
+window.currentProviderId = "";
 
 window.openBookingModal = async function(name, phone, providerId) {
   const { data: { session } } = await supabaseClient.auth.getSession();
-  
   if (!session) {
-    showToast("Please sign in or create an account to connect with this provider.");
-    openModal('consumer'); 
+    showToast("Please sign in to schedule an appointment.");
+    if(window.openModal) window.openModal('consumer');
     return; 
   }
 
   document.getElementById('book-prov-name').textContent = name;
   window.currentBookingPhone = phone; 
-  window.currentProviderId = providerId; // ID hold kar li
+  window.currentProviderId = providerId; 
   
-  // Direct Call Button handler with DB logging tracker
-  const callBtn = document.getElementById('direct-call-btn');
-  callBtn.setAttribute('href', `tel:${phone}`);
-  callBtn.onclick = async () => {
-     await window.logBookingToDatabase("Direct Phone Call Request");
-  };
+  // Reset fields to current date
+  document.getElementById('appointment-date').value = new Date().toISOString().split('T')[0];
+  document.getElementById('appointment-from').value = "10:00";
+  document.getElementById('appointment-to').value = "11:00";
 
+  document.getElementById('direct-call-btn').setAttribute('href', `tel:${phone}`);
   document.getElementById('booking-modal').classList.add('open');
 };
 
-// Core Engine: Database mein entry dalne ke liye
-window.logBookingToDatabase = async function(messageText) {
+// Action Handler: Jab customer schedule confirm karega
+window.submitCustomAppointment = async function() {
+  const dateVal = document.getElementById('appointment-date').value;
+  const fromVal = document.getElementById('appointment-from').value;
+  const toVal = document.getElementById('appointment-to').value;
+
+  if(!dateVal || !fromVal || !toVal) {
+    alert("Please select Date and full Time slot!");
+    return;
+  }
+
   try {
     const { data: { session } } = await supabaseClient.auth.getSession();
     if(!session || !window.currentProviderId) return;
 
-    // Customer ka details nikaalo profile se
+    // Customer detail extraction
     const { data: customerProfile } = await supabaseClient
       .from('profiles')
       .select('full_name, mobile')
       .eq('id', session.user.id)
       .single();
 
-    // Bookings table mein entry daalo
-    await supabaseClient.from('bookings').insert([{
+    // Insert structured scheduling matrix into Database
+    const { error } = await supabaseClient.from('bookings').insert([{
       provider_id: window.currentProviderId,
       customer_name: customerProfile?.full_name || "Verified Customer",
       customer_mobile: customerProfile?.mobile || "N/A",
-      message: messageText
+      message: `Requested Custom Scheduled Slot`,
+      apt_date: dateVal,
+      apt_from: fromVal,
+      apt_to: toVal
     }]);
-    
-    console.log("Booking synced with database successfully!");
+
+    if(!error) {
+      alert(`🎉 Appointment submitted for ${dateVal} between ${fromVal} to ${toVal}!`);
+      document.getElementById('booking-modal').classList.remove('open');
+    } else {
+      console.error(error);
+    }
   } catch (err) {
-    console.error("Database log failed:", err);
+    console.error("Scheduling failed:", err);
   }
 };
 
+// WhatsApp fallback setup
 window.sendWhatsAppMsg = async function(message) {
   if(!window.currentBookingPhone) return;
-  
-  // 1. Pehle database mein entry save karo taaki provider dashboard par dikhe
-  await window.logBookingToDatabase(message);
-  
-  // 2. Phir regular flow ki tarah WhatsApp trigger kar do
   let phone = window.currentBookingPhone.replace(/\D/g, '');
   if(phone.length === 10) phone = '91' + phone;
-  
-  const finalMessage = `${message}\n\n- Sent via *SevaSarthi* 🇮🇳`;
-  const encodedMsg = encodeURIComponent(finalMessage);
-  
-  const waUrl = `https://wa.me/${phone}?text=${encodedMsg}`;
+  const waUrl = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
   window.open(waUrl, '_blank');
-  
-  document.getElementById('booking-modal').classList.remove('open');
 };
+
+
+/* ── DASHBOARD UPDATED VIEW ENGINE FOR PROVIDER ── */
+// Is code block ko apne loadProviderDashboard function ke andar requests fetch loop me replace karna
+const requestsListArea = document.getElementById('live-requests-list');
+if(requestsListArea && providerId) {
+  const { data: requests, error } = await supabaseClient
+    .from('bookings')
+    .select('*')
+    .eq('provider_id', providerId)
+    .order('created_at', { ascending: false });
+
+  if(!error && requests && requests.length > 0) {
+    // Top counter mapping card details header ke sath update karega
+    requestsListArea.innerHTML = `<div style="display: flex; flex-direction: column; gap: 12px; text-align: left;"></div>`;
+    const listWrapper = requestsListArea.firstChild;
+
+    requests.forEach(r => {
+      const reqCard = document.createElement('div');
+      reqCard.style = "background: var(--surface); border: 1px solid var(--border); padding: 14px 18px; border-radius: var(--radius-sm); box-shadow: var(--shadow); display: flex; justify-content: space-between; align-items: center;";
+      
+      // Smart display checker for visual matrix layout data
+      const scheduleDetails = (r.apt_date) 
+        ? `<div style="margin-top: 6px; display:inline-block; background: #eff6ff; color: #1e40af; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 700;">
+             📅 Appointment on <b>${r.apt_date}</b> btw <b>${r.apt_from} clock</b> to <b>${r.apt_to} clock</b>
+           </div>`
+        : `<div style="font-size: 12px; color: var(--accent); margin: 2px 0;">💬 ${r.message}</div>`;
+
+      reqCard.innerHTML = `
+        <div>
+          <div style="font-weight: 700; font-size: 15px; color: var(--text);">${r.customer_name}</div>
+          ${scheduleDetails}
+          <div style="font-size: 11px; color: var(--text3); margin-top: 5px;">Requested at: ${new Date(r.created_at).toLocaleDateString('en-IN')}</div>
+        </div>
+        <a href="tel:${r.customer_mobile}" class="btn btn-primary" style="padding: 8px 16px; font-size: 13px; border-radius:8px; text-decoration:none;">📞 Call Now</a>
+      `;
+      listWrapper.appendChild(reqCard);
+    });
+  }
+}
   window.signOutUser = async function () { await supabaseClient.auth.signOut(); showToast("Signed out."); };
 </script>
 </body>
