@@ -384,25 +384,51 @@
   </div>
 </div>
 
- <div class="modal-overlay" id="booking-modal" onclick="if(event.target===this) this.classList.remove('open')">
-  <div class="modal" style="max-width: 400px;">
+ <!-- BOOKING & MESSAGE MODAL WITH DATE-TIME PICKER -->
+<div class="modal-overlay" id="booking-modal" onclick="if(event.target===this) this.classList.remove('open')">
+  <div class="modal" style="max-width: 420px; border-radius: 16px;">
     <div class="modal-header">
       <div>
-        <div class="modal-title">Connect with Provider</div>
-        <div class="modal-sub">Choose how to contact <strong id="book-prov-name" style="color: var(--accent);">Provider</strong></div>
+        <div class="modal-title" style="font-size: 20px; font-weight: 700;">Schedule Appointment</div>
+        <div class="modal-sub">Book your slot with <strong id="book-prov-name" style="color: var(--accent);">Provider</strong></div>
       </div>
       <button class="modal-close" onclick="document.getElementById('booking-modal').classList.remove('open')">✕</button>
     </div>
-    <div class="modal-body">
+    <div class="modal-body" style="padding-top: 10px;">
       
-      <label class="form-label" style="margin-bottom: 8px; display: block; font-weight: 700;">Option 1: Direct Call (Recommended)</label>
-      <a href="#" id="direct-call-btn" class="btn btn-primary" style="width: 100%; justify-content: center; padding: 12px; margin-bottom: 20px; text-decoration: none;">
-        📞 Call Now Directly
-      </a>
+      <!-- 📅 DATE & TIME PICKER FORM -->
+      <div style="background: var(--bg); padding: 15px; border-radius: var(--radius-sm); border: 1px solid var(--border); margin-bottom: 15px;">
+        <label style="display:block; font-size:13px; font-weight:700; margin-bottom:6px; color:var(--text);">Select Date:</label>
+        <input type="date" id="appointment-date" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border); margin-bottom:12px; font-size:14px; outline:none;">
+        
+        <div style="display: flex; gap: 10px;">
+          <div style="flex: 1;">
+            <label style="display:block; font-size:13px; font-weight:700; margin-bottom:6px; color:var(--text);">From (Time):</label>
+            <input type="time" id="appointment-from" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border); font-size:14px; outline:none;">
+          </div>
+          <div style="flex: 1;">
+            <label style="display:block; font-size:13px; font-weight:700; margin-bottom:6px; color:var(--text);">To (Time):</label>
+            <input type="time" id="appointment-to" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border); font-size:14px; outline:none;">
+          </div>
+        </div>
+      </div>
 
-      <hr style="border: 0; border-top: 1px solid var(--border); margin-bottom: 15px;">
+      <!-- MAIN ACTION BUTTON -->
+      <button class="btn btn-primary" style="width: 100%; justify-content: center; padding: 12px; font-weight: 700; font-size: 15px; margin-bottom: 15px;" onclick="window.submitCustomAppointment()">
+        📅 Confirm & Schedule Appointment
+      </button>
 
-      <label class="form-label" style="margin-bottom: 8px; display: block; font-weight: 700;">Option 2: Send WhatsApp Message</label>
+      <div style="text-align: center; margin-bottom: 15px; position: relative;">
+        <hr style="border: 0; border-top: 1px solid var(--border);">
+        <span style="position: absolute; top: -10px; background: var(--surface); padding: 0 10px; font-size: 12px; color: var(--text3); left: 50%; transform: translateX(-50%); font-weight: 600;">OR CONTACT DIRECTLY</span>
+      </div>
+
+      <!-- Direct Fallbacks (Call/WhatsApp) -->
+      <div style="display: flex; gap: 8px;">
+        <a href="#" id="direct-call-btn" class="btn btn-outline" style="flex: 1; justify-content: center; font-size: 13px; text-decoration: none; padding: 10px;">
+          📞 Direct Call
+        </a>
+        <label class="form-label" style="margin-bottom: 8px; display: block; font-weight: 700;">Option 2: Send WhatsApp Message</label>
       <p style="font-size: 12px; color: var(--text3); margin-bottom: 10px;">Select a quick message (Works if provider is on WhatsApp):</p>
       
       <div style="display: flex; flex-direction: column; gap: 8px;">
@@ -410,6 +436,8 @@
         <button class="btn btn-outline" style="justify-content: flex-start; padding: 10px; font-size: 13px; font-weight: 500;" onclick="window.sendWhatsAppMsg('Hi, what are your visiting/service charges?')">💰 What are your visiting charges?</button>
         <button class="btn btn-outline" style="justify-content: flex-start; padding: 10px; font-size: 13px; font-weight: 500;" onclick="window.sendWhatsAppMsg('Please call me, I have an urgent work.')">⚡ Urgent work, please call back.</button>
       </div>
+      </div>
+
     </div>
   </div>
 </div>
