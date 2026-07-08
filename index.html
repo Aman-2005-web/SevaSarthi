@@ -384,7 +384,7 @@
   </div>
 </div>
 
- <!-- BOOKING & MESSAGE MODAL WITH DATE-TIME PICKER -->
+ <!-- 📅 BOOKING MODAL HTML (Paste before <script>) -->
 <div class="modal-overlay" id="booking-modal" onclick="if(event.target===this) this.classList.remove('open')">
   <div class="modal" style="max-width: 420px; border-radius: 16px;">
     <div class="modal-header">
@@ -428,14 +428,15 @@
         <a href="#" id="direct-call-btn" class="btn btn-outline" style="flex: 1; justify-content: center; font-size: 13px; text-decoration: none; padding: 10px;">
           📞 Direct Call
         </a>
-        <label class="form-label" style="margin-bottom: 8px; display: block; font-weight: 700;">Option 2: Send WhatsApp Message</label>
+      </div>
+      
+      <label class="form-label" style="margin-top: 15px; margin-bottom: 8px; display: block; font-weight: 700;">Option 2: Send WhatsApp Message</label>
       <p style="font-size: 12px; color: var(--text3); margin-bottom: 10px;">Select a quick message (Works if provider is on WhatsApp):</p>
       
       <div style="display: flex; flex-direction: column; gap: 8px;">
         <button class="btn btn-outline" style="justify-content: flex-start; padding: 10px; font-size: 13px; font-weight: 500;" onclick="window.sendWhatsAppMsg('I want to book an appointment for today.')">📅 Appointment for today.</button>
         <button class="btn btn-outline" style="justify-content: flex-start; padding: 10px; font-size: 13px; font-weight: 500;" onclick="window.sendWhatsAppMsg('Hi, what are your visiting/service charges?')">💰 What are your visiting charges?</button>
         <button class="btn btn-outline" style="justify-content: flex-start; padding: 10px; font-size: 13px; font-weight: 500;" onclick="window.sendWhatsAppMsg('Please call me, I have an urgent work.')">⚡ Urgent work, please call back.</button>
-      </div>
       </div>
 
     </div>
@@ -916,15 +917,14 @@ window.triggerSupabaseOTP = async function (role = 'customer') {
       showToast("Verified!"); closeModal(); setTimeout(() => { window.location.reload(); }, 1200);
     }
   };
-
- // BOOKING
+// ⚡ BOOKING MODAL & SUBMIT FUNCTIONS
 window.currentBookingPhone = "";
 window.currentProviderId = "";
 
 window.openBookingModal = async function(name, phone, providerId) {
   const { data: { session } } = await supabaseClient.auth.getSession();
   if (!session) {
-    showToast("Please sign in to schedule an appointment.");
+    alert("Please sign in to schedule an appointment.");
     if(window.openModal) window.openModal('consumer');
     return; 
   }
@@ -942,7 +942,6 @@ window.openBookingModal = async function(name, phone, providerId) {
   document.getElementById('booking-modal').classList.add('open');
 };
 
-// Action Handler: Jab customer schedule confirm karega
 window.submitCustomAppointment = async function() {
   const dateVal = document.getElementById('appointment-date').value;
   const fromVal = document.getElementById('appointment-from').value;
@@ -957,20 +956,18 @@ window.submitCustomAppointment = async function() {
     const { data: { session } } = await supabaseClient.auth.getSession();
     if(!session || !window.currentProviderId) return;
 
-    // Customer detail extraction
     const { data: customerProfile } = await supabaseClient
       .from('profiles')
       .select('full_name, mobile')
       .eq('id', session.user.id)
       .single();
 
-    // Insert structured scheduling matrix into Database
     const { error } = await supabaseClient.from('bookings').insert([{
       provider_id: window.currentProviderId,
       customer_name: customerProfile?.full_name || "Verified Customer",
       customer_mobile: customerProfile?.mobile || "N/A",
       message: `Requested Custom Scheduled Slot`,
-      apt_date: dateVal,
+      apt_date: dateVal, // Note: You need to add these columns to your Supabase 'bookings' table!
       apt_from: fromVal,
       apt_to: toVal
     }]);
@@ -986,7 +983,6 @@ window.submitCustomAppointment = async function() {
   }
 };
 
-// WhatsApp fallback setup
 window.sendWhatsAppMsg = async function(message) {
   if(!window.currentBookingPhone) return;
   let phone = window.currentBookingPhone.replace(/\D/g, '');
@@ -995,46 +991,11 @@ window.sendWhatsAppMsg = async function(message) {
   window.open(waUrl, '_blank');
 };
 
-
-/* ── DASHBOARD UPDATED VIEW ENGINE FOR PROVIDER ── */
-// Is code block ko apne loadProviderDashboard function ke andar requests fetch loop me replace karna
-const requestsListArea = document.getElementById('live-requests-list');
-if(requestsListArea && providerId) {
-  const { data: requests, error } = await supabaseClient
-    .from('bookings')
-    .select('*')
-    .eq('provider_id', providerId)
-    .order('created_at', { ascending: false });
-
-  if(!error && requests && requests.length > 0) {
-    // Top counter mapping card details header ke sath update karega
-    requestsListArea.innerHTML = `<div style="display: flex; flex-direction: column; gap: 12px; text-align: left;"></div>`;
-    const listWrapper = requestsListArea.firstChild;
-
-    requests.forEach(r => {
-      const reqCard = document.createElement('div');
-      reqCard.style = "background: var(--surface); border: 1px solid var(--border); padding: 14px 18px; border-radius: var(--radius-sm); box-shadow: var(--shadow); display: flex; justify-content: space-between; align-items: center;";
-      
-      // Smart display checker for visual matrix layout data
-      const scheduleDetails = (r.apt_date) 
-        ? `<div style="margin-top: 6px; display:inline-block; background: #eff6ff; color: #1e40af; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 700;">
-             📅 Appointment on <b>${r.apt_date}</b> btw <b>${r.apt_from} clock</b> to <b>${r.apt_to} clock</b>
-           </div>`
-        : `<div style="font-size: 12px; color: var(--accent); margin: 2px 0;">💬 ${r.message}</div>`;
-
-      reqCard.innerHTML = `
-        <div>
-          <div style="font-weight: 700; font-size: 15px; color: var(--text);">${r.customer_name}</div>
-          ${scheduleDetails}
-          <div style="font-size: 11px; color: var(--text3); margin-top: 5px;">Requested at: ${new Date(r.created_at).toLocaleDateString('en-IN')}</div>
-        </div>
-        <a href="tel:${r.customer_mobile}" class="btn btn-primary" style="padding: 8px 16px; font-size: 13px; border-radius:8px; text-decoration:none;">📞 Call Now</a>
-      `;
-      listWrapper.appendChild(reqCard);
-    });
-  }
-}
-  window.signOutUser = async function () { await supabaseClient.auth.signOut(); showToast("Signed out."); };
+window.signOutUser = async function () { 
+  await supabaseClient.auth.signOut(); 
+  alert("Signed out."); 
+  window.location.reload();
+};
 </script>
 </body>
 </html>
