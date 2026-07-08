@@ -777,7 +777,12 @@ window.loadProviderDashboard = async function() {
   const providerId = session.user.id;
 
   // 1. Profile Details Render Section
-  const { data: profile } = await supabaseClient.from('profiles').select('full_name, gender, service_category, experience').eq('id', providerId).single();
+  const { data: profile } = await supabaseClient
+    .from('profiles')
+    .select('full_name, gender, service_category, experience')
+    .eq('id', providerId)
+    .single();
+
   if(profile) {
     document.getElementById('prov-name').value = profile.full_name || '';
     document.getElementById('prov-gender').value = profile.gender || '';
@@ -797,20 +802,9 @@ window.loadProviderDashboard = async function() {
     }
   }
 
-  //  REAL-TIME INCOMING REQUESTS RENDER ENGINE 🔥
-  const requestContainer = document.querySelector('.hero-card:has(h3:contains("Incoming Requests"))') || document.getElementById('incoming-requests-container');
- 
-  // Let's create or find the dynamic request list wrapper
-  let requestsListArea = document.getElementById('live-requests-list');
-  if(!requestsListArea) {
-    // Agar custom container id nahi hai, toh hum HTML card ke andar element dhoondh lenge ya aap directly card ke body par 'live-requests-list' id de sakte hain.
-    // Sabse aasan: Apne HTML mein "0 customers to contact yet" wale main placeholder div ko id="live-requests-list" de do!
-    requestsListArea = document.getElementById('live-requests-list');
-  }
-
-  if(requestsListArea) {
-   // INCOMING REQUESTS RENDER ENGINE
+  // 2. REAL-TIME INCOMING REQUESTS RENDER ENGINE
   const requestsListArea = document.getElementById('live-requests-list');
+  
   if (requestsListArea && providerId) {
     const { data: requests, error } = await supabaseClient
       .from('bookings')
@@ -840,7 +834,6 @@ window.loadProviderDashboard = async function() {
         reqCard.style = "background: var(--surface); border: 1px solid var(--border); padding: 14px 18px; border-radius: var(--radius-sm); box-shadow: var(--shadow); display: flex; justify-content: space-between; align-items: center; width: 100%; margin-bottom: 4px;";
         
         // SAFE CHECK: Check karo ki custom appointment hai ya normal text message
-        // Agar apt_date column blank hai ya undefined hai, toh fallback text message dikhao
         let scheduleDetails = "";
         if (r.apt_date || r.appointment_date) {
           const targetDate = r.apt_date || r.appointment_date;
@@ -867,6 +860,7 @@ window.loadProviderDashboard = async function() {
       console.log("No bookings found for this provider yet.");
     }
   }
+};
  
 /* ── BUSINESS LOGIC: ENABLE EDIT MODE ── */
 window.enableEditMode = function() {
