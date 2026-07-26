@@ -172,7 +172,7 @@
   <div class="search-section">
     <div class="search-wrap">
       <div class="search-box">
-        <input type="text" id="search-input" placeholder="Search electrician, plumber, carpenter, tutor…" aria-label="Search for services">
+        <input type="text" id="search-input" placeholder="Search electrician, plumber, carpenter, tutor, Steel and iron work contractor, construction contractor, Lohar(Blacksmith)…" aria-label="Search for services">
         <div class="search-divider"></div>
        
        
@@ -195,6 +195,10 @@
         <a href="#" class="qs-tag" onclick="document.getElementById('search-input').value='Home Tutor'; return false;">📚 Tutor</a>
         <a href="#" class="qs-tag" onclick="document.getElementById('search-input').value='Maid'; return false;">🧹 Maid</a>
         <a href="#" class="qs-tag" onclick="document.getElementById('search-input').value='Maid'; return false;">🧹Driver</a>
+        <a href="#" class="qs-tag" onclick="document.getElementById('search-input').value='Maid'; return false;">🧹construction contractor</a>
+        <a href="#" class="qs-tag" onclick="document.getElementById('search-input').value='Maid'; return false;">🧹Steel and Iron work contractor</a>
+        <a href="#" class="qs-tag" onclick="document.getElementById('search-input').value='Maid'; return false;">🧹construction contractor</a>
+    
       </div>
 
   <section id="map-section" class="map-section">
@@ -253,7 +257,7 @@
   <div id="prov-edit-mode">
     <div class="form-group">
       <label class="form-label">Full Name</label>
-      <input type="text" id="prov-name" class="form-input" placeholder="e.g. Ramesh Kumar">
+      <input type="text" id="prov-name" class="form-input" placeholder="e.g. Amam Kumar">
     </div>
     <div class="form-group" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
       <div style="margin: 0;">
@@ -278,6 +282,9 @@
         <option value="Plumber"></option>
         <option value="Carpenter"></option>
         <option value="Home Tutor"></option>
+       <option value="Driver"></option>
+       <option value="Steel and iron work contractor"></option>
+       <option value="OTHER"></option>
       </datalist>
     </div>
   </div>
@@ -568,8 +575,8 @@ function toggleAuthIntent(mode) {
       const userRole = session.user.user_metadata?.role || 'customer';
       const userPhone = session.user.user_metadata?.saved_phone || session.user.phone || '';
       const userName = session.user.user_metadata?.full_name || 'User';
-      const userEmail = session.user.email || ''; // Google login se automatic nikal aayega
-
+      const userEmail = session.user.email || ''; 
+     
       // Database mein Name, Mobile, Role aur Email sab ek saath save karo
       await supabaseClient.from('profiles').upsert([{ 
           id: userId, 
@@ -696,8 +703,29 @@ window.saveProviderProfile = async function() {
   }
 };
 
+// 🔍 SEARCH BUTTON ENGINE
+window.searchProviders = function(quickTagValue) {
+  const searchInput = document.getElementById('search-input');
+  
+  // Tag se click hua hai ya input box se type hua hai, dono handle karo
+  const searchTerm = quickTagValue || (searchInput ? searchInput.value.trim() : "");
+  
+  if (quickTagValue && searchInput) {
+    searchInput.value = quickTagValue;
+  }
+  
+  // Check karo ki customer ka location map wale engine mein saved hai ya nahi
+  // NOTE: Ensure karna ki tum window.customerLat & Lng mein coordinates save kar rahe ho jab "Locate Me" chalta hai
+  if (window.customerLat && window.customerLng) {
+    // Agar location available hai, toh direct live map update kar do!
+    window.loadLiveProvidersOnMap(window.customerLat, window.customerLng, searchTerm);
+  } else {
+    alert("📍 Please click 'Find Location' first so we can show providers near you!");
+  }
+};
+
  /* ── BUSINESS LOGIC: LOAD PROVIDERS ON MAP & SIDEBAR ── */
-window.loadLiveProvidersOnMap = async function(customerLat = null, customerLng = null) {
+window.loadLiveProvidersOnMap = async function(customerLat = null, customerLng = null, searchTerm = "") {
   const listContainer = document.getElementById('customer-provider-list');
   if(!listContainer) return;
 
@@ -707,49 +735,58 @@ window.loadLiveProvidersOnMap = async function(customerLat = null, customerLng =
     return;
   }
 
-  // Use 'ilike' instead of 'eq' just in case 'Provider' is saved with capital 'P'
-  const { data: providers, error } = await supabaseClient.from('profiles').select('*').ilike('role', 'provider');
+  // 1. BASE DATABASE QUERY
+  let dbQuery = supabaseClient.from('profiles').select('*').ilike('role', '%provider%');
+  
+  // 🔥 2. SEARCH FILTER (Asli jadoo yahan hai)
+  if (searchTerm && searchTerm.trim() !== "") {
+    dbQuery = dbQuery.ilike('service_category', `%${searchTerm.trim()}%`);
+  }
+
+  const { data: providers, error } = await dbQuery;
   
   if (error || !providers) {
     console.error("Supabase Error fetching providers:", error);
     return;
   }
 
-   listContainer.innerHTML = ''; 
+  listContainer.innerHTML = ''; 
   let foundNearby = false;
+
+  // 🧹 3. OLD MARKERS PURGE (Map se purane search ke markers hatao warna overlap honge)
+  if (window.currentMapMarkers && window.currentMapMarkers.length > 0) {
+    window.currentMapMarkers.forEach(m => map.removeLayer(m));
+  }
+  window.currentMapMarkers = []; // Array ko wapas khali kar do
 
   providers.forEach(p => {
     if(p.latitude && p.longitude) {
-      // Forcefully convert database values to clean numbers
       const pLat = parseFloat(p.latitude);
       const pLng = parseFloat(p.longitude);
       
       const dist = calculateDistance(customerLat, customerLng, pLat, pLng);
       
-      console.log(`Checking ${p.full_name} -> Distance is: ${dist.toFixed(2)} KM`);
-      
       if (dist <= 10) { 
         foundNearby = true;
         
         const marker = L.marker([pLat, pLng]).addTo(map);
+        window.currentMapMarkers.push(marker); // 👈 Marker save kar liya future mein hatane ke liye
         
-        // Map ke Pop-up ke andar humne naya "Book Now" primary button jod diya hai
+        // Popup
         marker.bindPopup(`
           <div style="text-align:center; min-width: 140px;">
             <b style="font-size: 15px;">${p.full_name || 'Verified Provider'}</b><br>
             <span style="color:var(--text2); font-size:13px;">${p.service_category || 'Service'}</span><br>
             <span style="font-size:12px; color: var(--green); font-weight:600;">📍 ${dist.toFixed(1)} km away</span><br>
-            <button class="btn btn-primary" style="margin-top:10px; width:100%; justify-content:center; padding: 6px 10px; font-size: 13px;" onclick="event.stopPropagation(); window.openBookingModal('${p.full_name || 'Provider'}', '${p.mobile}', '${p.id}')"</button>
+            <button class="btn btn-primary" style="margin-top:10px; width:100%; justify-content:center; padding: 6px 10px; font-size: 13px;" onclick="event.stopPropagation(); window.openBookingModal('${p.full_name || 'Provider'}', '${p.mobile}', '${p.id}')">Book Now</button>
           </div>
         `);
 
         const item = document.createElement('div');
         item.className = 'map-provider-item';
-        item.style.alignItems = 'center'; // Layout standard symmetric karne ke liye
+        item.style.alignItems = 'center';
         item.onclick = () => { map.setView([pLat, pLng], 15); marker.openPopup(); };
         
-        // Sidebar card item ke right side mein direct "Book" call-to-action button
-        // Isme event.stopPropagation() isliye lagaya hai taaki button dabane par poora card click na ho jaye
         item.innerHTML =`
           <div class="mpi-avatar" style="background:var(--accent);">${(p.full_name||'P').substring(0,2).toUpperCase()}</div>
           <div class="mpi-info">
@@ -763,6 +800,16 @@ window.loadLiveProvidersOnMap = async function(customerLat = null, customerLng =
       }
     }
   });
+  
+  // 🚫 4. NO PROVIDER FOUND FALLBACK
+  if (!foundNearby) {
+    listContainer.innerHTML = `<div style="padding: 30px 20px; text-align: center; color: var(--text3); font-size: 14px;">
+      <div style="font-size: 40px; margin-bottom: 10px;">🔍</div>
+      No <b>${searchTerm || 'providers'}</b> found within 10 km.<br><br>
+      <span style="font-size:12px;">Try searching for something else or increasing the range.</span>
+    </div>`;
+  }
+};
  
   if(!foundNearby) {
      listContainer.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--text3);">No providers found nearby right now. Distance might be too far!</div>';
@@ -1021,6 +1068,7 @@ window.signOutUser = async function () {
   alert("Signed out."); 
   window.location.reload();
 };
+ 
 </script>
 </body>
 </html>
