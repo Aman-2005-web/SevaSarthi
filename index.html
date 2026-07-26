@@ -194,10 +194,10 @@
         <a href="#" class="qs-tag" onclick="document.getElementById('search-input').value='Carpenter'; return false;">🪚 Carpenter</a>
         <a href="#" class="qs-tag" onclick="document.getElementById('search-input').value='Home Tutor'; return false;">📚 Tutor</a>
         <a href="#" class="qs-tag" onclick="document.getElementById('search-input').value='Maid'; return false;">🧹 Maid</a>
-        <a href="#" class="qs-tag" onclick="document.getElementById('search-input').value='Maid'; return false;">🧹Driver</a>
-        <a href="#" class="qs-tag" onclick="document.getElementById('search-input').value='Maid'; return false;">🧹construction contractor</a>
-        <a href="#" class="qs-tag" onclick="document.getElementById('search-input').value='Maid'; return false;">🧹Steel and Iron work contractor</a>
-        <a href="#" class="qs-tag" onclick="document.getElementById('search-input').value='Maid'; return false;">🧹construction contractor</a>
+        <a href="#" class="qs-tag" onclick="document.getElementById('search-input').value='Maid'; return false;">Driver</a>
+        <a href="#" class="qs-tag" onclick="document.getElementById('search-input').value='Maid'; return false;">construction contractor</a>
+        <a href="#" class="qs-tag" onclick="document.getElementById('search-input').value='Maid'; return false;">Steel and Iron work contractor</a>
+        <a href="#" class="qs-tag" onclick="document.getElementById('search-input').value='Maid'; return false;">construction contractor</a>
     
       </div>
 
@@ -653,6 +653,21 @@ window.askCustomerLocation = function() {
   } else {
     showToast("Your browser does not support location finding.");
   }
+}; 
+
+ // 🔍 2. SEARCH BUTTON ENGINE
+window.searchProviders = function(quickTagValue) {
+  const searchInput = document.getElementById('search-input');
+  const searchTerm = quickTagValue || (searchInput ? searchInput.value.trim() : "");
+  if (quickTagValue && searchInput) {
+    searchInput.value = quickTagValue;
+  }
+  // Check karo ki map engine aur location ready hai ya nahi
+  if (window.customerLat && window.customerLng) {
+    window.loadLiveProvidersOnMap(window.customerLat, window.customerLng, searchTerm);
+  } else {
+    alert("📍 Please click 'Find Location' (Locate Me) first so we can search providers near you!");
+  }
 };
  
   /* ── BUSINESS LOGIC: PROVIDER LOCATION LOCK ── */
@@ -700,27 +715,6 @@ window.saveProviderProfile = async function() {
   } else {
     showToast("Geolocation is not supported by your browser.");
     btn.textContent = "Save Details & Lock Location 📍";
-  }
-};
-
-// 🔍 SEARCH BUTTON ENGINE
-window.searchProviders = function(quickTagValue) {
-  const searchInput = document.getElementById('search-input');
-  
-  // Tag se click hua hai ya input box se type hua hai, dono handle karo
-  const searchTerm = quickTagValue || (searchInput ? searchInput.value.trim() : "");
-  
-  if (quickTagValue && searchInput) {
-    searchInput.value = quickTagValue;
-  }
-  
-  // Check karo ki customer ka location map wale engine mein saved hai ya nahi
-  // NOTE: Ensure karna ki tum window.customerLat & Lng mein coordinates save kar rahe ho jab "Locate Me" chalta hai
-  if (window.customerLat && window.customerLng) {
-    // Agar location available hai, toh direct live map update kar do!
-    window.loadLiveProvidersOnMap(window.customerLat, window.customerLng, searchTerm);
-  } else {
-    alert("📍 Please click 'Find Location' first so we can show providers near you!");
   }
 };
 
@@ -1067,8 +1061,7 @@ window.signOutUser = async function () {
   await supabaseClient.auth.signOut(); 
   alert("Signed out."); 
   window.location.reload();
-};
- 
+}; 
 </script>
 </body>
 </html>
