@@ -169,37 +169,41 @@
     </div>
   </div>
 
-  <div class="search-section">
-    <div class="search-wrap">
-      <div class="search-box">
-        <input type="text" id="search-input" placeholder="Search electrician, plumber, carpenter, tutor, Steel and iron work contractor, construction contractor, Lohar(Blacksmith)…" aria-label="Search for services">
-        <div class="search-divider"></div>
-       
-       
-        <!-- AUTO LOCATION BUTTON -->
-        <div class="search-location" onclick="window.askCustomerLocation()">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--accent); flex-shrink: 0;"><path d="M12 22s-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 8.2c0 7.3-8 11.8-8 11.8z"/><circle cx="12" cy="10" r="3"/></svg>
-          <span id="location-text">Locate Me</span>
-        </div>
-        <button class="btn btn-primary" style="white-space: nowrap;">Search</button>
+  <!-- 🔍 SEARCH & POPULAR TAGS SECTION -->
+<div class="search-section">
+  <div class="search-wrap">
+    <div class="search-box">
+      <!-- Search Input -->
+      <input type="text" id="search-input" placeholder="Search electrician, plumber, carpenter, tutor, contractor..." aria-label="Search for services">
+      <div class="search-divider"></div>
+      
+      <!-- Locate Me Button -->
+      <div class="search-location" onclick="window.askCustomerLocation()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--accent); flex-shrink: 0;">
+          <path d="M12 22s-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 8.2c0 7.3-8 11.8-8 11.8z"/>
+          <circle cx="12" cy="10" r="3"/>
+        </svg>
+        <span id="location-text">Locate Me</span>
       </div>
+
+      <!-- Search Trigger Button -->
+      <button class="btn btn-primary" style="white-space: nowrap;" onclick="window.searchProviders()">Search</button>
     </div>
   </div>
+</div>
 
-
- <div class="quick-services">
-        <span class="qs-label">Popular:</span>
-        <a href="#" class="qs-tag" onclick="document.getElementById('search-input').value='Electrician'; return false;">⚡ Electrician</a>
-        <a href="#" class="qs-tag" onclick="document.getElementById('search-input').value='Plumber'; return false;">🔧 Plumber</a>
-        <a href="#" class="qs-tag" onclick="document.getElementById('search-input').value='Carpenter'; return false;">🪚 Carpenter</a>
-        <a href="#" class="qs-tag" onclick="document.getElementById('search-input').value='Home Tutor'; return false;">📚 Tutor</a>
-        <a href="#" class="qs-tag" onclick="document.getElementById('search-input').value='Maid'; return false;">🧹 Maid</a>
-        <a href="#" class="qs-tag" onclick="document.getElementById('search-input').value='Maid'; return false;">Driver</a>
-        <a href="#" class="qs-tag" onclick="document.getElementById('search-input').value='Maid'; return false;">construction contractor</a>
-        <a href="#" class="qs-tag" onclick="document.getElementById('search-input').value='Maid'; return false;">Steel and Iron work contractor</a>
-        <a href="#" class="qs-tag" onclick="document.getElementById('search-input').value='Maid'; return false;">construction contractor</a>
-    
-      </div>
+<!-- ⚡ POPULAR SERVICE TAGS -->
+<div class="quick-services">
+  <span class="qs-label">Popular:</span>
+  <a href="#" class="qs-tag" onclick="window.searchProviders('Electrician'); return false;">⚡ Electrician</a>
+  <a href="#" class="qs-tag" onclick="window.searchProviders('Plumber'); return false;">🔧 Plumber</a>
+  <a href="#" class="qs-tag" onclick="window.searchProviders('Carpenter'); return false;">🪚 Carpenter</a>
+  <a href="#" class="qs-tag" onclick="window.searchProviders('Home Tutor'); return false;">📚 Tutor</a>
+  <a href="#" class="qs-tag" onclick="window.searchProviders('Maid'); return false;">🧹 Maid</a>
+  <a href="#" class="qs-tag" onclick="window.searchProviders('Driver'); return false;">🚗 Driver</a>
+  <a href="#" class="qs-tag" onclick="window.searchProviders('Construction Contractor'); return false;">🏗️ Construction Contractor</a>
+  <a href="#" class="qs-tag" onclick="window.searchProviders('Steel and Iron Work Contractor'); return false;">⚙️ Steel & Iron Contractor</a>
+</div>
 
   <section id="map-section" class="map-section">
     <div class="map-demo">
@@ -698,21 +702,25 @@ function toggleAuthIntent(mode) {
     }
   }; 
 
-  // ── 5. SEARCH & QUICK TAG ENGINE ──
-  window.searchProviders = function(quickTagValue) {
-    const searchInput = document.getElementById('search-input');
-    const searchTerm = quickTagValue || (searchInput ? searchInput.value.trim() : "");
-    if (quickTagValue && searchInput) {
-      searchInput.value = quickTagValue;
-    }
-    
-    if (window.customerLat && window.customerLng) {
-      window.loadLiveProvidersOnMap(window.customerLat, window.customerLng, searchTerm);
-    } else {
-      window.loadLiveProvidersOnMap(null, null, searchTerm);
-    }
-  };
 
+  // 🔍 SEARCH ENGINE CONTROLLER
+window.searchProviders = function(quickTagValue) {
+  const searchInput = document.getElementById('search-input');
+  
+  // Tag se click hua hai ya search box mein type hua hai, dono ko catch karega
+  const searchTerm = quickTagValue || (searchInput ? searchInput.value.trim() : "");
+  
+  if (quickTagValue && searchInput) {
+    searchInput.value = quickTagValue;
+  }
+  
+  // Direct Search Call (Coordinates hon ya na hon, search properly chalega)
+  if (window.loadLiveProvidersOnMap) {
+    window.loadLiveProvidersOnMap(window.customerLat || null, window.customerLng || null, searchTerm);
+  } else {
+    console.error("loadLiveProvidersOnMap function not found!");
+  }
+};
   // ── 6. PROVIDER LOCATION & PROFILE SAVE ──
   window.saveProviderProfile = async function() {
     const name = document.getElementById('prov-name').value.trim();
@@ -760,92 +768,101 @@ function toggleAuthIntent(mode) {
   };
 
   // ── 7. LOAD PROVIDERS ON MAP ──
-  window.loadLiveProvidersOnMap = async function(customerLat = null, customerLng = null, searchTerm = "") {
-    const listContainer = document.getElementById('customer-provider-list');
-    if(!listContainer) return;
+window.loadLiveProvidersOnMap = async function(customerLat = null, customerLng = null, searchTerm = "") {
+  const listContainer = document.getElementById('customer-provider-list');
+  if(!listContainer) return;
 
-    if (!customerLat || !customerLng) {
-      listContainer.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--text3); font-size: 14px;">📍 Searching providers near you...<br><br><span style="font-size:12px;">Please click "Find Location" to see providers within 10 km.</span></div>';
-    }
+  // BASE DATABASE QUERY
+  let dbQuery = supabaseClient.from('profiles').select('*').ilike('role', '%provider%');
+  
+  // SEARCH FILTER LOGIC (ilike handles uppercase/lowercase match)
+  if (searchTerm && searchTerm.trim() !== "") {
+    dbQuery = dbQuery.ilike('service_category', `%${searchTerm.trim()}%`);
+  }
 
-    let dbQuery = supabaseClient.from('profiles').select('*').ilike('role', '%provider%');
-    
-    if (searchTerm && searchTerm.trim() !== "") {
-      dbQuery = dbQuery.ilike('service_category', `%${searchTerm.trim()}%`);
-    }
+  const { data: providers, error } = await dbQuery;
+  
+  if (error) {
+    console.error("Supabase Error fetching providers:", error);
+    listContainer.innerHTML = `<div style="padding: 20px; text-align: center; color: var(--accent);">Error loading providers. Please refresh!</div>`;
+    return;
+  }
 
-    const { data: providers, error } = await dbQuery;
-    
-    if (error || !providers) {
-      console.error("Supabase Error fetching providers:", error);
-      return;
-    }
+  listContainer.innerHTML = ''; 
+  let foundNearby = false;
 
-    listContainer.innerHTML = ''; 
-    let foundNearby = false;
+  // 🧹 PURGE OLD MAP PINS
+  if (window.currentMapMarkers && window.currentMapMarkers.length > 0) {
+    window.currentMapMarkers.forEach(m => { 
+      if(typeof map !== 'undefined' && map) map.removeLayer(m); 
+    });
+  }
+  window.currentMapMarkers = [];
 
-    if (window.currentMapMarkers && window.currentMapMarkers.length > 0) {
-      window.currentMapMarkers.forEach(m => { if(typeof map !== 'undefined' && map) map.removeLayer(m); });
-    }
-    window.currentMapMarkers = [];
-
+  if (providers && providers.length > 0) {
     providers.forEach(p => {
-      if(p.latitude && p.longitude) {
+      let dist = null;
+      if (p.latitude && p.longitude && customerLat && customerLng) {
         const pLat = parseFloat(p.latitude);
         const pLng = parseFloat(p.longitude);
-        
-        let dist = 0;
-        if(customerLat && customerLng) {
-          dist = calculateDistance(customerLat, customerLng, pLat, pLng);
-        }
-        
-        // Show all if location not present, or filter by <= 10km if customer location exists
-        if (!customerLat || dist <= 10) { 
-          foundNearby = true;
-          
-          if(typeof map !== 'undefined' && map && typeof L !== 'undefined') {
-            const marker = L.marker([pLat, pLng]).addTo(map);
-            window.currentMapMarkers.push(marker);
-            
-            marker.bindPopup(`
-              <div style="text-align:center; min-width: 140px;">
-                <b style="font-size: 15px;">${p.full_name || 'Verified Provider'}</b><br>
-                <span style="color:var(--text2); font-size:13px;">${p.service_category || 'Service'}</span><br>
-                <span style="font-size:12px; color: var(--green); font-weight:600;">📍 ${customerLat ? dist.toFixed(1) + ' km away' : 'Available'}</span><br>
-                <button class="btn btn-primary" style="margin-top:10px; width:100%; justify-content:center; padding: 6px 10px; font-size: 13px;" onclick="event.stopPropagation(); window.openBookingModal('${p.full_name || 'Provider'}', '${p.mobile}', '${p.id}')">Book Now</button>
-              </div>
-            `);
-          }
+        dist = calculateDistance(customerLat, customerLng, pLat, pLng);
+      }
 
-          const item = document.createElement('div');
-          item.className = 'map-provider-item';
-          item.style.alignItems = 'center';
-          item.onclick = () => { 
-            if(typeof map !== 'undefined' && map) map.setView([pLat, pLng], 15); 
-          };
+      // Filter: If location is granted, filter within 10 KM. If not granted, show all matched search results.
+      if (!customerLat || (dist !== null && dist <= 10)) { 
+        foundNearby = true;
+        
+        // Render Marker on Map
+        if(typeof map !== 'undefined' && map && typeof L !== 'undefined' && p.latitude && p.longitude) {
+          const marker = L.marker([parseFloat(p.latitude), parseFloat(p.longitude)]).addTo(map);
+          window.currentMapMarkers.push(marker);
           
-          item.innerHTML =`
-            <div class="mpi-avatar" style="background:var(--accent);">${(p.full_name||'P').substring(0,2).toUpperCase()}</div>
-            <div class="mpi-info">
-              <div class="mpi-name">${p.full_name || 'Verified Provider'}</div>
-              <div class="mpi-role">${p.service_category || 'Service Professional'}</div>
-              <div style="font-size: 11px; color: var(--green); margin-top:2px;">📍 ${customerLat ? dist.toFixed(1) + ' km away' : 'Verified'}</div>
+          marker.bindPopup(`
+            <div style="text-align:center; min-width: 140px;">
+              <b style="font-size: 15px;">${p.full_name || 'Verified Provider'}</b><br>
+              <span style="color:var(--text2); font-size:13px;">${p.service_category || 'Service'}</span><br>
+              <span style="font-size:12px; color: var(--green); font-weight:600;">📍 ${dist !== null ? dist.toFixed(1) + ' km away' : 'Available'}</span><br>
+              <button class="btn btn-primary" style="margin-top:10px; width:100%; justify-content:center; padding: 6px 10px; font-size: 13px;" onclick="event.stopPropagation(); window.openBookingModal('${p.full_name || 'Provider'}', '${p.mobile}', '${p.id}')">Book Now</button>
             </div>
-            <button class="btn btn-outline" style="padding: 6px 12px; font-size: 12px; border-color: var(--accent); color: var(--accent);" onclick="event.stopPropagation(); window.openBookingModal('${p.full_name || 'Provider'}', '${p.mobile}', '${p.id}')">Book</button>
-           `;
-          listContainer.appendChild(item);
+          `);
         }
+
+        // Render Card in Sidebar List
+        const item = document.createElement('div');
+        item.className = 'map-provider-item';
+        item.style.alignItems = 'center';
+        item.onclick = () => { 
+          if(typeof map !== 'undefined' && map && p.latitude && p.longitude) {
+            map.setView([parseFloat(p.latitude), parseFloat(p.longitude)], 15); 
+          }
+        };
+        
+        item.innerHTML = `
+          <div class="mpi-avatar" style="background:var(--accent);">${(p.full_name||'P').substring(0,2).toUpperCase()}</div>
+          <div class="mpi-info">
+            <div class="mpi-name">${p.full_name || 'Verified Provider'}</div>
+            <div class="mpi-role">${p.service_category || 'Service Professional'}</div>
+            <div style="font-size: 11px; color: var(--green); margin-top:2px;">📍 ${dist !== null ? dist.toFixed(1) + ' km away' : 'Verified Partner'}</div>
+          </div>
+          <button class="btn btn-outline" style="padding: 6px 12px; font-size: 12px; border-color: var(--accent); color: var(--accent);" onclick="event.stopPropagation(); window.openBookingModal('${p.full_name || 'Provider'}', '${p.mobile}', '${p.id}')">Book</button>
+        `;
+        listContainer.appendChild(item);
       }
     });
-    
-    if (!foundNearby) {
-      listContainer.innerHTML = `<div style="padding: 30px 20px; text-align: center; color: var(--text3); font-size: 14px;">
-        <div style="font-size: 40px; margin-bottom: 10px;">🔍</div>
-        No <b>${searchTerm || 'providers'}</b> found nearby.<br><br>
-        <span style="font-size:12px;">Try searching for another service category.</span>
+  }
+
+  // 🚫 IF NO MATCHING PROVIDERS FOUND
+  if (!foundNearby) {
+    listContainer.innerHTML = `
+      <div style="padding: 30px 20px; text-align: center; color: var(--text3); font-size: 14px;">
+        <div style="font-size: 38px; margin-bottom: 10px;">🚫</div>
+        <b>No ${searchTerm ? `'${searchTerm}'` : 'providers'} found near you!</b><br>
+        <span style="font-size: 12px; color: var(--text2); display: block; margin-top: 6px;">
+          ${customerLat ? 'No provider is currently registered within 10 km for this category.' : 'Try searching for another service category.'}
+        </span>
       </div>`;
-    }
-  };
+  }
+};
 
   // ── 8. PROVIDER DASHBOARD ──
   window.loadProviderDashboard = async function() {
