@@ -541,20 +541,19 @@ function toggleAuthIntent(mode) {
   });
 </script>
 
-
-<script>
-  // ── 1. SUPABASE CLIENT INITIALIZATION ──
+<script> 
+ // ── 1. SUPABASE CLIENT INITIALIZATION ──
   const SUPABASE_URL = "https://fekvrxxhspbntjriwiha.supabase.co";
   const SUPABASE_ANON_KEY = "sb_publishable_YrjBg24OxoW--XxfI71EBg_nCqm3lMo";
   const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-  // Global Fallback Variables
+  // Global Variables
   window.currentAuthMode = 'login';
   window.customerLat = null;
   window.customerLng = null;
   window.currentMapMarkers = [];
 
-  // Helper Fallback Toast
+  // ── 2. SAFE UI HELPERS (Prevents undefined crashes) ──
   if (typeof window.showToast !== 'function') {
     window.showToast = function(msg) {
       const toast = document.getElementById('toast');
@@ -563,12 +562,11 @@ function toggleAuthIntent(mode) {
         toast.classList.add('show');
         setTimeout(() => toast.classList.remove('show'), 3000);
       } else {
-        console.log("Toast:", msg);
+        console.log("Notification:", msg);
       }
     };
   }
 
-  // Helper Fallback Close Modal
   if (typeof window.closeModal !== 'function') {
     window.closeModal = function() {
       const modals = document.querySelectorAll('.modal-overlay, .modal');
@@ -577,7 +575,7 @@ function toggleAuthIntent(mode) {
     };
   }
 
-  // ── 2. AUTH OBSERVER ──
+  // ── 3. AUTH OBSERVER (ROLE DETECTION ENGINE) ──
   supabaseClient.auth.onAuthStateChange(async (event, session) => {
     const status = document.getElementById("user-status");
     const signin = document.getElementById("signin-btn");
@@ -592,48 +590,45 @@ function toggleAuthIntent(mode) {
       if (pendingRole || pendingPhone || pendingName) {
         await supabaseClient.auth.updateUser({
           data: { 
-            role: pendingRole || 'customer', 
+            role: pendingRole || session.user.user_metadata?.role || 'customer', 
             saved_phone: pendingPhone || '',
             full_name: pendingName || session.user.user_metadata?.full_name || ''
           }
         });
-        localStorage.removeItem('pending_role'); localStorage.removeItem('pending_phone');
-        localStorage.removeItem('temp_firstname'); localStorage.removeItem('temp_lastname');
-        if (pendingRole) session.user.user_metadata.role = pendingRole;
-        if (pendingPhone) session.user.user_metadata.saved_phone = pendingPhone;
-        if (pendingName) session.user.user_metadata.full_name = pendingName;
       }
 
       const userId = session.user.id;
-      const userRole = session.user.user_metadata?.role || 'customer';
-      const userPhone = session.user.user_metadata?.saved_phone || session.user.phone || '';
-      const userName = session.user.user_metadata?.full_name || 'User';
+      const { data: existingProfile } = await supabaseClient.from('profiles').select('role, full_name, mobile').eq('id', userId).single();
+
+      const finalRole = existingProfile?.role || pendingRole || session.user.user_metadata?.role || 'customer';
+      const userPhone = pendingPhone || session.user.user_metadata?.saved_phone || session.user.phone || existingProfile?.mobile || '';
+      const userName = pendingName || existingProfile?.full_name || session.user.user_metadata?.full_name || 'User';
       const userEmail = session.user.email || ''; 
+
+      localStorage.removeItem('pending_role'); 
+      localStorage.removeItem('pending_phone');
+      localStorage.removeItem('temp_firstname'); 
+      localStorage.removeItem('temp_lastname');
      
       await supabaseClient.from('profiles').upsert([{ 
-          id: userId, 
-          full_name: userName, 
-          mobile: userPhone, 
-          role: userRole,
-          email: userEmail
+          id: userId, full_name: userName, mobile: userPhone, role: finalRole, email: userEmail
       }]);
 
       const identity = userName !== 'User' ? userName : (userPhone || "Logged In");
       if(status) {
         status.style.display = "inline-block";
-        status.textContent = userRole === "provider" ? `${identity} (Provider)` : identity;
+        status.textContent = finalRole === "provider" ? `${identity} (Provider)` : identity;
       }
       if(signin) signin.style.display = "none"; 
       if(register) register.style.display = "none"; 
       if(signout) signout.style.display = "inline-flex";
       
-      if (userRole === "provider") {
+      if (finalRole === "provider") {
         document.body.classList.add('provider-mode');
         if(window.loadProviderDashboard) window.loadProviderDashboard();
       } else {
         document.body.classList.remove('provider-mode');
-        if(window.loadLiveProvidersOnMap) window.loadLiveProvidersOnMap();
-        if(window.askCustomerLocation) window.askCustomerLocation(); 
+        if(window.loadLiveProvidersOnMap) window.loadLiveProvidersOnMap(window.customerLat, window.customerLng, "");
       }
       window.closeModal();
     } else {
@@ -646,237 +641,202 @@ function toggleAuthIntent(mode) {
     }
   });
 
-  // ── 3. DISTANCE CALCULATOR ENGINE ──
+  // ── 4. AUTHENTICATION FUNCTIONS (GOOGLE & OTP) ──
+  window.initiateGoogleAuth = async function (role = 'customer') {
+    try {
+      localStorage.setItem('pending_role', role);
+      
+      const mode = window.currentAuthMode || 'login';
+      if (mode === 'register' && role === 'provider') {
+        const mobileInput = document.getElementById('provider-mobile');
+        const mobileValue = mobileInput ? mobileInput.value.replace(/\D/g, '') : '';
+        if (mobileValue && /^[6-9]\d{9}$/.test(mobileValue)) {
+          localStorage.setItem('pending_phone', '+91' + mobileValue);
+        } else {
+          window.showToast("Enter a valid 10-digit mobile number to register."); return; 
+        }
+      }
+      window.showToast("Opening Google...");
+      await supabaseClient.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.origin + window.location.pathname } });
+    } catch(e) {
+      console.error(e);
+    }
+  };
+
+  window.triggerSupabaseOTP = async function (role = 'customer') {
+    const inputId = role === 'provider' ? 'provider-mobile' : 'auth-mobile';
+    const displayId = role === 'provider' ? 'provider-otp-phone-display' : 'otp-phone-display';
+    const inputEl = document.getElementById(inputId);
+    if(!inputEl) return;
+    
+    const raw = inputEl.value.trim().replace(/\D/g, '');
+    if (!/^[6-9]\d{9}$/.test(raw)) { window.showToast("Enter a valid 10-digit Indian number."); return; }
+    const phoneWithCode = '+91' + raw;
+
+    const { data: existingProfile } = await supabaseClient.from('profiles').select('id').eq('mobile', phoneWithCode).single();
+    const mode = window.currentAuthMode || 'login';
+    
+    if (mode === 'register' && existingProfile) { window.showToast("❌ Account already exists! Please sign in."); return; }
+    if (mode === 'login' && !existingProfile) { window.showToast("❌ No account found! Please create an account first."); return; }
+
+    const fName = document.getElementById(role === 'provider' ? 'provider-firstname' : 'auth-firstname'); 
+    const lName = document.getElementById(role === 'provider' ? 'provider-lastname' : 'auth-lastname');
+    if(fName && fName.value) localStorage.setItem('temp_firstname', fName.value);
+    if(lName && lName.value) localStorage.setItem('temp_lastname', lName.value);
+    localStorage.setItem('pending_role', role);
+
+    window._globalCurrentAuthPhone = phoneWithCode; 
+    const dispEl = document.getElementById(displayId); if(dispEl) dispEl.textContent = window._globalCurrentAuthPhone;
+    
+    window.showToast("Requesting OTP...");
+    const { error } = await supabaseClient.auth.signInWithOtp({ phone: window._globalCurrentAuthPhone });
+    
+    if (error) { window.showToast("Error: " + error.message); } 
+    else {
+      if(document.getElementById(role === 'provider' ? 'provider-input-fields' : 'consumer-input-fields')) document.getElementById(role === 'provider' ? 'provider-input-fields' : 'consumer-input-fields').style.display = 'none';
+      if(document.getElementById(role === 'provider' ? 'provider-otp-fields' : 'consumer-otp-fields')) document.getElementById(role === 'provider' ? 'provider-otp-fields' : 'consumer-otp-fields').style.display = 'block';
+      window.showToast("OTP sent successfully!");
+    }
+  };
+
+  window.verifySupabaseOTP = async function (role = 'customer') {
+    if (!window._globalCurrentAuthPhone) return;
+    let code = role === 'provider' ? document.getElementById('provider-otp-code').value.trim() : Array.from(document.querySelectorAll('.otp-field')).map(i => i.value.trim()).join('');
+    if (code.length < 6) { window.showToast("Enter all 6 digits."); return; }
+    
+    window.showToast("Verifying...");
+    const { error } = await supabaseClient.auth.verifyOtp({ phone: window._globalCurrentAuthPhone, token: code, type: 'sms' });
+    
+    if (error) { window.showToast("Invalid OTP."); } 
+    else {
+      window.showToast("Verified!"); window.closeModal(); setTimeout(() => { window.location.reload(); }, 1200);
+    }
+  };
+
+  // ── 5. DISTANCE & LOCATION ENGINE ──
   function calculateDistance(lat1, lon1, lat2, lon2) {
-    const R = 6371; // Earth's radius in km
-    const dLat = (lat2 - lat1) * Math.PI / 180;
-    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const R = 6371; const dLat = (lat2 - lat1) * Math.PI / 180; const dLon = (lon2 - lon1) * Math.PI / 180;
     const a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon/2) * Math.sin(dLon/2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-    return R * c;
+    return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)));
   }
 
-  // ── 4. CUSTOMER LOCATION ENGINE ──
   window.askCustomerLocation = function() {
     if (navigator.geolocation) {
       const locText = document.getElementById('location-text');
       if(locText) locText.textContent = "Finding...";
 
       navigator.geolocation.getCurrentPosition(async (pos) => {
-        const lat = pos.coords.latitude; 
-        const lng = pos.coords.longitude;
-        
-        window.customerLat = lat;
-        window.customerLng = lng;
+        window.customerLat = pos.coords.latitude; window.customerLng = pos.coords.longitude;
         
         if(typeof map !== 'undefined' && map) {
-          map.setView([lat, lng], 13); 
+          map.setView([window.customerLat, window.customerLng], 13); 
           if(window.customerMarker) { map.removeLayer(window.customerMarker); }
-          if(typeof L !== 'undefined') {
-            window.customerMarker = L.marker([lat, lng], {zIndexOffset: 1000})
-                .addTo(map).bindPopup("<b>📍 You are here</b>").openPopup();
-          }
+          if(typeof L !== 'undefined') window.customerMarker = L.marker([window.customerLat, window.customerLng], {zIndexOffset: 1000}).addTo(map).bindPopup("<b>📍 You are here</b>").openPopup();
         }
-
         window.showToast("Location detected automatically!");
-
-        window.loadLiveProvidersOnMap(lat, lng, "");
+        window.loadLiveProvidersOnMap(window.customerLat, window.customerLng, document.getElementById('search-input') ? document.getElementById('search-input').value : "");
 
         try {
-          const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`);
+          const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${window.customerLat}&lon=${window.customerLng}`);
           const data = await res.json();
-          const areaName = data.address.suburb || data.address.neighbourhood || data.address.town || data.address.city || "Location Found";
-          if(locText) locText.textContent = areaName;
-        } catch (err) {
-          if(locText) locText.textContent = "Location Found";
-        }
-
+          if(locText) locText.textContent = data.address.suburb || data.address.neighbourhood || data.address.town || data.address.city || "Location Found";
+        } catch (err) { if(locText) locText.textContent = "Location Found"; }
       }, (err) => {
         window.showToast("Please allow location access to see nearby providers.");
-        const locText = document.getElementById('location-text');
-        if(locText) locText.textContent = "Find Location";
+        if(document.getElementById('location-text')) document.getElementById('location-text').textContent = "Find Location";
         window.loadLiveProvidersOnMap(null, null, "");
       });
-    } else {
-      window.showToast("Your browser does not support location finding.");
-    }
+    } else { window.showToast("Geolocation is not supported by your browser."); }
   }; 
 
-
-  // 🔍 SEARCH ENGINE CONTROLLER
-window.searchProviders = function(quickTagValue) {
-  const searchInput = document.getElementById('search-input');
-  
-  // Tag se click hua hai ya search box mein type hua hai, dono ko catch karega
-  const searchTerm = quickTagValue || (searchInput ? searchInput.value.trim() : "");
-  
-  if (quickTagValue && searchInput) {
-    searchInput.value = quickTagValue;
-  }
-  
-  // Direct Search Call (Coordinates hon ya na hon, search properly chalega)
-  if (window.loadLiveProvidersOnMap) {
-    window.loadLiveProvidersOnMap(window.customerLat || null, window.customerLng || null, searchTerm);
-  } else {
-    console.error("loadLiveProvidersOnMap function not found!");
-  }
-};
-  // ── 6. PROVIDER LOCATION & PROFILE SAVE ──
-  window.saveProviderProfile = async function() {
-    const name = document.getElementById('prov-name').value.trim();
-    const gender = document.getElementById('prov-gender').value;
-    const exp = document.getElementById('prov-exp').value;
-    const cat = document.getElementById('prov-cat').value.trim();
+  // ── 6. SEARCH ENGINE ──
+  window.searchProviders = function(quickTagValue) {
+    const searchInput = document.getElementById('search-input');
+    const searchTerm = quickTagValue || (searchInput ? searchInput.value.trim() : "");
+    if (quickTagValue && searchInput) searchInput.value = quickTagValue;
     
-    if(!name) { window.showToast("Full Name is required!"); return; }
-    if(!cat) { window.showToast("Service Category is required!"); return; }
+    if (window.loadLiveProvidersOnMap) window.loadLiveProvidersOnMap(window.customerLat || null, window.customerLng || null, searchTerm);
+  };
 
-    const btn = document.getElementById('save-prov-btn');
-    if(btn) btn.textContent = "Updating Profile & Locking... ⏳";
+  // ── 7. LIVE MAP RENDER LOGIC ──
+  window.loadLiveProvidersOnMap = async function(customerLat = null, customerLng = null, searchTerm = "") {
+    const listContainer = document.getElementById('customer-provider-list');
+    if(!listContainer) return;
 
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(async (pos) => {
-        const lat = pos.coords.latitude; const lng = pos.coords.longitude;
-        const { data: { session } } = await supabaseClient.auth.getSession();
-        
-        if(session) {
-          const { error } = await supabaseClient.from('profiles').update({
-            full_name: name,
-            gender: gender,
-            experience: exp, 
-            service_category: cat, 
-            latitude: lat, 
-            longitude: lng
-          }).eq('id', session.user.id);
-          
-          if(error) {
-             window.showToast("Error saving data: " + error.message);
-          } else {
-             window.showToast("Profile Saved & Live Location Locked! 📍");
-             window.loadProviderDashboard(); 
-          }
+    let dbQuery = supabaseClient.from('profiles').select('*').ilike('role', '%provider%');
+    if (searchTerm && searchTerm.trim() !== "") dbQuery = dbQuery.ilike('service_category', `%${searchTerm.trim()}%`);
+
+    const { data: providers, error } = await dbQuery;
+    if (error) { listContainer.innerHTML = `<div style="padding: 20px; text-align: center; color: var(--accent);">Error loading providers. Please refresh!</div>`; return; }
+
+    listContainer.innerHTML = ''; let foundNearby = false;
+
+    if (window.currentMapMarkers && window.currentMapMarkers.length > 0) {
+      window.currentMapMarkers.forEach(m => { if(typeof map !== 'undefined' && map) map.removeLayer(m); });
+    }
+    window.currentMapMarkers = [];
+
+    if (providers && providers.length > 0) {
+      providers.forEach(p => {
+        let dist = null;
+        if (p.latitude && p.longitude && customerLat && customerLng) {
+          dist = calculateDistance(customerLat, customerLng, parseFloat(p.latitude), parseFloat(p.longitude));
         }
-        if(btn) btn.textContent = "Save Details & Lock Location 📍";
-      }, (err) => {
-        window.showToast("Location access denied! Cannot list you on map.");
-        if(btn) btn.textContent = "Save Details & Lock Location 📍";
+
+        if (!customerLat || (dist !== null && dist <= 10)) { 
+          foundNearby = true;
+          
+          if(typeof map !== 'undefined' && map && typeof L !== 'undefined' && p.latitude && p.longitude) {
+            const marker = L.marker([parseFloat(p.latitude), parseFloat(p.longitude)]).addTo(map);
+            window.currentMapMarkers.push(marker);
+            
+            marker.bindPopup(`
+              <div style="text-align:center; min-width: 140px;">
+                <b style="font-size: 15px;">${p.full_name || 'Verified Provider'}</b><br>
+                <span style="color:var(--text2); font-size:13px;">${p.service_category || 'Service'}</span><br>
+                <span style="font-size:12px; color: var(--green); font-weight:600;">📍 ${dist !== null ? dist.toFixed(1) + ' km away' : 'Available'}</span><br>
+                <button class="btn btn-primary" style="margin-top:10px; width:100%; justify-content:center; padding: 6px 10px; font-size: 13px;" onclick="event.stopPropagation(); window.openBookingModal('${p.full_name || 'Provider'}', '${p.mobile}', '${p.id}')">Book Now</button>
+              </div>
+            `);
+          }
+
+          const item = document.createElement('div');
+          item.className = 'map-provider-item'; item.style.alignItems = 'center';
+          item.onclick = () => { if(typeof map !== 'undefined' && map && p.latitude && p.longitude) map.setView([parseFloat(p.latitude), parseFloat(p.longitude)], 15); };
+          
+          item.innerHTML = `
+            <div class="mpi-avatar" style="background:var(--accent);">${(p.full_name||'P').substring(0,2).toUpperCase()}</div>
+            <div class="mpi-info">
+              <div class="mpi-name">${p.full_name || 'Verified Provider'}</div>
+              <div class="mpi-role">${p.service_category || 'Service Professional'}</div>
+              <div style="font-size: 11px; color: var(--green); margin-top:2px;">📍 ${dist !== null ? dist.toFixed(1) + ' km away' : 'Verified Partner'}</div>
+            </div>
+            <button class="btn btn-outline" style="padding: 6px 12px; font-size: 12px; border-color: var(--accent); color: var(--accent);" onclick="event.stopPropagation(); window.openBookingModal('${p.full_name || 'Provider'}', '${p.mobile}', '${p.id}')">Book</button>
+          `;
+          listContainer.appendChild(item);
+        }
       });
-    } else {
-      window.showToast("Geolocation is not supported by your browser.");
-      if(btn) btn.textContent = "Save Details & Lock Location 📍";
+    }
+
+    if (!foundNearby) {
+      listContainer.innerHTML = `
+        <div style="padding: 30px 20px; text-align: center; color: var(--text3); font-size: 14px;">
+          <div style="font-size: 38px; margin-bottom: 10px;">🚫</div>
+          <b>No ${searchTerm ? `'${searchTerm}'` : 'providers'} found near you!</b><br>
+          <span style="font-size: 12px; color: var(--text2); display: block; margin-top: 6px;">
+            ${customerLat ? 'No provider is currently registered within 10 km for this category.' : 'Try clicking "Locate Me" or search another service.'}
+          </span>
+        </div>`;
     }
   };
 
-  // ── 7. LOAD PROVIDERS ON MAP ──
-window.loadLiveProvidersOnMap = async function(customerLat = null, customerLng = null, searchTerm = "") {
-  const listContainer = document.getElementById('customer-provider-list');
-  if(!listContainer) return;
-
-  // BASE DATABASE QUERY
-  let dbQuery = supabaseClient.from('profiles').select('*').ilike('role', '%provider%');
-  
-  // SEARCH FILTER LOGIC (ilike handles uppercase/lowercase match)
-  if (searchTerm && searchTerm.trim() !== "") {
-    dbQuery = dbQuery.ilike('service_category', `%${searchTerm.trim()}%`);
-  }
-
-  const { data: providers, error } = await dbQuery;
-  
-  if (error) {
-    console.error("Supabase Error fetching providers:", error);
-    listContainer.innerHTML = `<div style="padding: 20px; text-align: center; color: var(--accent);">Error loading providers. Please refresh!</div>`;
-    return;
-  }
-
-  listContainer.innerHTML = ''; 
-  let foundNearby = false;
-
-  // 🧹 PURGE OLD MAP PINS
-  if (window.currentMapMarkers && window.currentMapMarkers.length > 0) {
-    window.currentMapMarkers.forEach(m => { 
-      if(typeof map !== 'undefined' && map) map.removeLayer(m); 
-    });
-  }
-  window.currentMapMarkers = [];
-
-  if (providers && providers.length > 0) {
-    providers.forEach(p => {
-      let dist = null;
-      if (p.latitude && p.longitude && customerLat && customerLng) {
-        const pLat = parseFloat(p.latitude);
-        const pLng = parseFloat(p.longitude);
-        dist = calculateDistance(customerLat, customerLng, pLat, pLng);
-      }
-
-      // Filter: If location is granted, filter within 10 KM. If not granted, show all matched search results.
-      if (!customerLat || (dist !== null && dist <= 10)) { 
-        foundNearby = true;
-        
-        // Render Marker on Map
-        if(typeof map !== 'undefined' && map && typeof L !== 'undefined' && p.latitude && p.longitude) {
-          const marker = L.marker([parseFloat(p.latitude), parseFloat(p.longitude)]).addTo(map);
-          window.currentMapMarkers.push(marker);
-          
-          marker.bindPopup(`
-            <div style="text-align:center; min-width: 140px;">
-              <b style="font-size: 15px;">${p.full_name || 'Verified Provider'}</b><br>
-              <span style="color:var(--text2); font-size:13px;">${p.service_category || 'Service'}</span><br>
-              <span style="font-size:12px; color: var(--green); font-weight:600;">📍 ${dist !== null ? dist.toFixed(1) + ' km away' : 'Available'}</span><br>
-              <button class="btn btn-primary" style="margin-top:10px; width:100%; justify-content:center; padding: 6px 10px; font-size: 13px;" onclick="event.stopPropagation(); window.openBookingModal('${p.full_name || 'Provider'}', '${p.mobile}', '${p.id}')">Book Now</button>
-            </div>
-          `);
-        }
-
-        // Render Card in Sidebar List
-        const item = document.createElement('div');
-        item.className = 'map-provider-item';
-        item.style.alignItems = 'center';
-        item.onclick = () => { 
-          if(typeof map !== 'undefined' && map && p.latitude && p.longitude) {
-            map.setView([parseFloat(p.latitude), parseFloat(p.longitude)], 15); 
-          }
-        };
-        
-        item.innerHTML = `
-          <div class="mpi-avatar" style="background:var(--accent);">${(p.full_name||'P').substring(0,2).toUpperCase()}</div>
-          <div class="mpi-info">
-            <div class="mpi-name">${p.full_name || 'Verified Provider'}</div>
-            <div class="mpi-role">${p.service_category || 'Service Professional'}</div>
-            <div style="font-size: 11px; color: var(--green); margin-top:2px;">📍 ${dist !== null ? dist.toFixed(1) + ' km away' : 'Verified Partner'}</div>
-          </div>
-          <button class="btn btn-outline" style="padding: 6px 12px; font-size: 12px; border-color: var(--accent); color: var(--accent);" onclick="event.stopPropagation(); window.openBookingModal('${p.full_name || 'Provider'}', '${p.mobile}', '${p.id}')">Book</button>
-        `;
-        listContainer.appendChild(item);
-      }
-    });
-  }
-
-  // 🚫 IF NO MATCHING PROVIDERS FOUND
-  if (!foundNearby) {
-    listContainer.innerHTML = `
-      <div style="padding: 30px 20px; text-align: center; color: var(--text3); font-size: 14px;">
-        <div style="font-size: 38px; margin-bottom: 10px;">🚫</div>
-        <b>No ${searchTerm ? `'${searchTerm}'` : 'providers'} found near you!</b><br>
-        <span style="font-size: 12px; color: var(--text2); display: block; margin-top: 6px;">
-          ${customerLat ? 'No provider is currently registered within 10 km for this category.' : 'Try searching for another service category.'}
-        </span>
-      </div>`;
-  }
-};
-
-  // ── 8. PROVIDER DASHBOARD ──
+  // ── 8. PROVIDER DASHBOARD & PROFILE LOGIC ──
   window.loadProviderDashboard = async function() {
     const { data: { session } } = await supabaseClient.auth.getSession();
     if(!session) return;
-
     const providerId = session.user.id;
 
-    const { data: profile } = await supabaseClient
-      .from('profiles')
-      .select('full_name, gender, service_category, experience')
-      .eq('id', providerId)
-      .single();
-
+    const { data: profile } = await supabaseClient.from('profiles').select('*').eq('id', providerId).single();
     if(profile) {
       if(document.getElementById('prov-name')) document.getElementById('prov-name').value = profile.full_name || '';
       if(document.getElementById('prov-gender')) document.getElementById('prov-gender').value = profile.gender || '';
@@ -897,25 +857,11 @@ window.loadLiveProvidersOnMap = async function(customerLat = null, customerLng =
     }
 
     const requestsListArea = document.getElementById('live-requests-list');
-    
     if (requestsListArea && providerId) {
-      const { data: requests, error } = await supabaseClient
-        .from('bookings')
-        .select('*')
-        .eq('provider_id', providerId)
-        .order('created_at', { ascending: false });
-
-      if (error) {
-        console.error("Error fetching bookings:", error);
-        return;
-      }
-
+      const { data: requests, error } = await supabaseClient.from('bookings').select('*').eq('provider_id', providerId).order('created_at', { ascending: false });
+      
       if (requests && requests.length > 0) {
-        requestsListArea.style.border = "none";
-        requestsListArea.style.padding = "0";
-        requestsListArea.style.background = "transparent";
-        requestsListArea.style.textAlign = "left";
-
+        requestsListArea.style.border = "none"; requestsListArea.style.padding = "0"; requestsListArea.style.background = "transparent"; requestsListArea.style.textAlign = "left";
         requestsListArea.innerHTML = `<div style="display: flex; flex-direction: column; gap: 12px; width: 100%;"></div>`;
         const listWrapper = requestsListArea.firstChild;
 
@@ -923,25 +869,17 @@ window.loadLiveProvidersOnMap = async function(customerLat = null, customerLng =
           const reqCard = document.createElement('div');
           reqCard.style = "background: var(--surface); border: 1px solid var(--border); padding: 14px 18px; border-radius: var(--radius-sm); box-shadow: var(--shadow); display: flex; justify-content: space-between; align-items: center; width: 100%; margin-bottom: 4px;";
           
-          let scheduleDetails = "";
-          if (r.apt_date || r.appointment_date) {
-            const targetDate = r.apt_date || r.appointment_date;
-            const targetFrom = r.apt_from || "N/A";
-            const targetTo = r.apt_to || "N/A";
-            scheduleDetails = `<div style="margin-top: 6px; display:inline-block; background: #eff6ff; color: #1e40af; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 700;">
-                                📅 Appointment on <b>${targetDate}</b> btw <b>${targetFrom}</b> to <b>${targetTo}</b>
-                               </div>`;
-          } else {
-            scheduleDetails = `<div style="font-size: 13px; color: var(--accent); margin: 4px 0; font-weight: 600;">💬 ${r.message || 'New Request'}</div>`;
-          }
+          let scheduleDetails = (r.apt_date || r.appointment_date) 
+            ? `<div style="margin-top: 6px; display:inline-block; background: #eff6ff; color: #1e40af; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 700;">📅 ${r.apt_date || r.appointment_date} btw ${r.apt_from || 'N/A'} to ${r.apt_to || 'N/A'}</div>`
+            : `<div style="font-size: 13px; color: var(--accent); margin: 4px 0; font-weight: 600;">💬 ${r.message || 'New Request'}</div>`;
 
           reqCard.innerHTML = `
             <div style="flex: 1; padding-right: 15px;">
               <div style="font-weight: 700; font-size: 16px; color: var(--text);">${r.customer_name || 'Verified Customer'}</div>
               ${scheduleDetails}
-              <div style="font-size: 11px; color: var(--text3); margin-top: 6px;">Requested at: ${new Date(r.created_at).toLocaleDateString('en-IN')}</div>
+              <div style="font-size: 11px; color: var(--text3); margin-top: 6px;">Requested: ${new Date(r.created_at).toLocaleDateString('en-IN')}</div>
             </div>
-            <a href="tel:${r.customer_mobile}" class="btn btn-primary" style="padding: 10px 16px; font-size: 13px; border-radius:8px; text-decoration:none; display: inline-flex; align-items: center; gap: 6px; font-weight: 600; min-width: 110px; justify-content: center;">📞 Call Now</a>
+            <a href="tel:${r.customer_mobile}" class="btn btn-primary" style="padding: 10px 16px; font-size: 13px; border-radius:8px; text-decoration:none;">📞 Call Now</a>
           `;
           listWrapper.appendChild(reqCard);
         });
@@ -949,128 +887,51 @@ window.loadLiveProvidersOnMap = async function(customerLat = null, customerLng =
     }
   };
 
-  // ── 9. AUTHENTICATION HELPERS ──
   window.enableEditMode = function() {
     if(document.getElementById('prov-view-mode')) document.getElementById('prov-view-mode').style.display = 'none';
     if(document.getElementById('prov-edit-mode')) document.getElementById('prov-edit-mode').style.display = 'block';
     if(document.getElementById('edit-prov-btn')) document.getElementById('edit-prov-btn').style.display = 'none';
-    if(document.getElementById('save-prov-btn')) {
-      document.getElementById('save-prov-btn').style.display = 'flex';
-      document.getElementById('save-prov-btn').textContent = "Update Details & Relock 📍";
-    }
+    if(document.getElementById('save-prov-btn')) { document.getElementById('save-prov-btn').style.display = 'flex'; document.getElementById('save-prov-btn').textContent = "Update Details & Relock 📍"; }
   };
 
-  window.initiateGoogleAuth = async function (role = 'customer') {
-    try {
-      const mode = window.currentAuthMode || 'login';
-      if (mode === 'register') {
-        if (role === 'provider') {
-          const mobileInput = document.getElementById('provider-mobile');
-          const mobileValue = mobileInput ? mobileInput.value.replace(/\D/g, '') : '';
-          if (!/^[6-9]\d{9}$/.test(mobileValue)) { 
-            window.showToast("Enter a valid 10-digit mobile number to register."); 
-            return; 
-          }
-          localStorage.setItem('pending_phone', '+91' + mobileValue);
+  window.saveProviderProfile = async function() {
+    const name = document.getElementById('prov-name').value.trim();
+    const gender = document.getElementById('prov-gender').value;
+    const exp = document.getElementById('prov-exp').value;
+    const cat = document.getElementById('prov-cat').value.trim();
+    
+    if(!name || !cat) { window.showToast("Name and Category are required!"); return; }
+    const btn = document.getElementById('save-prov-btn'); if(btn) btn.textContent = "Updating Profile & Locking... ⏳";
+
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(async (pos) => {
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        if(session) {
+          const { error } = await supabaseClient.from('profiles').update({
+            full_name: name, gender: gender, experience: exp, service_category: cat, latitude: pos.coords.latitude, longitude: pos.coords.longitude
+          }).eq('id', session.user.id);
+          
+          if(error) window.showToast("Error saving data: " + error.message);
+          else { window.showToast("Profile Saved & Live Location Locked! 📍"); window.loadProviderDashboard(); }
         }
-        localStorage.setItem('pending_role', role);
-      }
-      window.showToast("Opening Google...");
-      await supabaseClient.auth.signInWithOAuth({ 
-        provider: 'google', 
-        options: { redirectTo: window.location.origin + window.location.pathname } 
-      });
-    } catch(e) {
-      console.error(e);
-    }
+        if(btn) btn.textContent = "Save Details & Lock Location 📍";
+      }, () => { window.showToast("Location denied! Cannot list you on map."); if(btn) btn.textContent = "Save Details & Lock Location 📍"; });
+    } else { window.showToast("Geolocation not supported."); if(btn) btn.textContent = "Save Details & Lock Location 📍"; }
   };
 
-  window.triggerSupabaseOTP = async function (role = 'customer') {
-    const inputId = role === 'provider' ? 'provider-mobile' : 'auth-mobile';
-    const displayId = role === 'provider' ? 'provider-otp-phone-display' : 'otp-phone-display';
-    const inputEl = document.getElementById(inputId);
-    if(!inputEl) return;
-    
-    const raw = inputEl.value.trim().replace(/\D/g, '');
-    if (!/^[6-9]\d{9}$/.test(raw)) { window.showToast("Enter a valid 10-digit Indian number."); return; }
-    
-    const phoneWithCode = '+91' + raw;
-
-    const { data: existingProfile } = await supabaseClient.from('profiles').select('id').eq('mobile', phoneWithCode).single();
-
-    const mode = window.currentAuthMode || 'login';
-    if (mode === 'register' && existingProfile) {
-        window.showToast("❌ This number already has an account! Please sign in.");
-        return; 
-    }
-    
-    if (mode === 'login' && !existingProfile) {
-        window.showToast("❌ No account found! Please create an account first.");
-        return; 
-    }
-
-    const fNameId = role === 'provider' ? 'provider-firstname' : 'auth-firstname';
-    const lNameId = role === 'provider' ? 'provider-lastname' : 'auth-lastname';
-    const fName = document.getElementById(fNameId); const lName = document.getElementById(lNameId);
-    if(fName && fName.value) localStorage.setItem('temp_firstname', fName.value);
-    if(lName && lName.value) localStorage.setItem('temp_lastname', lName.value);
-
-    window._globalCurrentAuthPhone = phoneWithCode; 
-    const dispEl = document.getElementById(displayId);
-    if(dispEl) dispEl.textContent = window._globalCurrentAuthPhone;
-    
-    window.showToast("Requesting OTP...");
-    
-    const { error } = await supabaseClient.auth.signInWithOtp({ phone: window._globalCurrentAuthPhone });
-    if (error) { 
-      window.showToast("Error: " + error.message); 
-    } else {
-      if(document.getElementById(role === 'provider' ? 'provider-input-fields' : 'consumer-input-fields')) {
-        document.getElementById(role === 'provider' ? 'provider-input-fields' : 'consumer-input-fields').style.display = 'none';
-      }
-      if(document.getElementById(role === 'provider' ? 'provider-otp-fields' : 'consumer-otp-fields')) {
-        document.getElementById(role === 'provider' ? 'provider-otp-fields' : 'consumer-otp-fields').style.display = 'block';
-      }
-      window.showToast("OTP sent successfully!");
-    }
-  };
-
-  window.verifySupabaseOTP = async function (role = 'customer') {
-    if (!window._globalCurrentAuthPhone) return;
-    let code = role === 'provider' ? document.getElementById('provider-otp-code').value.trim() : Array.from(document.querySelectorAll('.otp-field')).map(i => i.value.trim()).join('');
-    if (code.length < 6) { window.showToast("Enter all 6 digits."); return; }
-    window.showToast("Verifying...");
-    const { error } = await supabaseClient.auth.verifyOtp({ phone: window._globalCurrentAuthPhone, token: code, type: 'sms' });
-    if (error) { 
-      window.showToast("Invalid OTP."); 
-    } else {
-      await supabaseClient.auth.updateUser({ data: { role: role } });
-      window.showToast("Verified!"); 
-      window.closeModal(); 
-      setTimeout(() => { window.location.reload(); }, 1200);
-    }
-  };
-
-  // ── 10. BOOKING MODAL & SUBMIT ──
-  window.currentBookingPhone = "";
-  window.currentProviderId = "";
+  // ── 9. BOOKING SYSTEM ──
+  window.currentBookingPhone = ""; window.currentProviderId = "";
 
   window.openBookingModal = async function(name, phone, providerId) {
     const { data: { session } } = await supabaseClient.auth.getSession();
-    if (!session) {
-      alert("Please sign in to schedule an appointment.");
-      if(window.openModal) window.openModal('consumer');
-      return; 
-    }
+    if (!session) { alert("Please sign in to schedule an appointment."); if(window.openModal) window.openModal('consumer'); return; }
 
     if(document.getElementById('book-prov-name')) document.getElementById('book-prov-name').textContent = name;
-    window.currentBookingPhone = phone; 
-    window.currentProviderId = providerId; 
+    window.currentBookingPhone = phone; window.currentProviderId = providerId; 
     
     if(document.getElementById('appointment-date')) document.getElementById('appointment-date').value = new Date().toISOString().split('T')[0];
     if(document.getElementById('appointment-from')) document.getElementById('appointment-from').value = "10:00";
     if(document.getElementById('appointment-to')) document.getElementById('appointment-to').value = "11:00";
-
     if(document.getElementById('direct-call-btn')) document.getElementById('direct-call-btn').setAttribute('href', `tel:${phone}`);
     if(document.getElementById('booking-modal')) document.getElementById('booking-modal').classList.add('open');
   };
@@ -1080,56 +941,39 @@ window.loadLiveProvidersOnMap = async function(customerLat = null, customerLng =
     const fromVal = document.getElementById('appointment-from').value;
     const toVal = document.getElementById('appointment-to').value;
 
-    if(!dateVal || !fromVal || !toVal) {
-      alert("Please select Date and full Time slot!");
-      return;
-    }
+    if(!dateVal || !fromVal || !toVal) { alert("Please select Date and full Time slot!"); return; }
 
     try {
       const { data: { session } } = await supabaseClient.auth.getSession();
       if(!session || !window.currentProviderId) return;
 
-      const { data: customerProfile } = await supabaseClient
-        .from('profiles')
-        .select('full_name, mobile')
-        .eq('id', session.user.id)
-        .single();
-
+      const { data: customerProfile } = await supabaseClient.from('profiles').select('full_name, mobile').eq('id', session.user.id).single();
       const { error } = await supabaseClient.from('bookings').insert([{
-        provider_id: window.currentProviderId,
-        customer_name: customerProfile?.full_name || "Verified Customer",
-        customer_mobile: customerProfile?.mobile || "N/A",
-        message: `Requested Custom Scheduled Slot`,
-        apt_date: dateVal,
-        apt_from: fromVal,
-        apt_to: toVal
+        provider_id: window.currentProviderId, customer_name: customerProfile?.full_name || "Verified Customer", customer_mobile: customerProfile?.mobile || "N/A",
+        message: `Requested Custom Scheduled Slot`, apt_date: dateVal, apt_from: fromVal, apt_to: toVal
       }]);
 
       if(!error) {
         alert(`🎉 Appointment submitted for ${dateVal} between ${fromVal} to ${toVal}!`);
         if(document.getElementById('booking-modal')) document.getElementById('booking-modal').classList.remove('open');
-      } else {
-        console.error(error);
-      }
-    } catch (err) {
-      console.error("Scheduling failed:", err);
-    }
+      } else { console.error(error); }
+    } catch (err) { console.error("Scheduling failed:", err); }
   };
 
   window.sendWhatsAppMsg = async function(message) {
     if(!window.currentBookingPhone) return;
-    let phone = window.currentBookingPhone.replace(/\D/g, '');
-    if(phone.length === 10) phone = '91' + phone;
-    const waUrl = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
-    window.open(waUrl, '_blank');
+    let phone = window.currentBookingPhone.replace(/\D/g, ''); if(phone.length === 10) phone = '91' + phone;
+    window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, '_blank');
   };
 
+  // ── 10. GLOBAL LOGOUT ──
   window.signOutUser = async function () { 
     await supabaseClient.auth.signOut(); 
+    localStorage.clear();
     alert("Signed out."); 
     window.location.reload();
   }; 
- 
 </script>
+ 
 </body>
 </html>
