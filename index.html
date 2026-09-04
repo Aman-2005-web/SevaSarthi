@@ -9,7 +9,8 @@
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SevaSarthi – Find Trusted Local Services Near You</title>
+<title>SevaSarthi - Where Needs Meet Skills</title>
+ <link rel="icon" type="image/png" href="SevaSarthi.png" />
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -43,6 +44,19 @@
     line-height: 1.6;
     min-height: 100vh;
   }
+
+ .navbar-brand {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+}
+
+.brand-logo-img {
+  height: 42px;          /* Adjust height to fit your navbar */
+  width: auto;           /* Keeps aspect ratio intact */
+  object-fit: contain;
+  display: block;
+}
 
   nav {
     position: sticky; top: 0; z-index: 100;
@@ -145,6 +159,9 @@
 <body>
 
 <nav>
+ <a href="#" class="navbar-brand">
+    <img src="SevaSarthi.png" alt="SevaSarthi Logo" class="brand-logo-img" />
+  </a>
   <a href="#" class="logo">Seva<span>Sarthi</span></a>
   <div style="display:flex;gap:8px;align-items:center;">
     <button id="signin-btn" class="btn btn-outline" onclick="openModal('login')">Sign In</button>
