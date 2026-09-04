@@ -45,14 +45,15 @@
     min-height: 100vh;
   }
 
- .navbar-brand {
+.navbar-brand {
   display: inline-flex;
   align-items: center;
+  gap: 10px; /* Keeps image and SevaSarthi glued together */
   text-decoration: none;
 }
-
+ 
 .brand-logo-img {
-  height: 42px;          /* Adjust height to fit your navbar */
+  height: 60px;          /* Adjust height to fit your navbar */
   width: auto;           /* Keeps aspect ratio intact */
   object-fit: contain;
   display: block;
@@ -161,9 +162,8 @@
 <nav>
  <a href="#" class="navbar-brand">
     <img src="SevaSarthi.png" alt="SevaSarthi Logo" class="brand-logo-img" />
-  </a>
-  <a href="#" class="logo">Seva<span>Sarthi</span></a>
-  <div style="display:flex;gap:8px;align-items:center;">
+   <span class="brand-name">Seva<span>Sarthi</span></span>
+ </a>
     <button id="signin-btn" class="btn btn-outline" onclick="openModal('login')">Sign In</button>
     <button id="register-btn" class="btn btn-primary" onclick="openModal('register')">Get Started</button>
     
@@ -176,16 +176,19 @@
 <div class="hide-on-provider">
   <div class="hero">
     <div>
+      <div class="hero-logo-wrapper" style="margin-bottom: 16px;">
+        <img src="images/logo.png" alt="SevaSarthi Logo" style="height: 64px; width: auto; object-fit: contain;" />
+      </div>
       <div class="hero-eyebrow">🇮🇳 Trusted Across India</div>
-      <h1>Find <em>Skilled Workers</em> Near You — Instantly</h1>
-      <p>Electricians, plumbers, carpenters, home tutors, labors and 40+ more services. Verified, rated, and just minutes away.</p>
+      <h1>Where Needs <em>Meet Skills</em></h1>
+      <p>Connect with verified service providers and skilled workers near you in minutes.</p>
       <div class="hero-cta">
         <button class="btn btn-primary" onclick="document.getElementById('search-input').focus()">🔍 Find a Service</button>
-        <button class="btn btn-outline" onclick="openModal('register-provider')">Work With Us →</button>
+        <button class="btn btn-outline" onclick="openModal('register-provider')">Become a Sarthi →</button>
       </div>
     </div>
   </div>
-
+</div>
   <!-- 🔍 SEARCH & POPULAR TAGS SECTION -->
 <div class="search-section">
   <div class="search-wrap">
