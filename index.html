@@ -48,7 +48,6 @@
 .navbar-brand {
   display: inline-flex;
   align-items: center;
-  gap: 10px; /* Keeps image and SevaSarthi glued together */
   text-decoration: none;
 }
  
@@ -163,6 +162,7 @@
  <a href="#" class="navbar-brand">
     <img src="SevaSarthi.png" alt="SevaSarthi Logo" class="brand-logo-img" />
    <span class="brand-name">Seva<span>Sarthi</span></span>
+  <div style="display:flex;gap:10px;align-items:center;">
  </a>
     <button id="signin-btn" class="btn btn-outline" onclick="openModal('login')">Sign In</button>
     <button id="register-btn" class="btn btn-primary" onclick="openModal('register')">Get Started</button>
@@ -177,7 +177,7 @@
   <div class="hero">
     <div>
       <div class="hero-logo-wrapper" style="margin-bottom: 16px;">
-        <img src="images/logo.png" alt="SevaSarthi Logo" style="height: 64px; width: auto; object-fit: contain;" />
+        <img src="SevaSarth.png" alt="SevaSarthi Logo" style="height: 64px; width: auto; object-fit: contain;" />
       </div>
       <div class="hero-eyebrow">🇮🇳 Trusted Across India</div>
       <h1>Where Needs <em>Meet Skills</em></h1>
