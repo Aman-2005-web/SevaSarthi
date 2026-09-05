@@ -68,105 +68,218 @@
     height: 64px;
   }
 
- .ss-hero-wrapper {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 40px 24px;
+/* ── AMBIENT BACKGROUND GLOW ── */
+.ambient-glow {
+  position: absolute;
+  width: 260px;
+  height: 260px;
+  background: radial-gradient(circle, rgba(14, 165, 233, 0.22) 0%, rgba(37, 99, 235, 0.04) 70%, transparent 100%);
+  filter: blur(40px);
+  z-index: 0;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
-.ss-hero-container {
+/* ── SHOWCASE CONTAINER CARD ── */
+.showcase-card {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 380px;
+  margin: 0 auto;
+  background: #ffffff;
+  border: 1px solid var(--border, #e2e8f0);
+  border-radius: 20px;
+  padding: 22px;
+  box-shadow: 0 20px 35px -15px rgba(15, 23, 42, 0.08), 0 0 1px 1px rgba(0, 0, 0, 0.04);
+}
+
+.showcase-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.live-indicator {
   display: flex;
   align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+/* ── PULSING GREEN LIVE PIN ── */
+.pulse-dot {
+  width: 8px;
+  height: 8px;
+  background-color: #22c55e;
+  border-radius: 50%;
+  box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
+  animation: livePulse 1.8s infinite;
+}
+
+@keyframes livePulse {
+  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
+  70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(34, 197, 94, 0); }
+  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+}
+
+.range-badge {
+  font-size: 11px;
+  font-weight: 600;
+  color: #0284c7;
+  background: #f0f9ff;
+  border: 1px solid #bae6fd;
+  padding: 3px 8px;
+  border-radius: 12px;
+}
+
+/* ── WORKER PREVIEW ROW ── */
+.worker-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 12px 14px;
+  margin-bottom: 16px;
+}
+
+.worker-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: var(--accent, #0284c7);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.worker-details {
+  flex: 1;
+  text-align: left;
+}
+
+.worker-name-row {
+  display: flex;
   justify-content: space-between;
-  gap: 40px;
+  align-items: center;
 }
 
-.ss-hero-content {
-  flex: 1.2;
+.worker-name-row h4 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: #0f172a;
 }
 
-.ss-hero-headline {
-  font-size: 3.2rem;
-  line-height: 1.15;
+.rating {
+  font-size: 12px;
+  font-weight: 700;
+  color: #d97706;
+}
+
+.worker-role {
+  margin: 2px 0 5px;
+  font-size: 12px;
+  color: #64748b;
+}
+
+.distance-pill {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 600;
+  color: #15803d;
+  background: #f0fdf4;
+  padding: 2px 6px;
+  border-radius: 6px;
+}
+
+/* ── STATS SUMMARY BAR ── */
+.hero-stats-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid #f1f5f9;
+  padding-top: 14px;
+}
+
+.stat-item {
+  text-align: center;
+  flex: 1;
+}
+
+.stat-num {
+  display: block;
+  font-size: 15px;
   font-weight: 800;
   color: #0f172a;
-  margin: 16px 0;
 }
 
-.ss-hero-headline span {
-  color: #0284c7;
-}
-
-.ss-hero-description {
-  font-size: 1.15rem;
+.stat-lbl {
+  font-size: 10px;
   color: #64748b;
-  margin-bottom: 24px;
-  line-height: 1.6;
-  max-width: 480px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
-/* Unique Right Side Trust Card */
-.ss-trust-panel {
-  flex: 0.8;
-  display: flex;
-  justify-content: center;
+.stat-divider {
+  width: 1px;
+  height: 22px;
+  background: #e2e8f0;
 }
 
-.ss-trust-card {
+/* ── FLOATING ACCENTS ── */
+.floating-pill {
+  position: absolute;
+  z-index: 2;
   background: #ffffff;
   border: 1px solid #e2e8f0;
-  padding: 28px 24px;
-  border-radius: 16px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
-  text-align: center;
-  max-width: 320px;
-  width: 100%;
-}
-
-.ss-badge-icon {
-  font-size: 2.2rem;
-  margin-bottom: 10px;
-}
-
-.ss-trust-card h3 {
-  font-size: 1.25rem;
+  padding: 7px 12px;
+  border-radius: 50px;
+  font-size: 11px;
+  font-weight: 600;
   color: #0f172a;
-  margin-bottom: 6px;
+  box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.08);
+  white-space: nowrap;
 }
 
-.ss-trust-card p {
-  font-size: 0.9rem;
-  color: #64748b;
-  margin-bottom: 16px;
-  line-height: 1.4;
+.floating-left {
+  top: 4%;
+  left: -15px;
 }
 
-.ss-service-pills {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  justify-content: center;
+.floating-right {
+  bottom: 4%;
+  right: -15px;
 }
 
-.ss-service-pills span {
-  background: #f8fafc;
-  border: 1px solid #cbd5e1;
-  font-size: 0.8rem;
-  padding: 5px 10px;
-  border-radius: 6px;
-  color: #334155;
-  font-weight: 500;
-}
-
-/* Responsive adjustment for mobile screens */
-@media (max-width: 768px) {
-  .ss-hero-container {
-    flex-direction: column;
+/* ── RESPONSIVE COLLAPSE FOR SCREENS UNDER 900PX ── */
+@media (max-width: 900px) {
+  .hero {
+    grid-template-columns: 1fr;
     text-align: center;
+    gap: 36px;
+    padding: 40px 20px;
   }
-  .ss-hero-description {
+  .hero p {
     margin-left: auto;
     margin-right: auto;
+  }
+  .hero-cta {
+    justify-content: center;
+  }
+  .floating-left,
+  .floating-right {
+    display: none;
   }
 }
   
@@ -278,7 +391,9 @@
 <!-- CUSTOMER INTERFACE -->
 <div class="hide-on-provider">
   <div class="hero">
-    <div>
+    
+    <!-- LEFT COLUMN -->
+    <div class="hero-left">
       <div class="hero-logo-wrapper" style="margin-bottom: 16px;">
         <img src="SevaSarthi.png" alt="SevaSarthi Logo" style="height: 64px; width: auto; object-fit: contain;" />
       </div>
@@ -290,64 +405,60 @@
         <button class="btn btn-outline" onclick="openModal('register-provider')">Become a Sarthi →</button>
       </div>
     </div>
-  </div>
-</div>
 
- <!-- RIGHT COLUMN: Safe Namespaced Showcase -->
-<div class="hero-live-preview">
-  <div class="ambient-glow"></div>
+    <!-- RIGHT COLUMN (Placed inside .hero) -->
+    <div class="hero-visual">
+      <div class="ambient-glow"></div>
 
-  <div class="showcase-card">
-    <div class="showcase-header">
-      <div class="live-indicator">
-        <span class="pulse-dot"></span>
-        <span class="live-text">Live In Your Area</span>
-      </div>
-      <span class="range-badge">📍 Within 10 KM</span>
-    </div>
-
-    <!-- Active Technician Preview -->
-    <div class="worker-card">
-      <div class="worker-avatar">RK</div>
-      <div class="worker-details">
-        <div class="worker-name-row">
-          <h4>Ramesh Kumar</h4>
-          <span class="rating">⭐ 4.9</span>
+      <div class="showcase-card">
+        <div class="showcase-header">
+          <div class="live-indicator">
+            <span class="pulse-dot"></span>
+            <span class="live-text">Live In Your Area</span>
+          </div>
+          <span class="range-badge">📍 Within 10 KM</span>
         </div>
-        <p class="worker-role">Verified Electrician</p>
-        <span class="distance-pill">0.8 km away • Available Now</span>
+
+        <div class="worker-card">
+          <div class="worker-avatar">RK</div>
+          <div class="worker-details">
+            <div class="worker-name-row">
+              <h4>Ramesh Kumar</h4>
+              <span class="rating">⭐ 4.9</span>
+            </div>
+            <p class="worker-role">Verified Electrician</p>
+            <span class="distance-pill">0.8 km away • Available Now</span>
+          </div>
+        </div>
+
+        <div class="hero-stats-row">
+          <div class="stat-item">
+            <span class="stat-num">0%</span>
+            <span class="stat-lbl">Commission</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat-item">
+            <span class="stat-num">&lt; 15 min</span>
+            <span class="stat-lbl">Avg. Arrival</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat-item">
+            <span class="stat-num">100%</span>
+            <span class="stat-lbl">Direct Pay</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="floating-pill floating-left">
+        <span>⚡ Direct Call & WhatsApp</span>
+      </div>
+      
+      <div class="floating-pill floating-right">
+        <span>🛡️ Verified Digital Profile</span>
       </div>
     </div>
-
-    <!-- Live Metrics Row -->
-    <div class="hero-stats-row">
-      <div class="stat-item">
-        <span class="stat-num">0%</span>
-        <span class="stat-lbl">Commission</span>
-      </div>
-      <div class="stat-divider"></div>
-      <div class="stat-item">
-        <span class="stat-num">&lt; 15 min</span>
-        <span class="stat-lbl">Avg. Arrival</span>
-      </div>
-      <div class="stat-divider"></div>
-      <div class="stat-item">
-        <span class="stat-num">100%</span>
-        <span class="stat-lbl">Direct Pay</span>
-      </div>
-    </div>
-  </div>
-
-  <!-- Floating Feature Badges -->
-  <div class="floating-pill floating-left">
-    <span>⚡ Direct Call & WhatsApp</span>
-  </div>
-  
-  <div class="floating-pill floating-right">
-    <span>🛡️ Verified Aadhaar/Skill ID</span>
   </div>
 </div>
-
  
   <!-- 🔍 SEARCH & POPULAR TAGS SECTION -->
 <div class="search-section">
