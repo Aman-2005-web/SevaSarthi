@@ -57,6 +57,7 @@
   object-fit: contain;
   display: block;
 }
+ 
 
   nav {
     position: sticky; top: 0; z-index: 100;
@@ -66,6 +67,108 @@
     display: flex; align-items: center; justify-content: space-between;
     height: 64px;
   }
+
+ .ss-hero-wrapper {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 24px;
+}
+
+.ss-hero-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 40px;
+}
+
+.ss-hero-content {
+  flex: 1.2;
+}
+
+.ss-hero-headline {
+  font-size: 3.2rem;
+  line-height: 1.15;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 16px 0;
+}
+
+.ss-hero-headline span {
+  color: #0284c7;
+}
+
+.ss-hero-description {
+  font-size: 1.15rem;
+  color: #64748b;
+  margin-bottom: 24px;
+  line-height: 1.6;
+  max-width: 480px;
+}
+
+/* Unique Right Side Trust Card */
+.ss-trust-panel {
+  flex: 0.8;
+  display: flex;
+  justify-content: center;
+}
+
+.ss-trust-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  padding: 28px 24px;
+  border-radius: 16px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+  text-align: center;
+  max-width: 320px;
+  width: 100%;
+}
+
+.ss-badge-icon {
+  font-size: 2.2rem;
+  margin-bottom: 10px;
+}
+
+.ss-trust-card h3 {
+  font-size: 1.25rem;
+  color: #0f172a;
+  margin-bottom: 6px;
+}
+
+.ss-trust-card p {
+  font-size: 0.9rem;
+  color: #64748b;
+  margin-bottom: 16px;
+  line-height: 1.4;
+}
+
+.ss-service-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+}
+
+.ss-service-pills span {
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+  font-size: 0.8rem;
+  padding: 5px 10px;
+  border-radius: 6px;
+  color: #334155;
+  font-weight: 500;
+}
+
+/* Responsive adjustment for mobile screens */
+@media (max-width: 768px) {
+  .ss-hero-container {
+    flex-direction: column;
+    text-align: center;
+  }
+  .ss-hero-description {
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
   
   .logo { font-family: var(--font-display); font-size: 22px; font-weight: 800; color: var(--text); text-decoration: none; display: flex; align-items: center; gap: 8px; }
   .logo span { color: var(--accent); }
@@ -177,7 +280,7 @@
   <div class="hero">
     <div>
       <div class="hero-logo-wrapper" style="margin-bottom: 16px;">
-        <img src="SevaSarth.png" alt="SevaSarthi Logo" style="height: 64px; width: auto; object-fit: contain;" />
+        <img src="SevaSarthi.png" alt="SevaSarthi Logo" style="height: 64px; width: auto; object-fit: contain;" />
       </div>
       <div class="hero-eyebrow">🇮🇳 Trusted Across India</div>
       <h1>Where Needs <em>Meet Skills</em></h1>
@@ -189,6 +292,63 @@
     </div>
   </div>
 </div>
+
+ <!-- RIGHT COLUMN: Safe Namespaced Showcase -->
+<div class="hero-live-preview">
+  <div class="ambient-glow"></div>
+
+  <div class="showcase-card">
+    <div class="showcase-header">
+      <div class="live-indicator">
+        <span class="pulse-dot"></span>
+        <span class="live-text">Live In Your Area</span>
+      </div>
+      <span class="range-badge">📍 Within 10 KM</span>
+    </div>
+
+    <!-- Active Technician Preview -->
+    <div class="worker-card">
+      <div class="worker-avatar">RK</div>
+      <div class="worker-details">
+        <div class="worker-name-row">
+          <h4>Ramesh Kumar</h4>
+          <span class="rating">⭐ 4.9</span>
+        </div>
+        <p class="worker-role">Verified Electrician</p>
+        <span class="distance-pill">0.8 km away • Available Now</span>
+      </div>
+    </div>
+
+    <!-- Live Metrics Row -->
+    <div class="hero-stats-row">
+      <div class="stat-item">
+        <span class="stat-num">0%</span>
+        <span class="stat-lbl">Commission</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-item">
+        <span class="stat-num">&lt; 15 min</span>
+        <span class="stat-lbl">Avg. Arrival</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-item">
+        <span class="stat-num">100%</span>
+        <span class="stat-lbl">Direct Pay</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Floating Feature Badges -->
+  <div class="floating-pill floating-left">
+    <span>⚡ Direct Call & WhatsApp</span>
+  </div>
+  
+  <div class="floating-pill floating-right">
+    <span>🛡️ Verified Aadhaar/Skill ID</span>
+  </div>
+</div>
+
+ 
   <!-- 🔍 SEARCH & POPULAR TAGS SECTION -->
 <div class="search-section">
   <div class="search-wrap">
