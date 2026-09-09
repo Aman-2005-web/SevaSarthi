@@ -1,15 +1,13 @@
 # SevaSarthi
-A platform for connecting users with local service providers.
 
-## Features
-- Electrician Booking
-- Plumber Booking
-- Home Tutors
-- Live Provider Map
-- Reviews & Ratings
-- Dark Mode
+Where Needs Meet Skills - Hyperlocal service marketplace connecting local users with verified service providers across India.
 
-## Technologies
-- HTML
-- CSS
-- JavaScript
+## Tech Stack
+- HTML5 & CSS3
+- JavaScript (Vanilla)
+- Leaflet.js & OpenStreetMap
+- Supabase (Database & Authentication)
+- Render (Static Site Hosting)
+
+## Live URL
+[sevasarthi.onrender.com](https://sevasarthi.onrender.com)
