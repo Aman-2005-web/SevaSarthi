@@ -866,50 +866,6 @@ function toggleAuthIntent(mode) {
     };
   }
 
-window.addEventListener('DOMContentLoaded', async () => {
-  // Check if Supabase just processed a Google OAuth login (tokens in URL hash)
-  const { data: { session }, error } = await supabaseClient.auth.getSession();
-  
-  if (session) {
-    const userId = session.user.id;
-    const userEmail = session.user.email;
-    const pendingRole = localStorage.getItem('pending_role') || 'customer';
-
-    // 1. Check if a profile already exists for this Google user
-    const { data: existingProfile } = await supabaseClient
-      .from('profiles')
-      .select('role')
-      .eq('id', userId)
-      .single();
-
-    let activeRole = pendingRole;
-
-    if (!existingProfile) {
-      // 2. If it's their first time logging in via Google, create their profile with the pending role
-      const fullName = session.user.user_metadata?.full_name || '';
-      const nameParts = fullName.split(' ');
-      
-      await supabaseClient.from('profiles').upsert({
-        id: userId,
-        email: userEmail,
-        role: pendingRole,
-        first_name: nameParts[0] || '',
-        last_name: nameParts.slice(1).join(' ') || ''
-      });
-    } else {
-      // If profile exists, respect their existing role in the database
-      activeRole = existingProfile.role;
-    }
-
-    // 3. Clear temporary storage
-    localStorage.removeItem('pending_role');
-
-    // 4. Redirect providers automatically if they land on the main page
-    if (activeRole === 'provider' && !window.location.pathname.includes('provider-workspace')) {
-      window.location.href = 'provider-workspace.html';
-    }
-  }
-});
  
   // ── 3. AUTH OBSERVER (ROLE DETECTION ENGINE) ──
   supabaseClient.auth.onAuthStateChange(async (event, session) => {
