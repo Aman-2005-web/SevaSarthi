@@ -28,7 +28,7 @@
   <div style="display:flex; gap:10px; align-items:center;">
     <button id="signin-btn" class="btn btn-outline" onclick="openModal('login')">Sign In</button>
     <button id="register-btn" class="btn btn-primary" onclick="openModal('register')">Get Started</button>
-    
+
     <span id="user-status" style="display:none; padding:6px 14px; background:#ecfdf5; color:#065f46; border-radius:20px; font-size:14px; font-weight:600;"></span>
     <button id="signout-btn" class="btn btn-outline" style="display:none;" onclick="window.signOutUser()">Sign Out</button>
   </div>
@@ -36,7 +36,7 @@
 
 <!-- CUSTOMER INTERFACE WRAPPER -->
 <div class="hide-on-provider">
-  
+
   <div class="hero">
     <!-- LEFT COLUMN -->
     <div class="hero-left">
@@ -136,7 +136,7 @@
     <div class="map-demo">
       <div class="map-sidebar">
         <div class="map-sidebar-header">
-          <div class="map-sidebar-title" style="font-weight:700;">Live Providers Near You</div>
+          <div class="map-sidebar-title">Live Providers Near You</div>
         </div>
         <div class="map-provider-list" id="customer-provider-list">
           <div style="padding: 20px; text-align: center; color: var(--text3); font-size: 14px;">Loading real-time map data...</div>
@@ -154,14 +154,14 @@
 <div id="provider-dashboard" class="provider-dashboard">
   <div style="margin-bottom: 30px;">
     <h2>Welcome to your Workspace</h2>
-    <p style="color: var(--text2);">Manage your skills, lock your live location, and receive direct customer requests.</p>
+    <p>Manage your skills, lock your live location, and receive direct customer requests.</p>
   </div>
-  
+
   <div class="provider-grid" style="display: grid; grid-template-columns: 1fr 1.5fr; gap: 30px;">
     <div class="hero-card">
-      <h3 style="margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 10px;">Your Professional Details</h3>
-      
-      <div id="prov-view-mode" style="display: none; background: var(--surface2); padding: 20px; border-radius: var(--radius-sm); margin-bottom: 15px;">
+      <h3 style="margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 14px;">Your Professional Details</h3>
+
+      <div id="prov-view-mode" style="display: none; background: var(--surface2); padding: 20px; border-radius: var(--radius-sm); margin-bottom: 15px; margin-top: 16px;">
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
           <div>
             <div style="font-size: 13px; color: var(--text2); margin-bottom: 4px;">Full Name</div>
@@ -185,7 +185,7 @@
         <div style="margin-top: 20px; text-align: center; font-size: 12px; color: var(--green); font-weight: 600;">✅ Profile Saved &amp; Location Locked</div>
       </div>
 
-      <div id="prov-edit-mode">
+      <div id="prov-edit-mode" style="margin-top: 16px;">
         <div class="form-group">
           <label class="form-label">Full Name</label>
           <input type="text" id="prov-name" class="form-input" placeholder="e.g. Aman Kumar">
@@ -222,16 +222,16 @@
 
       <button class="btn btn-green" id="save-prov-btn" style="width: 100%; justify-content: center;" onclick="window.saveProviderProfile()">Save Details &amp; Lock Location 📍</button>
       <button class="btn btn-outline" id="edit-prov-btn" style="width: 100%; justify-content: center; display: none; margin-top: 10px;" onclick="window.enableEditMode()">✏️ Edit Data</button>
-      
-      <p style="font-size: 12px; color: var(--text3); text-align: center; margin-top: 10px;">Security: Changes require active OTP session.</p>
+
+      <p style="font-size: 12px; color: var(--text3); text-align: center; margin-top: 12px;">Security: Changes require active OTP session.</p>
     </div>
 
     <div class="hero-card">
-      <h3 style="margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 10px;">Incoming Requests</h3>
-      <div id="provider-jobs-container">
-        <div id="provider-empty-state" style="border: 1px dashed var(--border); border-radius: var(--radius-sm); padding: 40px 20px; text-align: center; background: var(--bg);">
-          <div style="font-size: 48px; margin-bottom: 12px;">📭</div>
-          <h4 style="font-size: 18px; margin-bottom: 6px;">0 customers to contact yet</h4>
+      <h3 style="margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 14px;">Incoming Requests</h3>
+      <div id="provider-jobs-container" style="margin-top: 16px;">
+        <div id="provider-empty-state" style="border: 1.5px dashed var(--border); border-radius: var(--radius); padding: 44px 20px; text-align: center; background: var(--bg);">
+          <div style="font-size: 44px; margin-bottom: 12px;">📭</div>
+          <h4 style="font-size: 17px; margin-bottom: 6px; font-family: var(--font-display);">0 customers to contact yet</h4>
           <p style="color: var(--text2); font-size: 14px;">Keep your location updated. When nearby customers request your service, they will appear here instantly.</p>
         </div>
         <div id="live-requests-list" style="display: flex; flex-direction: column; gap: 12px;"></div>
@@ -266,7 +266,7 @@
           </div>
           <div class="form-group"><label class="form-label">Mobile Number *</label><input type="tel" id="auth-mobile" class="form-input" placeholder="98765 43210" maxlength="10"></div>
           <button class="btn btn-primary" id="primary-auth-btn" style="width:100%; justify-content:center; padding:13px;" onclick="window.triggerSupabaseOTP('customer')">Send Login OTP</button>
-          
+
           <div class="form-divider">or continue with</div>
           <button class="social-btn" onclick="window.initiateGoogleAuth('customer')">
             <svg width="18" height="18" viewBox="0 0 18 18"><path d="M17.64 9.2a10.34 10.34 0 0 0-.16-1.84H9v3.48h4.84A4.14 4.14 0 0 1 12.07 13v2.26h2.88A8.72 8.72 0 0 0 17.64 9.2z" fill="#4285F4"/><path d="M9 18a8.59 8.59 0 0 0 5.95-2.18L12.07 13a5.43 5.43 0 0 1-8.07-2.85H1.08v2.33A9 9 0 0 0 9 18z" fill="#34A853"/><path d="M4 10.15a5.34 5.34 0 0 1 0-3.41V4.4H1.08a9 9 0 0 0 0 8.09z" fill="#FBBC05"/><path d="M9 3.58a4.86 4.86 0 0 1 3.44 1.35l2.58-2.58A8.66 8.66 0 0 0 9 0 9 9 0 0 0 1.08 4.4L4 6.73A5.37 5.37 0 0 1 9 3.58z" fill="#EA4335"/></svg>
@@ -279,15 +279,15 @@
 
         <div id="consumer-otp-fields" style="display:none; text-align: center;">
           <div style="font-size:36px; margin-bottom:8px;">📱</div>
-          <div style="font-size:16px; font-weight:700;">Enter the OTP</div>
+          <div style="font-size:16px; font-weight:700; font-family: var(--font-display);">Enter the OTP</div>
           <div style="font-size:13px; color:var(--text2); margin: 6px 0 20px;">We sent a code to <strong id="otp-phone-display">your number</strong></div>
           <div style="display:flex; gap:8px; justify-content:center; margin-bottom:20px;">
-            <input type="text" class="otp-field form-input" maxlength="1" inputmode="numeric" style="width:40px; text-align:center; padding:10px 0;" oninput="otpAutoTab(this)">
-            <input type="text" class="otp-field form-input" maxlength="1" inputmode="numeric" style="width:40px; text-align:center; padding:10px 0;" oninput="otpAutoTab(this)">
-            <input type="text" class="otp-field form-input" maxlength="1" inputmode="numeric" style="width:40px; text-align:center; padding:10px 0;" oninput="otpAutoTab(this)">
-            <input type="text" class="otp-field form-input" maxlength="1" inputmode="numeric" style="width:40px; text-align:center; padding:10px 0;" oninput="otpAutoTab(this)">
-            <input type="text" class="otp-field form-input" maxlength="1" inputmode="numeric" style="width:40px; text-align:center; padding:10px 0;" oninput="otpAutoTab(this)">
-            <input type="text" class="otp-field form-input" maxlength="1" inputmode="numeric" style="width:40px; text-align:center; padding:10px 0;" oninput="otpAutoTab(this)">
+            <input type="text" class="otp-field form-input" maxlength="1" inputmode="numeric" style="width:42px; text-align:center; padding:10px 0;" oninput="otpAutoTab(this)">
+            <input type="text" class="otp-field form-input" maxlength="1" inputmode="numeric" style="width:42px; text-align:center; padding:10px 0;" oninput="otpAutoTab(this)">
+            <input type="text" class="otp-field form-input" maxlength="1" inputmode="numeric" style="width:42px; text-align:center; padding:10px 0;" oninput="otpAutoTab(this)">
+            <input type="text" class="otp-field form-input" maxlength="1" inputmode="numeric" style="width:42px; text-align:center; padding:10px 0;" oninput="otpAutoTab(this)">
+            <input type="text" class="otp-field form-input" maxlength="1" inputmode="numeric" style="width:42px; text-align:center; padding:10px 0;" oninput="otpAutoTab(this)">
+            <input type="text" class="otp-field form-input" maxlength="1" inputmode="numeric" style="width:42px; text-align:center; padding:10px 0;" oninput="otpAutoTab(this)">
           </div>
           <button class="btn btn-primary" style="width:100%; justify-content:center; padding:13px;" onclick="window.verifySupabaseOTP('customer')">Verify &amp; Sign In</button>
           <div style="margin-top: 14px;"><a href="#" onclick="backToPhone();return false;" style="font-size:13px; color:var(--accent); text-decoration:none;">← Change number</a></div>
@@ -314,7 +314,7 @@
         </div>
 
         <div id="provider-otp-fields" style="display:none; text-align:center;">
-          <div style="font-size:16px; font-weight:700;">Enter provider OTP</div>
+          <div style="font-size:16px; font-weight:700; font-family: var(--font-display);">Enter provider OTP</div>
           <div style="font-size:13px; color:var(--text2); margin:6px 0 20px;">We sent a code to <strong id="provider-otp-phone-display">your number</strong></div>
           <input type="text" id="provider-otp-code" class="form-input" maxlength="6" inputmode="numeric" placeholder="6-digit OTP" style="text-align:center; margin-bottom:20px;">
           <button class="btn btn-primary" style="width:100%; justify-content:center; padding:13px;" onclick="window.verifySupabaseOTP('provider')">Verify &amp; Continue</button>
@@ -327,7 +327,7 @@
 
 <!-- 📅 BOOKING MODAL -->
 <div class="modal-overlay" id="booking-modal" onclick="if(event.target===this) this.classList.remove('open')">
-  <div class="modal" style="max-width: 420px; border-radius: 16px;">
+  <div class="modal" style="max-width: 420px; border-radius: 20px;">
     <div class="modal-header">
       <div>
         <div class="modal-title" style="font-size: 20px; font-weight: 700;">Schedule Appointment</div>
@@ -335,45 +335,45 @@
       </div>
       <button class="modal-close" onclick="document.getElementById('booking-modal').classList.remove('open')">✕</button>
     </div>
-    <div class="modal-body" style="padding-top: 10px;">
-      <div style="background: var(--bg); padding: 15px; border-radius: var(--radius-sm); border: 1px solid var(--border); margin-bottom: 15px;">
+    <div class="modal-body" style="padding-top: 12px;">
+      <div style="background: var(--bg); padding: 16px; border-radius: var(--radius-sm); border: 1px solid var(--border); margin-bottom: 16px;">
         <label style="display:block; font-size:13px; font-weight:700; margin-bottom:6px; color:var(--text);">Select Date:</label>
-        <input type="date" id="appointment-date" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border); margin-bottom:12px; font-size:14px; outline:none;">
-        
+        <input type="date" id="appointment-date" class="form-input" style="margin-bottom:12px; padding: 10px 14px;">
+
         <div style="display: flex; gap: 10px;">
           <div style="flex: 1;">
             <label style="display:block; font-size:13px; font-weight:700; margin-bottom:6px; color:var(--text);">From (Time):</label>
-            <input type="time" id="appointment-from" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border); font-size:14px; outline:none;">
+            <input type="time" id="appointment-from" class="form-input" style="padding: 10px 14px;">
           </div>
           <div style="flex: 1;">
             <label style="display:block; font-size:13px; font-weight:700; margin-bottom:6px; color:var(--text);">To (Time):</label>
-            <input type="time" id="appointment-to" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border); font-size:14px; outline:none;">
+            <input type="time" id="appointment-to" class="form-input" style="padding: 10px 14px;">
           </div>
         </div>
       </div>
 
-      <button class="btn btn-primary" style="width: 100%; justify-content: center; padding: 12px; font-weight: 700; font-size: 15px; margin-bottom: 15px;" onclick="window.submitCustomAppointment()">
+      <button class="btn btn-primary" style="width: 100%; justify-content: center; padding: 13px; font-weight: 700; font-size: 15px; margin-bottom: 16px;" onclick="window.submitCustomAppointment()">
         📅 Confirm &amp; Schedule Appointment
       </button>
 
-      <div style="text-align: center; margin-bottom: 15px; position: relative;">
+      <div style="text-align: center; margin-bottom: 16px; position: relative;">
         <hr style="border: 0; border-top: 1px solid var(--border);">
         <span style="position: absolute; top: -10px; background: var(--surface); padding: 0 10px; font-size: 12px; color: var(--text3); left: 50%; transform: translateX(-50%); font-weight: 600;">OR CONTACT DIRECTLY</span>
       </div>
 
       <div style="display: flex; gap: 8px;">
-        <a href="#" id="direct-call-btn" class="btn btn-outline" style="flex: 1; justify-content: center; font-size: 13px; text-decoration: none; padding: 10px;">
+        <a href="#" id="direct-call-btn" class="btn btn-outline" style="flex: 1; justify-content: center; font-size: 13px; text-decoration: none; padding: 11px;">
           📞 Direct Call
         </a>
       </div>
-      
-      <label class="form-label" style="margin-top: 15px; margin-bottom: 8px; display: block; font-weight: 700;">Option 2: Send WhatsApp Message</label>
+
+      <label class="form-label" style="margin-top: 16px; margin-bottom: 8px; display: block; font-weight: 700;">Option 2: Send WhatsApp Message</label>
       <p style="font-size: 12px; color: var(--text3); margin-bottom: 10px;">Select a quick message:</p>
-      
+
       <div style="display: flex; flex-direction: column; gap: 8px;">
-        <button class="btn btn-outline" style="justify-content: flex-start; padding: 10px; font-size: 13px; font-weight: 500;" onclick="window.sendWhatsAppMsg('I want to book an appointment for today.')">📅 Appointment for today.</button>
-        <button class="btn btn-outline" style="justify-content: flex-start; padding: 10px; font-size: 13px; font-weight: 500;" onclick="window.sendWhatsAppMsg('Hi, what are your visiting/service charges?')">💰 What are your visiting charges?</button>
-        <button class="btn btn-outline" style="justify-content: flex-start; padding: 10px; font-size: 13px; font-weight: 500;" onclick="window.sendWhatsAppMsg('Please call me, I have an urgent work.')">⚡ Urgent work, please call back.</button>
+        <button class="btn btn-outline" style="justify-content: flex-start; padding: 11px; font-size: 13px; font-weight: 500;" onclick="window.sendWhatsAppMsg('I want to book an appointment for today.')">📅 Appointment for today.</button>
+        <button class="btn btn-outline" style="justify-content: flex-start; padding: 11px; font-size: 13px; font-weight: 500;" onclick="window.sendWhatsAppMsg('Hi, what are your visiting/service charges?')">💰 What are your visiting charges?</button>
+        <button class="btn btn-outline" style="justify-content: flex-start; padding: 11px; font-size: 13px; font-weight: 500;" onclick="window.sendWhatsAppMsg('Please call me, I have an urgent work.')">⚡ Urgent work, please call back.</button>
       </div>
 
     </div>
