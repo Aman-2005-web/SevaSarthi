@@ -10,7 +10,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SevaSarthi - Where Needs Meet Skills</title>
- <link rel="icon" type="image/png" href="SevaSarthi.png" />
+<link rel="icon" type="image/png" href="SevaSarthi.png" />
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -45,19 +45,30 @@
     min-height: 100vh;
   }
 
-.navbar-brand {
-  display: inline-flex;
-  align-items: center;
-  text-decoration: none;
-}
- 
-.brand-logo-img {
-  height: 60px;          /* Adjust height to fit your navbar */
-  width: auto;           /* Keeps aspect ratio intact */
-  object-fit: contain;
-  display: block;
-}
- 
+  .navbar-brand {
+    display: inline-flex;
+    align-items: center;
+    text-decoration: none;
+    gap: 8px;
+  }
+  
+  .brand-logo-img {
+    height: 48px;
+    width: auto;
+    object-fit: contain;
+    display: block;
+  }
+
+  .brand-name {
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--text);
+  }
+
+  .brand-name span {
+    color: var(--accent);
+  }
 
   nav {
     position: sticky; top: 0; z-index: 100;
@@ -68,242 +79,215 @@
     height: 64px;
   }
 
-/* ── AMBIENT BACKGROUND GLOW ── */
-.ambient-glow {
-  position: absolute;
-  width: 260px;
-  height: 260px;
-  background: radial-gradient(circle, rgba(14, 165, 233, 0.22) 0%, rgba(37, 99, 235, 0.04) 70%, transparent 100%);
-  filter: blur(40px);
-  z-index: 0;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
-
-/* ── SHOWCASE CONTAINER CARD ── */
-.showcase-card {
-  position: relative;
-  z-index: 1;
-  width: 100%;
-  max-width: 380px;
-  margin: 0 auto;
-  background: #ffffff;
-  border: 1px solid var(--border, #e2e8f0);
-  border-radius: 20px;
-  padding: 22px;
-  box-shadow: 0 20px 35px -15px rgba(15, 23, 42, 0.08), 0 0 1px 1px rgba(0, 0, 0, 0.04);
-}
-
-.showcase-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 16px;
-}
-
-.live-indicator {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 13px;
-  font-weight: 700;
-  color: #0f172a;
-}
-
-/* ── PULSING GREEN LIVE PIN ── */
-.pulse-dot {
-  width: 8px;
-  height: 8px;
-  background-color: #22c55e;
-  border-radius: 50%;
-  box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
-  animation: livePulse 1.8s infinite;
-}
-
-@keyframes livePulse {
-  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
-  70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(34, 197, 94, 0); }
-  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
-}
-
-.range-badge {
-  font-size: 11px;
-  font-weight: 600;
-  color: #0284c7;
-  background: #f0f9ff;
-  border: 1px solid #bae6fd;
-  padding: 3px 8px;
-  border-radius: 12px;
-}
-
-/* ── WORKER PREVIEW ROW ── */
-.worker-card {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  border-radius: 14px;
-  padding: 12px 14px;
-  margin-bottom: 16px;
-}
-
-.worker-avatar {
-  width: 44px;
-  height: 44px;
-  border-radius: 10px;
-  background: var(--accent, #0284c7);
-  color: #ffffff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-  font-size: 14px;
-  flex-shrink: 0;
-}
-
-.worker-details {
-  flex: 1;
-  text-align: left;
-}
-
-.worker-name-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.worker-name-row h4 {
-  margin: 0;
-  font-size: 14px;
-  font-weight: 700;
-  color: #0f172a;
-}
-
-.rating {
-  font-size: 12px;
-  font-weight: 700;
-  color: #d97706;
-}
-
-.worker-role {
-  margin: 2px 0 5px;
-  font-size: 12px;
-  color: #64748b;
-}
-
-.distance-pill {
-  display: inline-block;
-  font-size: 10px;
-  font-weight: 600;
-  color: #15803d;
-  background: #f0fdf4;
-  padding: 2px 6px;
-  border-radius: 6px;
-}
-
-/* ── STATS SUMMARY BAR ── */
-.hero-stats-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-top: 1px solid #f1f5f9;
-  padding-top: 14px;
-}
-
-.stat-item {
-  text-align: center;
-  flex: 1;
-}
-
-.stat-num {
-  display: block;
-  font-size: 15px;
-  font-weight: 800;
-  color: #0f172a;
-}
-
-.stat-lbl {
-  font-size: 10px;
-  color: #64748b;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.stat-divider {
-  width: 1px;
-  height: 22px;
-  background: #e2e8f0;
-}
-
-/* ── FLOATING ACCENTS ── */
-.floating-pill {
-  position: absolute;
-  z-index: 2;
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  padding: 7px 12px;
-  border-radius: 50px;
-  font-size: 11px;
-  font-weight: 600;
-  color: #0f172a;
-  box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.08);
-  white-space: nowrap;
-}
-
-.floating-left {
-  top: 4%;
-  left: -15px;
-}
-
-.floating-right {
-  bottom: 4%;
-  right: -15px;
-}
-
-/* ── RESPONSIVE COLLAPSE FOR SCREENS UNDER 900PX ── */
-@media (max-width: 900px) {
-  .hero {
-    grid-template-columns: 1fr;
-    text-align: center;
-    gap: 36px;
-    padding: 40px 20px;
+  /* ── AMBIENT BACKGROUND GLOW ── */
+  .ambient-glow {
+    position: absolute;
+    width: 260px;
+    height: 260px;
+    background: radial-gradient(circle, rgba(14, 165, 233, 0.22) 0%, rgba(37, 99, 235, 0.04) 70%, transparent 100%);
+    filter: blur(40px);
+    z-index: 0;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
   }
-  .hero p {
-    margin-left: auto;
-    margin-right: auto;
+
+  /* ── SHOWCASE CONTAINER CARD ── */
+  .showcase-card {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 380px;
+    margin: 0 auto;
+    background: #ffffff;
+    border: 1px solid var(--border, #e2e8f0);
+    border-radius: 20px;
+    padding: 22px;
+    box-shadow: 0 20px 35px -15px rgba(15, 23, 42, 0.08), 0 0 1px 1px rgba(0, 0, 0, 0.04);
   }
-  .hero-cta {
+
+  .showcase-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+
+  .live-indicator {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #0f172a;
+  }
+
+  /* ── PULSING GREEN LIVE PIN ── */
+  .pulse-dot {
+    width: 8px;
+    height: 8px;
+    background-color: #22c55e;
+    border-radius: 50%;
+    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
+    animation: livePulse 1.8s infinite;
+  }
+
+  @keyframes livePulse {
+    0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
+    70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(34, 197, 94, 0); }
+    100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+  }
+
+  .range-badge {
+    font-size: 11px;
+    font-weight: 600;
+    color: #0284c7;
+    background: #f0f9ff;
+    border: 1px solid #bae6fd;
+    padding: 3px 8px;
+    border-radius: 12px;
+  }
+
+  /* ── WORKER PREVIEW ROW ── */
+  .worker-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    padding: 12px 14px;
+    margin-bottom: 16px;
+  }
+
+  .worker-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    background: var(--accent, #0284c7);
+    color: #ffffff;
+    display: flex;
+    align-items: center;
     justify-content: center;
+    font-weight: 700;
+    font-size: 14px;
+    flex-shrink: 0;
   }
-  .floating-left,
+
+  .worker-details {
+    flex: 1;
+    text-align: left;
+  }
+
+  .worker-name-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .worker-name-row h4 {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 700;
+    color: #0f172a;
+  }
+
+  .rating {
+    font-size: 12px;
+    font-weight: 700;
+    color: #d97706;
+  }
+
+  .worker-role {
+    margin: 2px 0 5px;
+    font-size: 12px;
+    color: #64748b;
+  }
+
+  .distance-pill {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 600;
+    color: #15803d;
+    background: #f0fdf4;
+    padding: 2px 6px;
+    border-radius: 6px;
+  }
+
+  /* ── STATS SUMMARY BAR ── */
+  .hero-stats-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid #f1f5f9;
+    padding-top: 14px;
+  }
+
+  .stat-item {
+    text-align: center;
+    flex: 1;
+  }
+
+  .stat-num {
+    display: block;
+    font-size: 15px;
+    font-weight: 800;
+    color: #0f172a;
+  }
+
+  .stat-lbl {
+    font-size: 10px;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .stat-divider {
+    width: 1px;
+    height: 22px;
+    background: #e2e8f0;
+  }
+
+  /* ── FLOATING ACCENTS ── */
+  .floating-pill {
+    position: absolute;
+    z-index: 2;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    padding: 7px 12px;
+    border-radius: 50px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #0f172a;
+    box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.08);
+    white-space: nowrap;
+  }
+
+  .floating-left {
+    top: 4%;
+    left: -15px;
+  }
+
   .floating-right {
-    display: none;
+    bottom: 4%;
+    right: -15px;
   }
-}
-  
-  .logo { font-family: var(--font-display); font-size: 22px; font-weight: 800; color: var(--text); text-decoration: none; display: flex; align-items: center; gap: 8px; }
-  .logo span { color: var(--accent); }
-  .logo-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); display: inline-block; }
-  
+
   .btn { display: inline-flex; align-items: center; gap: 6px; padding: 9px 18px; border-radius: var(--radius-sm); font-size: 14px; font-weight: 600; cursor: pointer; border: none; transition: all 0.2s; text-decoration: none; }
   .btn-outline { background: transparent; border: 1.5px solid var(--border); color: var(--text); }
   .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
   .btn-primary { background: var(--accent); color: #fff; }
-  .btn-primary:hover { background: #1096de; transform: translateY(-1px); }
+  .btn-primary:hover { background: #0c82c2; transform: translateY(-1px); }
   .btn-green { background: var(--green); color: #fff; }
   
   .hero { padding: 80px 5% 60px; display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; max-width: 1200px; margin: 0 auto; }
-  .hero-eyebrow { display: inline-flex; align-items: center; gap: 8px; background: rgba(232,75,47,0.1); color: var(--accent); padding: 6px 14px; border-radius: 99px; font-size: 12px; font-weight: 600; text-transform: uppercase; margin-bottom: 20px; }
+  .hero-eyebrow { display: inline-flex; align-items: center; gap: 8px; background: rgba(16,150,222,0.1); color: var(--accent); padding: 6px 14px; border-radius: 99px; font-size: 12px; font-weight: 600; text-transform: uppercase; margin-bottom: 20px; }
   .hero h1 { font-family: var(--font-display); font-size: clamp(36px, 5vw, 58px); font-weight: 800; line-height: 1.1; margin-bottom: 20px; }
   .hero h1 em { font-style: normal; color: var(--accent); }
   .hero p { font-size: 17px; color: var(--text2); margin-bottom: 32px; max-width: 480px; }
   .hero-cta { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 40px; }
-
   .hero-visual { position: relative; }
   .hero-card { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 20px; box-shadow: var(--shadow-lg); }
-  .hero-map-mockup { background: linear-gradient(135deg, #d4e8ff 0%, #b8d4ff 50%, #d4f0e8 100%); border-radius: 14px; height: 220px; position: relative; overflow: hidden; }
 
   .search-section { background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 24px 5%; }
   .search-wrap { max-width: 900px; margin: 0 auto; }
@@ -311,16 +295,12 @@
   .search-box input { flex: 1; background: none; border: none; outline: none; font-size: 15px; color: var(--text); }
   .search-divider { width: 1px; background: var(--border); height: 24px; }
   .search-location { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--text2); padding: 0 12px; cursor: pointer; white-space: nowrap; }
-  .quick-services { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; align-items: center; }
+  .quick-services { display: flex; flex-wrap: wrap; gap: 10px; padding: 20px 5% 0; max-width: 1200px; margin: 0 auto; align-items: center; }
   .qs-label { font-size: 13px; color: var(--text3); font-weight: 600; }
   .qs-tag { background: var(--surface2); border: 1px solid var(--border); padding: 6px 12px; border-radius: 20px; font-size: 13px; color: var(--text2); text-decoration: none; transition: all 0.2s; }
   .qs-tag:hover { border-color: var(--accent); color: var(--accent); background: var(--surface); }
   
-  @media (max-width: 900px) {
-    .quick-services { justify-content: center; }
-  }
- 
-  .map-section { background: var(--surface2); padding: 64px 5%; }
+  .map-section { background: var(--surface2); padding: 40px 5% 64px; }
   .map-demo { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 360px 1fr; gap: 20px; }
   .map-sidebar { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
   .map-sidebar-header { padding: 18px 20px; border-bottom: 1px solid var(--border); }
@@ -358,28 +338,34 @@
   .toast { position: fixed; bottom: 24px; right: 24px; z-index: 5000; background: var(--text); color: var(--bg); padding: 14px 20px; border-radius: 12px; font-size: 14px; box-shadow: 0 4px 24px rgba(0,0,0,0.25); transform: translateY(100px); opacity: 0; transition: all 0.3s ease; }
   .toast.show { transform: none; opacity: 1; }
 
-  /* Provider Mode Toggle */
-  .provider-mode .hide-on-provider { display: none !important; }
-  .provider-dashboard { display: none; padding: 60px 5%; max-width: 1200px; margin: 0 auto; }
-  .provider-mode .provider-dashboard { display: block; }
+  /* ── PROVIDER VIEW TOGGLE ENGINE ── */
+  .hide-on-provider { display: block; }
+  .provider-dashboard { display: none; padding: 40px 5%; max-width: 1200px; margin: 0 auto; }
+  
+  body.provider-mode .hide-on-provider { display: none !important; }
+  body.provider-mode .provider-dashboard { display: block !important; }
 
   @media (max-width: 900px) {
-    .hero { grid-template-columns: 1fr; text-align: center; gap: 40px; }
+    .hero { grid-template-columns: 1fr; text-align: center; gap: 40px; padding: 40px 20px; }
+    .hero p { margin-left: auto; margin-right: auto; }
     .hero-cta { justify-content: center; }
     .hero-visual { display: none; }
     .map-demo { grid-template-columns: 1fr; }
     .provider-grid { grid-template-columns: 1fr !important; }
+    .quick-services { justify-content: center; }
   }
 </style>
 </head>
 <body>
 
+<!-- TOP NAVBAR -->
 <nav>
- <a href="#" class="navbar-brand">
+  <a href="#" class="navbar-brand">
     <img src="SevaSarthi.png" alt="SevaSarthi Logo" class="brand-logo-img" />
-   <span class="brand-name">Seva<span>Sarthi</span></span>
-  <div style="display:flex;gap:10px;align-items:center;">
- </a>
+    <span class="brand-name">Seva<span>Sarthi</span></span>
+  </a>
+
+  <div style="display:flex; gap:10px; align-items:center;">
     <button id="signin-btn" class="btn btn-outline" onclick="openModal('login')">Sign In</button>
     <button id="register-btn" class="btn btn-primary" onclick="openModal('register')">Get Started</button>
     
@@ -388,15 +374,12 @@
   </div>
 </nav>
 
-<!-- CUSTOMER INTERFACE -->
+<!-- 👤 CUSTOMER INTERFACE WRAPPER -->
 <div class="hide-on-provider">
+  
   <div class="hero">
-    
     <!-- LEFT COLUMN -->
     <div class="hero-left">
-      <div class="hero-logo-wrapper" style="margin-bottom: 16px;">
-        <img src="SevaSarthi.png" alt="SevaSarthi Logo" style="height: 64px; width: auto; object-fit: contain;" />
-      </div>
       <div class="hero-eyebrow">🇮🇳 Trusted Across India</div>
       <h1>Where Needs <em>Meet Skills</em></h1>
       <p>Connect with verified service providers and skilled workers near you in minutes.</p>
@@ -406,10 +389,9 @@
       </div>
     </div>
 
-    <!-- RIGHT COLUMN (Placed inside .hero) -->
+    <!-- RIGHT COLUMN -->
     <div class="hero-visual">
       <div class="ambient-glow"></div>
-
       <div class="showcase-card">
         <div class="showcase-header">
           <div class="live-indicator">
@@ -450,152 +432,149 @@
       </div>
 
       <div class="floating-pill floating-left">
-        <span>⚡ Direct Call & WhatsApp</span>
+        <span>⚡ Direct Call &amp; WhatsApp</span>
       </div>
-      
       <div class="floating-pill floating-right">
         <span>🛡️ Verified Digital Profile</span>
       </div>
     </div>
   </div>
-</div>
- 
-  <!-- 🔍 SEARCH & POPULAR TAGS SECTION -->
-<div class="search-section">
-  <div class="search-wrap">
-    <div class="search-box">
-      <!-- Search Input -->
-      <input type="text" id="search-input" placeholder="Search electrician, plumber, carpenter, tutor, contractor..." aria-label="Search for services">
-      <div class="search-divider"></div>
-      
-      <!-- Locate Me Button -->
-      <div class="search-location" onclick="window.askCustomerLocation()">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--accent); flex-shrink: 0;">
-          <path d="M12 22s-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 8.2c0 7.3-8 11.8-8 11.8z"/>
-          <circle cx="12" cy="10" r="3"/>
-        </svg>
-        <span id="location-text">Locate Me</span>
-      </div>
 
-      <!-- Search Trigger Button -->
-      <button class="btn btn-primary" style="white-space: nowrap;" onclick="window.searchProviders()">Search</button>
+  <!-- SEARCH & FILTER SECTION -->
+  <div class="search-section">
+    <div class="search-wrap">
+      <div class="search-box">
+        <input type="text" id="search-input" placeholder="Search electrician, plumber, carpenter, tutor, contractor..." aria-label="Search for services">
+        <div class="search-divider"></div>
+        <div class="search-location" onclick="window.askCustomerLocation()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--accent); flex-shrink: 0;">
+            <path d="M12 22s-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 8.2c0 7.3-8 11.8-8 11.8z"/>
+            <circle cx="12" cy="10" r="3"/>
+          </svg>
+          <span id="location-text">Locate Me</span>
+        </div>
+        <button class="btn btn-primary" style="white-space: nowrap;" onclick="window.searchProviders()">Search</button>
+      </div>
     </div>
   </div>
-</div>
 
-<!-- ⚡ POPULAR SERVICE TAGS -->
-<div class="quick-services">
-  <span class="qs-label">Popular:</span>
-  <a href="#" class="qs-tag" onclick="window.searchProviders('Electrician'); return false;">⚡ Electrician</a>
-  <a href="#" class="qs-tag" onclick="window.searchProviders('Plumber'); return false;">🔧 Plumber</a>
-  <a href="#" class="qs-tag" onclick="window.searchProviders('Carpenter'); return false;">🪚 Carpenter</a>
-  <a href="#" class="qs-tag" onclick="window.searchProviders('Home Tutor'); return false;">📚 Tutor</a>
-  <a href="#" class="qs-tag" onclick="window.searchProviders('Maid'); return false;">🧹 Maid</a>
-  <a href="#" class="qs-tag" onclick="window.searchProviders('Driver'); return false;">🚗 Driver</a>
-  <a href="#" class="qs-tag" onclick="window.searchProviders('Construction Contractor'); return false;">🏗️ Construction Contractor</a>
-  <a href="#" class="qs-tag" onclick="window.searchProviders('Steel and Iron Work Contractor'); return false;">⚙️ Steel & Iron Contractor</a>
-</div>
+  <!-- QUICK TAGS -->
+  <div class="quick-services">
+    <span class="qs-label">Popular:</span>
+    <a href="#" class="qs-tag" onclick="window.searchProviders('Electrician'); return false;">⚡ Electrician</a>
+    <a href="#" class="qs-tag" onclick="window.searchProviders('Plumber'); return false;">🔧 Plumber</a>
+    <a href="#" class="qs-tag" onclick="window.searchProviders('Carpenter'); return false;">🪚 Carpenter</a>
+    <a href="#" class="qs-tag" onclick="window.searchProviders('Home Tutor'); return false;">📚 Tutor</a>
+    <a href="#" class="qs-tag" onclick="window.searchProviders('Maid'); return false;">🧹 Maid</a>
+    <a href="#" class="qs-tag" onclick="window.searchProviders('Driver'); return false;">🚗 Driver</a>
+    <a href="#" class="qs-tag" onclick="window.searchProviders('Construction Contractor'); return false;">🏗️ Construction Contractor</a>
+    <a href="#" class="qs-tag" onclick="window.searchProviders('Steel and Iron Work Contractor'); return false;">⚙️ Steel &amp; Iron Contractor</a>
+  </div>
 
+  <!-- MAP VIEW -->
   <section id="map-section" class="map-section">
     <div class="map-demo">
       <div class="map-sidebar">
         <div class="map-sidebar-header">
-          <div class="map-sidebar-title">Live Providers Near You</div>
+          <div class="map-sidebar-title" style="font-weight:700;">Live Providers Near You</div>
         </div>
         <div class="map-provider-list" id="customer-provider-list">
           <div style="padding: 20px; text-align: center; color: var(--text3); font-size: 14px;">Loading real-time map data...</div>
         </div>
       </div>
       <div class="map-container">
-        <!-- THE MAP -->
         <div id="map"></div>
       </div>
     </div>
   </section>
+
 </div>
 
-<!-- PROVIDER DASHBOARD INTERFACE -->
+<!-- 🔨 PROVIDER DASHBOARD INTERFACE -->
 <div id="provider-dashboard" class="provider-dashboard">
   <div style="margin-bottom: 30px;">
     <h2>Welcome to your Workspace</h2>
-    <p style="color: var(--text2);">Manage your skills, lock your live location, and get new local requests.</p>
+    <p style="color: var(--text2);">Manage your skills, lock your live location, and receive direct customer requests.</p>
   </div>
   
   <div class="provider-grid" style="display: grid; grid-template-columns: 1fr 1.5fr; gap: 30px;">
-<div class="hero-card">
-  <h3 style="margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 10px;">Your Professional Details</h3>
-  
-  <div id="prov-view-mode" style="display: none; background: var(--surface2); padding: 20px; border-radius: var(--radius-sm); margin-bottom: 15px;">
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
-      <div>
-        <div style="font-size: 13px; color: var(--text2); margin-bottom: 4px;">Full Name</div>
-        <div id="view-name" style="font-size: 16px; font-weight: 700;">-</div>
+    <div class="hero-card">
+      <h3 style="margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 10px;">Your Professional Details</h3>
+      
+      <div id="prov-view-mode" style="display: none; background: var(--surface2); padding: 20px; border-radius: var(--radius-sm); margin-bottom: 15px;">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+          <div>
+            <div style="font-size: 13px; color: var(--text2); margin-bottom: 4px;">Full Name</div>
+            <div id="view-name" style="font-size: 16px; font-weight: 700;">-</div>
+          </div>
+          <div>
+            <div style="font-size: 13px; color: var(--text2); margin-bottom: 4px;">Gender</div>
+            <div id="view-gender" style="font-size: 16px; font-weight: 700;">-</div>
+          </div>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+          <div>
+            <div style="font-size: 13px; color: var(--text2); margin-bottom: 4px;">Service Category</div>
+            <div id="view-cat" style="font-size: 16px; font-weight: 700;">-</div>
+          </div>
+          <div>
+            <div style="font-size: 13px; color: var(--text2); margin-bottom: 4px;">Experience</div>
+            <div id="view-exp" style="font-size: 16px; font-weight: 700;">-</div>
+          </div>
+        </div>
+        <div style="margin-top: 20px; text-align: center; font-size: 12px; color: var(--green); font-weight: 600;">✅ Profile Saved &amp; Location Locked</div>
       </div>
-      <div>
-        <div style="font-size: 13px; color: var(--text2); margin-bottom: 4px;">Gender</div>
-        <div id="view-gender" style="font-size: 16px; font-weight: 700;">-</div>
-      </div>
-    </div>
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-      <div>
-        <div style="font-size: 13px; color: var(--text2); margin-bottom: 4px;">Service Category</div>
-        <div id="view-cat" style="font-size: 16px; font-weight: 700;">-</div>
-      </div>
-      <div>
-        <div style="font-size: 13px; color: var(--text2); margin-bottom: 4px;">Experience</div>
-        <div id="view-exp" style="font-size: 16px; font-weight: 700;">-</div>
-      </div>
-    </div>
-    <div style="margin-top: 20px; text-align: center; font-size: 12px; color: var(--green); font-weight: 600;">✅ Profile Saved & Location Locked</div>
-  </div>
 
-  <div id="prov-edit-mode">
-    <div class="form-group">
-      <label class="form-label">Full Name</label>
-      <input type="text" id="prov-name" class="form-input" placeholder="e.g. Amam Kumar">
-    </div>
-    <div class="form-group" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
-      <div style="margin: 0;">
-        <label class="form-label">Gender</label>
-        <select id="prov-gender" class="form-input" style="background-color: var(--bg);">
-          <option value="" disabled selected>Select...</option>
-          <option value="Male">Male</option>
-          <option value="Female">Female</option>
-          <option value="Other">Other</option>
-        </select>
+      <div id="prov-edit-mode">
+        <div class="form-group">
+          <label class="form-label">Full Name</label>
+          <input type="text" id="prov-name" class="form-input" placeholder="e.g. Aman Kumar">
+        </div>
+        <div class="form-group" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+          <div style="margin: 0;">
+            <label class="form-label">Gender</label>
+            <select id="prov-gender" class="form-input" style="background-color: var(--bg);">
+              <option value="" disabled selected>Select...</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div style="margin: 0;">
+            <label class="form-label">Experience (Years)</label>
+            <input type="number" id="prov-exp" class="form-input" placeholder="e.g. 5">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Service Category</label>
+          <input type="text" id="prov-cat" class="form-input" placeholder="e.g. Electrician, Plumber..." list="services-list">
+          <datalist id="services-list">
+            <option value="Electrician"></option>
+            <option value="Plumber"></option>
+            <option value="Carpenter"></option>
+            <option value="Home Tutor"></option>
+            <option value="Driver"></option>
+            <option value="Steel and iron work contractor"></option>
+            <option value="OTHER"></option>
+          </datalist>
+        </div>
       </div>
-      <div style="margin: 0;">
-        <label class="form-label">Experience (Years)</label>
-        <input type="number" id="prov-exp" class="form-input" placeholder="e.g. 5">
-      </div>
-    </div>
-    <div class="form-group">
-      <label class="form-label">Service Category</label>
-      <input type="text" id="prov-cat" class="form-input" placeholder="e.g. Electrician, Plumber..." list="services-list">
-      <datalist id="services-list">
-        <option value="Electrician"></option>
-        <option value="Plumber"></option>
-        <option value="Carpenter"></option>
-        <option value="Home Tutor"></option>
-       <option value="Driver"></option>
-       <option value="Steel and iron work contractor"></option>
-       <option value="OTHER"></option>
-      </datalist>
-    </div>
-  </div>
 
-  <button class="btn btn-green" id="save-prov-btn" style="width: 100%; justify-content: center;" onclick="window.saveProviderProfile()">Save Details & Lock Location 📍</button>
-  <button class="btn btn-outline" id="edit-prov-btn" style="width: 100%; justify-content: center; display: none; margin-top: 10px;" onclick="window.enableEditMode()">✏️ Edit Data</button>
-  
-  <p style="font-size: 12px; color: var(--text3); text-align: center; margin-top: 10px;">Security: Changes require active OTP session.</p>
-</div>
+      <button class="btn btn-green" id="save-prov-btn" style="width: 100%; justify-content: center;" onclick="window.saveProviderProfile()">Save Details &amp; Lock Location 📍</button>
+      <button class="btn btn-outline" id="edit-prov-btn" style="width: 100%; justify-content: center; display: none; margin-top: 10px;" onclick="window.enableEditMode()">✏️ Edit Data</button>
+      
+      <p style="font-size: 12px; color: var(--text3); text-align: center; margin-top: 10px;">Security: Changes require active OTP session.</p>
+    </div>
 
     <div class="hero-card">
       <h3 style="margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 10px;">Incoming Requests</h3>
-      <div id="provider-jobs-container" style="border: 1px dashed var(--border); border-radius: var(--radius-sm); padding: 40px 20px; text-align: center; background: var(--bg);">
-        <div id="live-requests-list" style="font-size: 48px; margin-bottom: 12px;">📭</div>
-        <h4 style="font-size: 18px; margin-bottom: 6px;">0 customers to contact yet</h4>
-        <p style="color: var(--text2); font-size: 14px;">Keep your location updated. When nearby customers request your service, they will appear here instantly.</p>
+      <div id="provider-jobs-container">
+        <div id="provider-empty-state" style="border: 1px dashed var(--border); border-radius: var(--radius-sm); padding: 40px 20px; text-align: center; background: var(--bg);">
+          <div style="font-size: 48px; margin-bottom: 12px;">📭</div>
+          <h4 style="font-size: 18px; margin-bottom: 6px;">0 customers to contact yet</h4>
+          <p style="color: var(--text2); font-size: 14px;">Keep your location updated. When nearby customers request your service, they will appear here instantly.</p>
+        </div>
+        <div id="live-requests-list" style="display: flex; flex-direction: column; gap: 12px;"></div>
       </div>
     </div>
   </div>
@@ -664,7 +643,7 @@
           </div>
           <div class="form-group"><label class="form-label">Mobile Number *</label><input type="tel" id="provider-mobile" class="form-input" placeholder="98765 43210" maxlength="10"></div>
           <button class="btn btn-primary" id="provider-auth-btn" style="width:100%; justify-content:center; padding:13px;" onclick="window.triggerSupabaseOTP('provider')">Send Login OTP</button>
-          <div class="form-divider">or sign up without OTP</div>
+          <div class="form-divider">or continue with</div>
           <button class="social-btn" onclick="window.initiateGoogleAuth('provider')">
             <svg width="18" height="18" viewBox="0 0 18 18"><path d="M17.64 9.2a10.34 10.34 0 0 0-.16-1.84H9v3.48h4.84A4.14 4.14 0 0 1 12.07 13v2.26h2.88A8.72 8.72 0 0 0 17.64 9.2z" fill="#4285F4"/><path d="M9 18a8.59 8.59 0 0 0 5.95-2.18L12.07 13a5.43 5.43 0 0 1-8.07-2.85H1.08v2.33A9 9 0 0 0 9 18z" fill="#34A853"/><path d="M4 10.15a5.34 5.34 0 0 1 0-3.41V4.4H1.08a9 9 0 0 0 0 8.09z" fill="#FBBC05"/><path d="M9 3.58a4.86 4.86 0 0 1 3.44 1.35l2.58-2.58A8.66 8.66 0 0 0 9 0 9 9 0 0 0 1.08 4.4L4 6.73A5.37 5.37 0 0 1 9 3.58z" fill="#EA4335"/></svg>
             Continue with Google
@@ -686,7 +665,7 @@
   </div>
 </div>
 
- <!-- 📅 BOOKING MODAL HTML (Paste before <script>) -->
+<!-- 📅 BOOKING MODAL -->
 <div class="modal-overlay" id="booking-modal" onclick="if(event.target===this) this.classList.remove('open')">
   <div class="modal" style="max-width: 420px; border-radius: 16px;">
     <div class="modal-header">
@@ -697,8 +676,6 @@
       <button class="modal-close" onclick="document.getElementById('booking-modal').classList.remove('open')">✕</button>
     </div>
     <div class="modal-body" style="padding-top: 10px;">
-      
-      <!-- 📅 DATE & TIME PICKER FORM -->
       <div style="background: var(--bg); padding: 15px; border-radius: var(--radius-sm); border: 1px solid var(--border); margin-bottom: 15px;">
         <label style="display:block; font-size:13px; font-weight:700; margin-bottom:6px; color:var(--text);">Select Date:</label>
         <input type="date" id="appointment-date" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border); margin-bottom:12px; font-size:14px; outline:none;">
@@ -715,9 +692,8 @@
         </div>
       </div>
 
-      <!-- MAIN ACTION BUTTON -->
       <button class="btn btn-primary" style="width: 100%; justify-content: center; padding: 12px; font-weight: 700; font-size: 15px; margin-bottom: 15px;" onclick="window.submitCustomAppointment()">
-        📅 Confirm & Schedule Appointment
+        📅 Confirm &amp; Schedule Appointment
       </button>
 
       <div style="text-align: center; margin-bottom: 15px; position: relative;">
@@ -725,7 +701,6 @@
         <span style="position: absolute; top: -10px; background: var(--surface); padding: 0 10px; font-size: 12px; color: var(--text3); left: 50%; transform: translateX(-50%); font-weight: 600;">OR CONTACT DIRECTLY</span>
       </div>
 
-      <!-- Direct Fallbacks (Call/WhatsApp) -->
       <div style="display: flex; gap: 8px;">
         <a href="#" id="direct-call-btn" class="btn btn-outline" style="flex: 1; justify-content: center; font-size: 13px; text-decoration: none; padding: 10px;">
           📞 Direct Call
@@ -733,7 +708,7 @@
       </div>
       
       <label class="form-label" style="margin-top: 15px; margin-bottom: 8px; display: block; font-weight: 700;">Option 2: Send WhatsApp Message</label>
-      <p style="font-size: 12px; color: var(--text3); margin-bottom: 10px;">Select a quick message (Works if provider is on WhatsApp):</p>
+      <p style="font-size: 12px; color: var(--text3); margin-bottom: 10px;">Select a quick message:</p>
       
       <div style="display: flex; flex-direction: column; gap: 8px;">
         <button class="btn btn-outline" style="justify-content: flex-start; padding: 10px; font-size: 13px; font-weight: 500;" onclick="window.sendWhatsAppMsg('I want to book an appointment for today.')">📅 Appointment for today.</button>
@@ -747,11 +722,11 @@
 
 <div class="toast" id="toast"></div>
 
-<!-- UI SCRIPTS & MAP INITIALIZATION -->
+<!-- UI SCRIPTS -->
 <script>
   let map;
   let toastTimer;
-  let customerMarker; // To store the "You are here" pin
+  let customerMarker;
 
   function showToast(msg) {
     const t = document.getElementById('toast');
@@ -781,39 +756,38 @@
   function backToPhone() { document.getElementById('consumer-input-fields').style.display = 'block'; document.getElementById('consumer-otp-fields').style.display = 'none'; }
   function backToProviderPhone() { document.getElementById('provider-input-fields').style.display = 'block'; document.getElementById('provider-otp-fields').style.display = 'none'; }
 
-  /* ── SMART AUTH TRACKER ── */
-let currentAuthMode = 'login'; // Default mode
+  let currentAuthMode = 'login';
 
-function toggleAuthIntent(mode) {
-  currentAuthMode = mode; // Tracker update
-  backToPhone();
-  const title = document.getElementById('modal-title'); const sub = document.getElementById('modal-sub');
-  const btn = document.getElementById('primary-auth-btn'); const nameRow = document.getElementById('name-row');
-  const toggleTxt = document.getElementById('auth-toggle-text');
-  if (mode === 'register') {
-    title.textContent = 'Create Account'; sub.textContent = 'Join thousands finding services daily';
-    btn.textContent = 'Send Verification OTP'; nameRow.style.display = 'grid';
-    toggleTxt.innerHTML = 'Already have an account? <a href="#" onclick="toggleAuthIntent(\'login\');return false;" style="color:var(--accent); text-decoration:none; font-weight:600;">Sign in</a>';
-  } else {
-    title.textContent = 'Welcome back'; sub.textContent = 'Sign in to your account';
-    btn.textContent = 'Send Login OTP'; nameRow.style.display = 'none';
-    toggleTxt.innerHTML = 'New to SevaSarthi? <a href="#" onclick="toggleAuthIntent(\'register\');return false;" style="color:var(--accent); text-decoration:none; font-weight:600;">Create account</a>';
+  function toggleAuthIntent(mode) {
+    currentAuthMode = mode;
+    backToPhone();
+    const title = document.getElementById('modal-title'); const sub = document.getElementById('modal-sub');
+    const btn = document.getElementById('primary-auth-btn'); const nameRow = document.getElementById('name-row');
+    const toggleTxt = document.getElementById('auth-toggle-text');
+    if (mode === 'register') {
+      title.textContent = 'Create Account'; sub.textContent = 'Join thousands finding services daily';
+      btn.textContent = 'Send Verification OTP'; nameRow.style.display = 'grid';
+      toggleTxt.innerHTML = 'Already have an account? <a href="#" onclick="toggleAuthIntent(\'login\');return false;" style="color:var(--accent); text-decoration:none; font-weight:600;">Sign in</a>';
+    } else {
+      title.textContent = 'Welcome back'; sub.textContent = 'Sign in to your account';
+      btn.textContent = 'Send Login OTP'; nameRow.style.display = 'none';
+      toggleTxt.innerHTML = 'New to SevaSarthi? <a href="#" onclick="toggleAuthIntent(\'register\');return false;" style="color:var(--accent); text-decoration:none; font-weight:600;">Create account</a>';
+    }
   }
-}
 
   function toggleProviderAuthIntent(mode) {
-  currentAuthMode = mode; // Tracker update
-  backToProviderPhone();
-  const nameRow = document.getElementById('provider-name-row'); const btn = document.getElementById('provider-auth-btn');
-  const toggleTxt = document.getElementById('provider-auth-toggle-text');
-  if (mode === 'register') {
-    nameRow.style.display = 'grid'; btn.textContent = 'Send Registration OTP';
-    toggleTxt.innerHTML = 'Already a provider? <a href="#" onclick="toggleProviderAuthIntent(\'login\');return false;" style="color:var(--accent); text-decoration:none; font-weight:600;">Sign in</a>';
-  } else {
-    nameRow.style.display = 'none'; btn.textContent = 'Send Login OTP';
-    toggleTxt.innerHTML = 'New provider? <a href="#" onclick="toggleProviderAuthIntent(\'register\');return false;" style="color:var(--accent); text-decoration:none; font-weight:600;">Create provider account</a>';
+    currentAuthMode = mode;
+    backToProviderPhone();
+    const nameRow = document.getElementById('provider-name-row'); const btn = document.getElementById('provider-auth-btn');
+    const toggleTxt = document.getElementById('provider-auth-toggle-text');
+    if (mode === 'register') {
+      nameRow.style.display = 'grid'; btn.textContent = 'Send Registration OTP';
+      toggleTxt.innerHTML = 'Already a provider? <a href="#" onclick="toggleProviderAuthIntent(\'login\');return false;" style="color:var(--accent); text-decoration:none; font-weight:600;">Sign in</a>';
+    } else {
+      nameRow.style.display = 'none'; btn.textContent = 'Send Login OTP';
+      toggleTxt.innerHTML = 'New provider? <a href="#" onclick="toggleProviderAuthIntent(\'register\');return false;" style="color:var(--accent); text-decoration:none; font-weight:600;">Create provider account</a>';
+    }
   }
-}
 
   function otpAutoTab(input) {
     input.value = input.value.replace(/\D/g, '');
@@ -824,27 +798,27 @@ function toggleAuthIntent(mode) {
     }
   }
 
-  // Basic Leaflet Initialization (Centered to general location first)
   document.addEventListener("DOMContentLoaded", function() {
-    map = L.map('map', { zoomControl: false }).setView([23.7957, 86.4304], 13);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
-    setTimeout(() => { map.invalidateSize(); }, 400);
+    const mapElement = document.getElementById('map');
+    if (mapElement) {
+      map = L.map('map', { zoomControl: false }).setView([23.7957, 86.4304], 13);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+      setTimeout(() => { if(map) map.invalidateSize(); }, 400);
+    }
   });
 </script>
 
+<!-- SUPABASE CLIENT & CORE LOGIC -->
 <script> 
- // ── 1. SUPABASE CLIENT INITIALIZATION ──
   const SUPABASE_URL = "https://fekvrxxhspbntjriwiha.supabase.co";
   const SUPABASE_ANON_KEY = "sb_publishable_YrjBg24OxoW--XxfI71EBg_nCqm3lMo";
   const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-  // Global Variables
   window.currentAuthMode = 'login';
   window.customerLat = null;
   window.customerLng = null;
   window.currentMapMarkers = [];
 
-  // ── 2. SAFE UI HELPERS (Prevents undefined crashes) ──
   if (typeof window.showToast !== 'function') {
     window.showToast = function(msg) {
       const toast = document.getElementById('toast');
@@ -852,8 +826,6 @@ function toggleAuthIntent(mode) {
         toast.textContent = msg;
         toast.classList.add('show');
         setTimeout(() => toast.classList.remove('show'), 3000);
-      } else {
-        console.log("Notification:", msg);
       }
     };
   }
@@ -866,8 +838,7 @@ function toggleAuthIntent(mode) {
     };
   }
 
- 
-  // ── 3. AUTH OBSERVER (ROLE DETECTION ENGINE) ──
+  // ── AUTH OBSERVER & ROLE SWITCHER ──
   supabaseClient.auth.onAuthStateChange(async (event, session) => {
     const status = document.getElementById("user-status");
     const signin = document.getElementById("signin-btn");
@@ -892,7 +863,8 @@ function toggleAuthIntent(mode) {
       const userId = session.user.id;
       const { data: existingProfile } = await supabaseClient.from('profiles').select('role, full_name, mobile').eq('id', userId).single();
 
-      const finalRole = existingProfile?.role || pendingRole || session.user.user_metadata?.role || 'customer';
+      const rawRole = existingProfile?.role || pendingRole || session.user.user_metadata?.role || 'customer';
+      const finalRole = rawRole.toLowerCase();
       const userPhone = pendingPhone || session.user.user_metadata?.saved_phone || session.user.phone || existingProfile?.mobile || '';
       const userName = pendingName || existingProfile?.full_name || session.user.user_metadata?.full_name || 'User';
       const userEmail = session.user.email || ''; 
@@ -933,11 +905,10 @@ function toggleAuthIntent(mode) {
     }
   });
 
-  // ── 4. AUTHENTICATION FUNCTIONS (GOOGLE & OTP) ──
+  // ── GOOGLE AUTH & OTP ──
   window.initiateGoogleAuth = async function (role = 'customer') {
     try {
       localStorage.setItem('pending_role', role);
-      
       const mode = window.currentAuthMode || 'login';
       if (mode === 'register' && role === 'provider') {
         const mobileInput = document.getElementById('provider-mobile');
@@ -1005,7 +976,6 @@ function toggleAuthIntent(mode) {
     }
   };
 
-  // ── 5. DISTANCE & LOCATION ENGINE ──
   function calculateDistance(lat1, lon1, lat2, lon2) {
     const R = 6371; const dLat = (lat2 - lat1) * Math.PI / 180; const dLon = (lon2 - lon1) * Math.PI / 180;
     const a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon/2) * Math.sin(dLon/2);
@@ -1041,16 +1011,13 @@ function toggleAuthIntent(mode) {
     } else { window.showToast("Geolocation is not supported by your browser."); }
   }; 
 
-  // ── 6. SEARCH ENGINE ──
   window.searchProviders = function(quickTagValue) {
     const searchInput = document.getElementById('search-input');
     const searchTerm = quickTagValue || (searchInput ? searchInput.value.trim() : "");
     if (quickTagValue && searchInput) searchInput.value = quickTagValue;
-    
     if (window.loadLiveProvidersOnMap) window.loadLiveProvidersOnMap(window.customerLat || null, window.customerLng || null, searchTerm);
   };
 
-  // ── 7. LIVE MAP RENDER LOGIC ──
   window.loadLiveProvidersOnMap = async function(customerLat = null, customerLng = null, searchTerm = "") {
     const listContainer = document.getElementById('customer-provider-list');
     if(!listContainer) return;
@@ -1077,7 +1044,6 @@ function toggleAuthIntent(mode) {
 
         if (!customerLat || (dist !== null && dist <= 10)) { 
           foundNearby = true;
-          
           if(typeof map !== 'undefined' && map && typeof L !== 'undefined' && p.latitude && p.longitude) {
             const marker = L.marker([parseFloat(p.latitude), parseFloat(p.longitude)]).addTo(map);
             window.currentMapMarkers.push(marker);
@@ -1122,7 +1088,7 @@ function toggleAuthIntent(mode) {
     }
   };
 
-  // ── 8. PROVIDER DASHBOARD & PROFILE LOGIC ──
+  // ── PROVIDER DASHBOARD ENGINE ──
   window.loadProviderDashboard = async function() {
     const { data: { session } } = await supabaseClient.auth.getSession();
     if(!session) return;
@@ -1149,17 +1115,17 @@ function toggleAuthIntent(mode) {
     }
 
     const requestsListArea = document.getElementById('live-requests-list');
+    const emptyState = document.getElementById('provider-empty-state');
     if (requestsListArea && providerId) {
-      const { data: requests, error } = await supabaseClient.from('bookings').select('*').eq('provider_id', providerId).order('created_at', { ascending: false });
+      const { data: requests } = await supabaseClient.from('bookings').select('*').eq('provider_id', providerId).order('created_at', { ascending: false });
       
       if (requests && requests.length > 0) {
-        requestsListArea.style.border = "none"; requestsListArea.style.padding = "0"; requestsListArea.style.background = "transparent"; requestsListArea.style.textAlign = "left";
-        requestsListArea.innerHTML = `<div style="display: flex; flex-direction: column; gap: 12px; width: 100%;"></div>`;
-        const listWrapper = requestsListArea.firstChild;
+        if (emptyState) emptyState.style.display = 'none';
+        requestsListArea.innerHTML = '';
 
         requests.forEach(r => {
           const reqCard = document.createElement('div');
-          reqCard.style = "background: var(--surface); border: 1px solid var(--border); padding: 14px 18px; border-radius: var(--radius-sm); box-shadow: var(--shadow); display: flex; justify-content: space-between; align-items: center; width: 100%; margin-bottom: 4px;";
+          reqCard.style = "background: var(--surface); border: 1px solid var(--border); padding: 14px 18px; border-radius: var(--radius-sm); box-shadow: var(--shadow); display: flex; justify-content: space-between; align-items: center; width: 100%;";
           
           let scheduleDetails = (r.apt_date || r.appointment_date) 
             ? `<div style="margin-top: 6px; display:inline-block; background: #eff6ff; color: #1e40af; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 700;">📅 ${r.apt_date || r.appointment_date} btw ${r.apt_from || 'N/A'} to ${r.apt_to || 'N/A'}</div>`
@@ -1173,8 +1139,11 @@ function toggleAuthIntent(mode) {
             </div>
             <a href="tel:${r.customer_mobile}" class="btn btn-primary" style="padding: 10px 16px; font-size: 13px; border-radius:8px; text-decoration:none;">📞 Call Now</a>
           `;
-          listWrapper.appendChild(reqCard);
+          requestsListArea.appendChild(reqCard);
         });
+      } else {
+        if (emptyState) emptyState.style.display = 'block';
+        requestsListArea.innerHTML = '';
       }
     }
   };
@@ -1211,7 +1180,7 @@ function toggleAuthIntent(mode) {
     } else { window.showToast("Geolocation not supported."); if(btn) btn.textContent = "Save Details & Lock Location 📍"; }
   };
 
-  // ── 9. BOOKING SYSTEM ──
+  // ── BOOKING SYSTEM ──
   window.currentBookingPhone = ""; window.currentProviderId = "";
 
   window.openBookingModal = async function(name, phone, providerId) {
@@ -1258,7 +1227,7 @@ function toggleAuthIntent(mode) {
     window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, '_blank');
   };
 
-  // ── 10. GLOBAL LOGOUT ──
+  // ── LOGOUT ──
   window.signOutUser = async function () { 
     await supabaseClient.auth.signOut(); 
     localStorage.clear();
